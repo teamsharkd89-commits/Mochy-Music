@@ -1,4 +1,4 @@
-# Making modules for Mochy
+# Making modules for BeDivine
 
 The module guide moved to the wiki: **[realidkroo.github.io/Mochy-Music/wiki](https://realidkroo.github.io/Mochy-Music/wiki/#modules-types)**.
 

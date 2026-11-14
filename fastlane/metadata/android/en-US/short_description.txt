@@ -1,1 +1,1 @@
-A Material 3 YouTube Music client for Android
+BeDivine, a Material 3 YouTube Music client for Android

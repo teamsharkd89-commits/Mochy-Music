@@ -19,7 +19,7 @@ CUSTOM_BUILD_INFO=""
 IS_CUSTOM_BUILD=false
 NIGHTLY_NUMBER=""
 
-BETA_NOTICE_FILE="app/src/main/kotlin/com/mochyy/mochymusic/ui/screens/beta/BetaNoticeScreen.kt"
+BETA_NOTICE_FILE="app/src/main/kotlin/com/bedivine/app/ui/screens/beta/BetaNoticeScreen.kt"
 
 cleanup() {
     # a nightly's fourth number only lives for its own build
@@ -170,12 +170,12 @@ if [ "$SKIP_BUILD" = false ]; then
 
     # update beta notice
     if [ -f "$BETA_NOTICE_FILE" ]; then
-        NOTICE_TITLE="mochy build #$BUILD_ATTEMPT $VARIANT"
+        NOTICE_TITLE="bedivine build #$BUILD_ATTEMPT $VARIANT"
         if [ -n "$CUSTOM_DATE" ]; then
-            NOTICE_TITLE="mochy build #$BUILD_ATTEMPT $VARIANT ($CUSTOM_DATE)"
+            NOTICE_TITLE="bedivine build #$BUILD_ATTEMPT $VARIANT ($CUSTOM_DATE)"
         fi
-        sed -i '' -e "s/text = \"Mochy DEV PREV\"/text = \"$NOTICE_TITLE\"/g" "$BETA_NOTICE_FILE"
-        sed -i '' -e "s/text = \"mochy build #[0-9]* .*\"/text = \"$NOTICE_TITLE\"/g" "$BETA_NOTICE_FILE"
+        sed -i '' -e "s/text = \"BeDivine DEV PREV\"/text = \"$NOTICE_TITLE\"/g" "$BETA_NOTICE_FILE"
+        sed -i '' -e "s/text = \"bedivine build #[0-9]* .*\"/text = \"$NOTICE_TITLE\"/g" "$BETA_NOTICE_FILE"
         sed -i '' -e "s/text = \"[0-9]*\.[0-9]*\.[0-9]*DEV\"/text = \"$BASE_VERSION build#$BUILD_ATTEMPT\"/g" "$BETA_NOTICE_FILE"
         sed -i '' -e "s/text = \"[0-9]*\.[0-9]*\.[0-9]* build#[0-9]*\"/text = \"$BASE_VERSION build#$BUILD_ATTEMPT\"/g" "$BETA_NOTICE_FILE"
     fi
@@ -294,11 +294,11 @@ if [ "$INSTALL_ON_DEVICES" = true ]; then
     else
         DEVICES=$(adb devices | grep -v "^List" | grep -w "device" | cut -f1)
         
-        PACKAGE_NAME="com.mochyy.mochymusic"
+        PACKAGE_NAME="com.bedivine.app"
         if [ "$VARIANT" == "debug" ]; then
-            PACKAGE_NAME="com.mochyy.mochymusic.debug"
+            PACKAGE_NAME="com.bedivine.app.debug"
         elif [ "$VARIANT" == "profileable" ]; then
-            PACKAGE_NAME="com.mochyy.mochymusic.profileable"
+            PACKAGE_NAME="com.bedivine.app.profileable"
         fi
 
         if [ -z "$DEVICES" ]; then

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mochyy.mochymusic.artistvideo"
+    namespace = "com.bedivine.app.artistvideo"
     compileSdk = 36
 
     defaultConfig {

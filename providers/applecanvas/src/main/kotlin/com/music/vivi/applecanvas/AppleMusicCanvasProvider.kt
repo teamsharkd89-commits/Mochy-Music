@@ -1,7 +1,7 @@
-package com.mochyy.mochymusic.applecanvas
+package com.bedivine.app.applecanvas
 
-import com.mochyy.mochymusic.canvas.CanvasArtwork
-import com.mochyy.mochymusic.canvas.CanvasMatch
+import com.bedivine.app.canvas.CanvasArtwork
+import com.bedivine.app.canvas.CanvasMatch
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp

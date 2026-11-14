@@ -1,4 +1,4 @@
-package com.mochyy.mochymusic.artistvideo
+package com.bedivine.app.artistvideo
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
