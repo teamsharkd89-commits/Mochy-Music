@@ -67,6 +67,7 @@ import com.bedivine.app.viewmodels.DownloadedSong
 import com.bedivine.app.viewmodels.StorageViewModel
 import com.bedivine.app.ui.component.RemoteFocus
 import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 
 /** how many songs each suggestion shelf shows */
 private const val ShelfSize = 4

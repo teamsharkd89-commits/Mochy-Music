@@ -18,6 +18,7 @@ import com.bedivine.app.ui.menu.PlaylistMenu
 import com.bedivine.app.viewmodels.LibraryHomeViewModel
 import com.bedivine.app.viewmodels.LibraryShelfKind
 import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 
 /**
  * The library's playlists, or with a [shelf] the Local or Cached tab's: only the playlists that

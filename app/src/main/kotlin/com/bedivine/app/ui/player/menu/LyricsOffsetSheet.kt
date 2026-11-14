@@ -55,6 +55,7 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 import com.bedivine.app.ui.component.RemoteFocus
 import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 
 /** The slider and the typed value both stop here: 10 seconds either way, shown in ms. */
 private const val MaxOffsetMs = 10_000

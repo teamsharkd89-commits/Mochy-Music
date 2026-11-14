@@ -24,6 +24,7 @@ import com.bedivine.app.ui.component.removeImportSwipeAction
 import com.bedivine.app.ui.menu.SongMenu
 import com.bedivine.app.viewmodels.LibraryImportedViewModel
 import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 
 @Composable
 fun LibraryImportedScreen(

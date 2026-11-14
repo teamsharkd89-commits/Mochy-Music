@@ -74,6 +74,7 @@ import kotlin.math.hypot
 import kotlin.math.roundToInt
 import kotlin.math.sin
 import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 
 // ---------------------------------------------------------------------------------------------
 // Shared bits

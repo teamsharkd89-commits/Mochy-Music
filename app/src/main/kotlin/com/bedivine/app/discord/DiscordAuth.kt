@@ -42,6 +42,7 @@ import java.security.MessageDigest
 import java.security.SecureRandom
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.bedivine.app.R
 
 /** Where a Discord sign-in is, for the Discord page. */
 sealed interface DiscordLogin {

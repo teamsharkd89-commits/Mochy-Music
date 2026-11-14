@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.bedivine.app.R
 
 /** the service an imported playlist re-syncs with, null for one made here, from a file or youtube's own (a playlist with a browseId follows youtube through sync, and so does one sync brought in) */
 fun resyncSourceOf(imported: ImportedPlaylist?, browseId: String?): ImportSource? {

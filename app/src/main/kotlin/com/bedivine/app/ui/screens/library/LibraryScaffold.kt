@@ -44,6 +44,7 @@ import com.music.innertube.models.PlaylistItem
 import com.music.innertube.models.SongItem
 import com.music.innertube.models.YTItem
 import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 
 /**
  * Shared page frame for every Library screen: collapsing title/subtitle, a pinned search pill, and

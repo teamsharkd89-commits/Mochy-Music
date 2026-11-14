@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import com.bedivine.app.R
 
 /** the modules settings: each module's account, switch, choices and settings, its test, ordering, and adding new ones */
 @HiltViewModel

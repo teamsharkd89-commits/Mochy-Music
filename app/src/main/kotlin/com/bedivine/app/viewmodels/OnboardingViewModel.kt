@@ -41,6 +41,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import javax.inject.Inject
 import kotlin.random.Random
+import com.bedivine.app.R
 
 /** What the "Import & sync" options page sets. */
 data class YouTubeSyncChoices(

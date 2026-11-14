@@ -64,6 +64,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 
 private enum class AddMusicTab { Suggested, Library }
 

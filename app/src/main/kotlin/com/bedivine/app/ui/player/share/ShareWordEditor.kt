@@ -88,6 +88,7 @@ import kotlin.math.hypot
 import androidx.annotation.StringRes
 import com.bedivine.app.ui.component.RemoteFocus
 import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 
 // the three looks a word can take, each with its card and its prompt
 private enum class WordMode(@StringRes val labelRes: Int, @StringRes val promptRes: Int) {

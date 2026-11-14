@@ -63,6 +63,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
 import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 
 /** "stream info": where the playing song comes from, and its whole road to the speaker */
 @Composable

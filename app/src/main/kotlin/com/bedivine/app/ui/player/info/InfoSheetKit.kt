@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import com.bedivine.app.ui.player.menu.MenuRowSurface
 import com.bedivine.app.ui.component.RemoteFocus
 import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 
 // the look both info sheets share, drawn from the about song and stream info mocks
 

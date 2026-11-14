@@ -50,6 +50,7 @@ import com.bedivine.app.viewmodels.ImportSyncViewModel
 import com.bedivine.app.viewmodels.PendingImport
 import com.music.innertube.utils.parseCookieString
 import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 
 const val ImportSyncRoute = "import_sync"
 const val ImportProvidersRoute = "import_providers"

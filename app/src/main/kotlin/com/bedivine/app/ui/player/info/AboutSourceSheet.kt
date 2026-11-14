@@ -42,6 +42,7 @@ import com.bedivine.app.ui.player.menu.MenuSheetSurface
 import com.bedivine.app.ui.screens.setup.onboarding.ProviderSquircle
 import com.bedivine.app.ui.component.RemoteFocus
 import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 
 /** picks where "about" reads from; each row previews what that source says, so the choice is an easy one */
 @Composable

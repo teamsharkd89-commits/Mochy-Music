@@ -21,6 +21,7 @@ import com.bedivine.app.playback.queues.ListQueue
 import com.bedivine.app.viewmodels.LibraryHomeViewModel
 import com.bedivine.app.viewmodels.LibraryShelfKind
 import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 
 @Composable
 fun LibraryRecentlyAddedScreen(

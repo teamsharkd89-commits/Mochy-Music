@@ -48,6 +48,7 @@ import com.bedivine.app.viewmodels.frequencyLabel
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 
 @Composable
 fun EqBandsSection(

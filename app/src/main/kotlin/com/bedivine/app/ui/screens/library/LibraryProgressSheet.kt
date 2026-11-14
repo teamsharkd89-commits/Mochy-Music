@@ -46,6 +46,7 @@ import com.bedivine.app.viewmodels.LibraryImportViewModel
 import androidx.annotation.StringRes
 import kotlinx.coroutines.flow.StateFlow
 import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 
 /** Which job a progress card or sheet follows. */
 enum class TransferKind(@StringRes val titleRes: Int, @StringRes val idleTextRes: Int) {

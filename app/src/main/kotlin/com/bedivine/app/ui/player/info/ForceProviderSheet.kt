@@ -58,6 +58,7 @@ import com.bedivine.app.utils.rememberPreference
 import kotlinx.coroutines.delay
 import com.bedivine.app.ui.component.RemoteFocus
 import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 
 private val YouTubeQualities = listOf(AudioQuality.AUTO, AudioQuality.HIGH, AudioQuality.MEDIUM, AudioQuality.LOW)
 

@@ -72,6 +72,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.abs
 import com.bedivine.app.ui.component.RemoteFocus
 import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 
 /** When a tap picks or drops several rows, each one waits this long per row from where the tap started. */
 private const val SweepStepMs = 28L

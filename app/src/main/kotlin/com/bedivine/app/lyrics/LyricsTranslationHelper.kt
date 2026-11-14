@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.Locale
+import com.bedivine.app.R
 
 object LyricsTranslationHelper {
     private val _status = MutableStateFlow<TranslationStatus>(TranslationStatus.Idle)

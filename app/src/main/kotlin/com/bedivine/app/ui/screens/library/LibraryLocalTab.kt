@@ -32,6 +32,7 @@ import com.bedivine.app.ui.screens.search.SearchColors
 import com.bedivine.app.ui.screens.search.SearchHorizontalPadding
 import com.bedivine.app.ui.theme.InterFontFamily
 import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 
 internal fun LazyListScope.libraryLocalTab(
     data: ShelfTabData,
