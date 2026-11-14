@@ -171,7 +171,7 @@ internal enum class TvTab(val route: String, val icon: Any, val label: Int) {
     Home(TvRoutes.Home, R.drawable.nav_mochy_outline, R.string.home),
     Search(TvRoutes.Search, R.raw.search, R.string.search),
     Library(TvRoutes.Library, R.raw.lib, R.string.your_library),
-    Mochy(TvRoutes.Mochy, R.drawable.nav_mochy_outline, R.string.tv_mochy),
+    BeDivine(TvRoutes.BeDivine, R.drawable.nav_mochy_outline, R.string.tv_mochy),
 }
 
 @Composable
@@ -226,6 +226,6 @@ internal fun tabOf(route: String?): TvTab? = when {
     route.startsWith(TvRoutes.Home) || route.startsWith(TvRoutes.Recap) -> TvTab.Home
     route.startsWith(TvRoutes.Search) || route.startsWith(TvRoutes.Browse) -> TvTab.Search
     route.startsWith(TvRoutes.Library) || route.startsWith(TvRoutes.Songs) || route.startsWith("local_playlist") -> TvTab.Library
-    route.startsWith(TvRoutes.Mochy) || route.startsWith(TvRoutes.Phone) -> TvTab.Mochy
+    route.startsWith(TvRoutes.BeDivine) || route.startsWith(TvRoutes.Phone) -> TvTab.BeDivine
     else -> null
 }

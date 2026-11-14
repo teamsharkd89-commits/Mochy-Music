@@ -3953,7 +3953,7 @@ class MusicService :
 
     /**
      * The app's top banner (the one "Added to playlist" uses), with the song's cover. Only while
-     * Mochy is on screen: one raised in the background would greet the user later, for a song
+     * BeDivine is on screen: one raised in the background would greet the user later, for a song
      * that's long gone.
      */
     private fun showBanner(text: String) {

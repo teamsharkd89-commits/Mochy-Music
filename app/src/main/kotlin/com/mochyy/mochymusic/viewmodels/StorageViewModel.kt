@@ -54,7 +54,7 @@ data class DriveUsage(
     val othersUsed: Long get() = (total - free - mochy).coerceAtLeast(0L)
 }
 
-/** How much room Mochy takes, in the four parts the Storage page shows, and every drive it sits on. */
+/** How much room BeDivine takes, in the four parts the Storage page shows, and every drive it sits on. */
 data class StorageUsage(
     /** the phone first, then any memory card holding downloads or the cache */
     val drives: List<DriveUsage>,
@@ -120,7 +120,7 @@ class StorageViewModel @Inject constructor(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    /** Walks Mochy's folders again. The page calls it on open and whenever the downloads change. */
+    /** Walks BeDivine's folders again. The page calls it on open and whenever the downloads change. */
     fun measure() {
         viewModelScope.launch { _usage.value = withContext(Dispatchers.IO) { readUsage() } }
     }

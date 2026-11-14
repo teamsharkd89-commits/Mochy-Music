@@ -12,7 +12,7 @@ import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
 
-const val GithubOwner = "realidkroo"
+const val GithubOwner = "teamsharkd89-commits"
 const val GithubRepo = "Mochy-Music"
 
 const val GithubProfileUrl = "https://github.com/$GithubOwner"
@@ -289,7 +289,7 @@ suspend fun downloadApk(
 }
 
 fun apkFileFor(context: Context, release: GithubRelease): File =
-    File(context.cacheDir, release.apkName ?: "mochy-update.apk")
+    File(context.cacheDir, release.apkName ?: "bedivine-update.apk")
 
 fun isDownloaded(context: Context, release: GithubRelease): Boolean {
     val f = apkFileFor(context, release)

@@ -182,7 +182,7 @@ private val MoreCredits = listOf(
 private val Licenses = listOf(
     LicenseEntry(
         tag = "GPL-3.0",
-        title = "Mochy Music · GNU General Public License v3.0",
+        title = "BeDivine Music · GNU General Public License v3.0",
         subtitle = "Free and open source software, source code on GitHub",
         url = "$GithubRepoUrl/blob/main/LICENSE",
     ),
@@ -387,7 +387,7 @@ private fun ColumnScope.AboutSheetContent(
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = "Mochy Music | $installed",
+                    text = "BeDivine Music | $installed",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = (-0.4).sp,
@@ -404,7 +404,7 @@ private fun ColumnScope.AboutSheetContent(
                     .padding(horizontal = 18.dp, vertical = 16.dp),
             ) {
                 Text(
-                    text = "Mochy Music is a music app but\nkinda cool.",
+                    text = "BeDivine Music is a music app but\nkinda cool.",
                     fontSize = 15.sp,
                     lineHeight = 19.sp,
                     fontWeight = FontWeight.Bold,
@@ -421,7 +421,7 @@ private fun ColumnScope.AboutSheetContent(
                     onClick = { popup.showSupportSheet() },
                 )
                 AboutPillRow(
-                    text = "Mochy Music github \u2192",
+                    text = "BeDivine Music github \u2192",
                     onClick = { context.openUrl(GithubRepoUrl) },
                 )
             }

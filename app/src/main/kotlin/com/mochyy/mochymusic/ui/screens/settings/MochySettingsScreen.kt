@@ -593,7 +593,7 @@ fun MochySettingsScreen(navController: NavController, pane: SettingsPane? = null
         }
         }
 
-        // Top bar: Mochy mark + "Settings" title slide away on scroll (progressive glass blur
+        // Top bar: BeDivine mark + "Settings" title slide away on scroll (progressive glass blur
         // behind the gradient, matching Library/Search) while the search field glides up to sit
         // beside the profile avatar.
         SearchGlassTopBar(
@@ -606,7 +606,7 @@ fun MochySettingsScreen(navController: NavController, pane: SettingsPane? = null
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Icon(
                         painter = painterResource(R.drawable.ic_mochy_mark),
-                        contentDescription = "Mochy",
+                        contentDescription = "BeDivine",
                         tint = Color.White,
                         modifier = Modifier.size(SettingsMarkSize),
                     )

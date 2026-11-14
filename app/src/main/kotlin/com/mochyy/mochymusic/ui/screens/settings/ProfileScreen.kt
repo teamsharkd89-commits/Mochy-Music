@@ -1,6 +1,6 @@
 // ProfileScreen.kt
 //
-// The Mochy page. A dark header holds the profile ID card over a dot grid, with a giant MOCHY
+// The BeDivine page. A dark header holds the profile ID card over a dot grid, with a giant MOCHY
 // column sliding up the right edge. Pull the header down and it fills the screen, the card flips to
 // a scratch-off barcode, and scratching it opens the month's recap (ui/screens/recap) - which hands
 // back to this header when it's done. Below: listening time (into Stats), version, settings.
@@ -440,7 +440,7 @@ fun ProfileScreen(navController: NavController) {
     val glassState = remember { GlassState() }
     val bottomBarInset = LocalPlayerAwareWindowInsets.current.asPaddingValues().calculateBottomPadding()
 
-    // the Mochy page, and over it the profile page when the card has been tapped
+    // the BeDivine page, and over it the profile page when the card has been tapped
     Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
         BoxWithConstraints(
             modifier = Modifier
@@ -845,7 +845,7 @@ fun ProfileScreen(navController: NavController) {
             // ---- logo, and the greeting sliding into the bar beside it ----
             Icon(
                 painter = painterResource(R.drawable.ic_mochy_mark),
-                contentDescription = "Mochy",
+                contentDescription = "BeDivine",
                 tint = Color.White,
                 modifier = Modifier
                     .padding(start = HomeContentInset, top = statusBarTop + TopBarLogoTop)

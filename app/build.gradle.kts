@@ -24,7 +24,7 @@ extensions.configure<ApplicationExtension> {
     ndkVersion = "27.0.12077973"
 
     defaultConfig {
-        applicationId = "com.mochyy.mochymusic"
+        applicationId = "com.bedivine.app"
         minSdk = 24
         targetSdk = 36
         versionCode = 73
@@ -176,8 +176,14 @@ extensions.configure<ApplicationExtension> {
             )
             // Fall back to the debug keystore locally so a release-quality build is always
             // runnable on a dev machine. CI still signs with the real key when secrets exist.
+            // A fork has no release keystore: use the persistent debug keystore when the CI
+            // decoded it (app/persistent-debug.keystore), so every release build keeps the same
+            // signature and installs over the previous one. Locally, without it, fall back to
+            // the usual debug keystore as before.
             signingConfig = if (hasReleaseSigning) {
                 signingConfigs.getByName("release")
+            } else if (file("persistent-debug.keystore").exists()) {
+                signingConfigs.getByName("persistentDebug")
             } else {
                 signingConfigs.getByName("debug")
             }

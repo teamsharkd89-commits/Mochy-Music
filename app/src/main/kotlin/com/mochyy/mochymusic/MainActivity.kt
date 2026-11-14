@@ -510,7 +510,7 @@ class MainActivity : ComponentActivity() {
         }
 
         // "Keep screen on" (the player's menu, or a chevron button): the phone doesn't sleep while
-        // Mochy is on screen. A window flag only holds while the app is in front, which is the point.
+        // BeDivine is on screen. A window flag only holds while the app is in front, which is the point.
         val keepScreenOn by rememberPreference(com.mochyy.mochymusic.constants.KeepScreenOn, defaultValue = false)
         val rootView = androidx.compose.ui.platform.LocalView.current
         DisposableEffect(keepScreenOn) {
@@ -1544,7 +1544,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    /** Audio files shared to Mochy from another app or a file manager are imported as local songs. */
+    /** Audio files shared to BeDivine from another app or a file manager are imported as local songs. */
     private fun importSharedAudio(intent: Intent): Boolean {
         if (intent.action != Intent.ACTION_SEND && intent.action != Intent.ACTION_SEND_MULTIPLE) return false
         val uris = if (intent.action == Intent.ACTION_SEND) {
@@ -1567,7 +1567,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
             com.mochyy.mochymusic.ui.component.TopToaster.show(
-                if (done == 0) "Couldn't import that" else "Imported $done song${if (done != 1) "s" else ""} to Mochy",
+                if (done == 0) "Couldn't import that" else "Imported $done song${if (done != 1) "s" else ""} to BeDivine",
             )
         }
         return true

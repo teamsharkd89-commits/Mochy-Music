@@ -120,7 +120,7 @@ class LibraryImportViewModel @Inject constructor(
         return startFolderImport(files, emptyMessage = null)
     }
 
-    /** True if Mochy has music folders the user picked. */
+    /** True if BeDivine has music folders the user picked. */
     fun hasFolders(): Boolean = LocalFolders.read(context).isNotEmpty()
 
     private fun startFolderImport(files: List<Uri>, emptyMessage: String?): Boolean {

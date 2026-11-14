@@ -41,7 +41,7 @@ data class StoragePlace(
 object StoragePlaces {
     private const val Tag = "StoragePlaces"
     private const val LeftoversName = "storage_leftovers.json"
-    private const val PickedFolderName = "Mochy"
+    private const val PickedFolderName = "BeDivine"
     private const val ExternalStorageAuthority = "com.android.externalstorage.documents"
 
     private fun markerOf(context: Context, kind: StoredKind) = File(context.noBackupFilesDir, "storage_place_${kind.folder}.txt")
@@ -68,7 +68,7 @@ object StoragePlaces {
         return all.firstOrNull { it.root == root } ?: root?.let { folderPlace(context, it) } ?: all.first()
     }
 
-    // the folder mochy saves into for one the user picked: its own "Mochy" folder inside, since the player's cache deletes any file it doesn't know in its folder
+    // the folder mochy saves into for one the user picked: its own "BeDivine" folder inside, since the player's cache deletes any file it doesn't know in its folder
     fun rootForPicked(picked: File): File = if (picked.name.equals(PickedFolderName, ignoreCase = true)) picked else File(picked, PickedFolderName)
 
     // a picked folder described like a drive: where it is, and that drive's room
@@ -123,7 +123,7 @@ object StoragePlaces {
             ?.let(::File)
     }
 
-    // "Music/Mochy" on the phone, "card name/Music/Mochy" on a card
+    // "Music/BeDivine" on the phone, "card name/Music/BeDivine" on a card
     private fun readablePath(context: Context, folder: File): String {
         @Suppress("DEPRECATION")
         val phoneRoot = Environment.getExternalStorageDirectory().path

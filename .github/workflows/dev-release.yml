@@ -1,0 +1,75 @@
+name: Dev Release
+
+# Publishes a BeDivine release APK from the Mochy base, signed with the persistent
+# debug keystore (same signature as every other BeDivine build, so it installs
+# over the previous one). Run manually from the Actions tab.
+on:
+  workflow_dispatch:
+
+jobs:
+  dev_release:
+    name: Build and publish BeDivine release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Set Up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-disabled: true
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Decode persistent debug keystore
+        run: echo "${{ secrets.DEBUG_KEYSTORE_BASE64 }}" | base64 -d > app/persistent-debug.keystore
+
+      - name: Build foss release APKs
+        run: ./gradlew assembleArm64FossRelease assembleUniversalFossRelease --no-configuration-cache --console=plain --warning-mode summary
+
+      - name: Prepare release files
+        run: |
+          mkdir -p release
+          cp app/build/outputs/apk/arm64Foss/release/app-arm64-foss-release.apk release/BeDivine-arm64-foss-release.apk
+          cp app/build/outputs/apk/universalFoss/release/app-universal-foss-release.apk release/BeDivine-universal-foss-release.apk
+          cd release
+          sha256sum *.apk > SHA256SUMS.txt
+          cat > changelog.json <<'EOF'
+          {
+            "description": "BeDivine sobre Mochy-Music: rápida, personalizable y con el nombre y el logo de BeDivine.",
+            "changelog": [
+              {
+                "title": "BeDivine",
+                "items": [
+                  "Base cambiada a Mochy-Music (rápida y muy personalizable)",
+                  "Nombre e icono de BeDivine (rayo + D)",
+                  "Las actualizaciones llegan desde este mismo repo"
+                ]
+              }
+            ]
+          }
+          EOF
+          ls -la
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: bedivine-8.4.0-${{ github.run_number }}
+          name: BeDivine 8.4.0 build#${{ github.run_number }}
+          body: |
+            BeDivine sobre la base de Mochy-Music.
+            Instala el APK arm64 en el Redmi Note 10S (o el universal en cualquier otro Android).
+          prerelease: false
+          files: |
+            release/BeDivine-arm64-foss-release.apk
+            release/BeDivine-universal-foss-release.apk
+            release/SHA256SUMS.txt
+            release/changelog.json

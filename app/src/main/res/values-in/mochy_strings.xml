@@ -215,14 +215,14 @@
     <string name="scrobble_account">Akun</string>
     <string name="scrobble_sign_in_title">Masuk ke %1$s</string>
     <string name="scrobble_sign_in_desc">Simpan riwayat dengar, statistik, dan rekomendasimu di sana</string>
-    <string name="scrobble_not_set_up">Belum disiapkan di versi Mochy ini</string>
+    <string name="scrobble_not_set_up">Belum disiapkan di versi BeDivine ini</string>
     <string name="scrobble_to">Scrobble ke %1$s</string>
     <string name="scrobble_signed_in_as">Masuk sebagai %1$s</string>
     <string name="scrobble_paused_signed_in_as">Dijeda. Masuk sebagai %1$s</string>
     <string name="scrobble_open_profile">Buka profilmu</string>
     <string name="scrobble_open_profile_desc">Scrobble dan statistikmu di %1$s</string>
     <string name="scrobble_sign_out">Keluar</string>
-    <string name="scrobble_sign_out_desc">Mochy berhenti scrobble ke %1$s</string>
+    <string name="scrobble_sign_out_desc">BeDivine berhenti scrobble ke %1$s</string>
     <string name="scrobble_while_listening">Saat kamu mendengarkan</string>
     <string name="scrobble_now_playing">Sedang Diputar</string>
     <string name="scrobble_now_playing_desc">Tampilkan lagu yang sedang kamu putar di profilmu</string>
@@ -233,10 +233,10 @@
     </plurals>
     <string name="scrobble_plays_waiting_desc">Terkirim sendiri begitu kamu online. Ketuk untuk kirim sekarang</string>
     <string name="scrobble_all_sent">Semua sudah terkirim</string>
-    <string name="scrobble_send_later">Belum bisa dikirim. Mochy terus mencoba setiap kamu online.</string>
+    <string name="scrobble_send_later">Belum bisa dikirim. BeDivine terus mencoba setiap kamu online.</string>
     <string name="scrobble_signed_in">Masuk ke %1$s sebagai %2$s. Lagu yang kamu putar di-scrobble mulai sekarang.</string>
-    <string name="scrobble_signed_out">%1$s mengeluarkan Mochy. Masuk lagi di Pengaturan → Integrasi agar tetap scrobble.</string>
-    <string name="scrobble_sign_in_body">Pakai nama pengguna dan kata sandi %1$s-mu. Mochy hanya menyimpan kunci masuk dari %1$s, tidak pernah kata sandimu.</string>
+    <string name="scrobble_signed_out">%1$s mengeluarkan BeDivine. Masuk lagi di Pengaturan → Integrasi agar tetap scrobble.</string>
+    <string name="scrobble_sign_in_body">Pakai nama pengguna dan kata sandi %1$s-mu. BeDivine hanya menyimpan kunci masuk dari %1$s, tidak pernah kata sandimu.</string>
     <string name="scrobble_username_hint">Nama pengguna %1$s-mu</string>
     <string name="scrobble_password_hint">Kata sandi %1$s-mu</string>
     <string name="scrobble_sign_in_button">Masuk</string>
