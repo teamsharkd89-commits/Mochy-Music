@@ -2769,4 +2769,11 @@
     <string name="donate_sheet_body">If you like BeDivine, follow me on Instagram: @dvn.vii</string>
     <string name="donate_sheet_follow">Follow on Instagram</string>
     <string name="donate_sheet_dismiss">No, thanks</string>
+    <string name="devspace_bio">Developer of BeDivine</string>
+    <string name="devspace_socials">Socials</string>
+    <string name="devspace_donate">Donate</string>
+    <string name="devspace_donate_me">Donate me!</string>
+    <string name="devspace_attribution">BeDivine is inspired by Mochy-Music</string>
+    <string name="immersive_lyrics_title">Immersive lyrics</string>
+    <string name="immersive_lyrics_desc">After 5 seconds everything hides and the lyrics appear.</string>
 </resources>

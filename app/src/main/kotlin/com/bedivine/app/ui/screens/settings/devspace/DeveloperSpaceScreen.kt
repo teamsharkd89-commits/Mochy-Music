@@ -1,4 +1,4 @@
-// dev spaces: a pager with a page for each person who makes mochy, the repo numbers are fetched on every open
+// dev space: Daniel's page, the repo numbers are fetched on every open
 
 package com.bedivine.app.ui.screens.settings.devspace
 
@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.bedivine.app.BuildConfig
@@ -126,6 +127,7 @@ fun DeveloperSpaceScreen(navController: NavController, initialPage: Int = 0) {
                     },
                 ) {
                     PlaygroundCard(stats = stats, settled = ready, onClick = { navController.navigate(DevPlaygroundRoute) })
+                    MochyAttribution()
                     Spacer(Modifier.height(maxOf(160.dp, bottomInset + 140.dp)))
                 }
             }
@@ -200,6 +202,6 @@ private fun BackButton(onClick: () -> Unit) {
             .background(DevBarButtonFill)
             .clickable(interactionSource = interaction, indication = RemoteFocus, onClick = onClick),
     ) {
-        Icon(painterResource(R.drawable.chevron_leftpx), contentDescription = "Back", tint = Color.White, modifier = Modifier.size(20.dp))
+        Icon(painterResource(R.drawable.chevron_leftpx), contentDescription = stringResource(R.string.back_button_desc), tint = Color.White, modifier = Modifier.size(20.dp))
     }
 }

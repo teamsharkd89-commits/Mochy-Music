@@ -2767,4 +2767,11 @@
     <string name="donate_sheet_body">Si te gusta BeDivine, sígueme en Instagram: @dvn.vii</string>
     <string name="donate_sheet_follow">Seguir en Instagram</string>
     <string name="donate_sheet_dismiss">No, gracias</string>
+    <string name="devspace_bio">Desarrollador de BeDivine</string>
+    <string name="devspace_socials">Redes sociales</string>
+    <string name="devspace_donate">Donar</string>
+    <string name="devspace_donate_me">¡Dóname!</string>
+    <string name="devspace_attribution">BeDivine está inspirada en Mochy-Music</string>
+    <string name="immersive_lyrics_title">Letra inmersiva</string>
+    <string name="immersive_lyrics_desc">A los 5 segundos se oculta todo y aparece la letra.</string>
 </resources>
