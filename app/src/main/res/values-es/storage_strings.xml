@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- usage at the top of the page -->
+    <string name="storage_overall">General</string>
+    <string name="storage_legend_mochy">BeDivine</string>
+    <string name="storage_legend_yours">Tu almacenamiento</string>
+    <string name="storage_free">%1$s libres</string>
+    <string name="storage_measuring">Calculando cuánto espacio ocupa BeDivine…</string>
+    <string name="storage_uses">BeDivine usa %1$s de tu almacenamiento (%2$s), que se divide en</string>
+    <string name="storage_uses_drives">BeDivine usa %1$s en %2$d unidades, que se dividen en</string>
+    <string name="storage_breakdown_title">Uso de datos de la app BeDivine</string>
+    <string name="storage_legend_cache">Caché</string>
+    <string name="storage_legend_downloads">Música descargada y local</string>
+    <string name="storage_legend_database">Base de datos</string>
+    <string name="storage_legend_app_data">Datos de la app</string>
+
+    <!-- cutting the junk -->
+    <string name="storage_junk_title">Estas son algunas cosas que puedes hacer para liberar espacio</string>
+    <string name="storage_hint_full">Tu teléfono está casi lleno.</string>
+    <string name="storage_hint_cache">El caché es lo más fácil. Al borrarlo liberas %1$s y las canciones simplemente se vuelven a transmitir.</string>
+    <string name="storage_hint_downloads">Las descargas ocupan más espacio. «Administrar descargas» muestra las más grandes y las que casi no escuchas.</string>
+    <string name="storage_cache_limit">Establecer límite del caché de música</string>
+    <string name="storage_cache_none">Sin caché</string>
+    <string name="storage_cache_unlimited">Ilimitado</string>
+    <string name="storage_cache_off">Apagado</string>
+    <string name="storage_cache_mb">%1$d MB</string>
+    <string name="storage_cache_gb">%1$d GB</string>
+    <string name="storage_cache_applies_later">El nuevo límite se aplica la próxima vez que abras BeDivine.</string>
+    <string name="storage_remove_downloads">Eliminar todas las descargas</string>
+    <string name="storage_remove_downloads_title">¿Eliminar todas las descargas?</string>
+    <string name="storage_remove_downloads_message">Se eliminan todas las canciones descargadas de este teléfono. Quedan en tu biblioteca y se transmiten de nuevo cuando las reproduzcas, así que necesitarás conexión.</string>
+    <string name="storage_clear_cache">Eliminar todo el caché de música y portadas</string>
+    <string name="storage_clear_cache_title">¿Borrar el caché?</string>
+    <string name="storage_clear_cache_message">Se eliminan las canciones guardadas de la transmisión y las portadas guardadas. Vuelven cuando reproduces y exploras. Tu biblioteca y tus descargas quedan como están.</string>
+    <string name="storage_clear_cache_action">Borrar caché</string>
+    <string name="storage_manage_downloads">Administrar descargas</string>
+
+    <!-- where things are saved, and exporting songs -->
+    <string name="storage_or">O</string>
+    <string name="storage_downloads_place">Elegir dónde se guardan las descargas</string>
+    <string name="storage_cache_place">Elegir dónde se guarda el caché</string>
+    <string name="storage_export_downloads">Exportar las canciones descargadas como una carpeta</string>
+    <string name="storage_moving">Moviendo… %1$d%%</string>
+    <string name="storage_move_failed">No se pudo mover todo, así que no se cambió nada. Inténtalo de nuevo.</string>
+    <string name="storage_place_phone">Este teléfono</string>
+    <string name="storage_place_card">Tarjeta de memoria</string>
+    <string name="storage_place_sheet_downloads">Dónde se guardan las descargas</string>
+    <string name="storage_place_sheet_cache">Dónde se guarda el caché</string>
+    <string name="storage_place_note_downloads">Todas las canciones descargadas se mueven, y su letra va con ellas. BeDivine se reinicia una vez para terminar.</string>
+    <string name="storage_place_note_cache">El caché empieza desde cero en el nuevo lugar. BeDivine se reinicia una vez para terminar.</string>
+    <string name="storage_place_card_note">En una tarjeta de memoria, BeDivine guarda en su propia carpeta, que Android borra si se desinstala BeDivine.</string>
+    <string name="storage_place_choose_folder">Elegir una carpeta</string>
+    <string name="storage_place_folder_note">BeDivine guarda en una carpeta de BeDivine dentro de la que elijas, así que nada más de ahí se toca.</string>
+    <string name="storage_place_access_needed">Para guardar en %1$s, BeDivine necesita acceso a todos los archivos. Android lo pide en Ajustes.</string>
+    <string name="storage_place_allow_access">Permitir acceso</string>
+    <string name="storage_place_no_access">BeDivine no obtuvo acceso, así que no puede guardar ahí. Permítelo o elige otra carpeta.</string>
+    <string name="storage_place_folder_unsupported">Esa carpeta no se puede usar. Elige una en este teléfono o en una tarjeta de memoria.</string>
+    <string name="storage_place_free">%1$s libres de %2$s</string>
+    <string name="storage_place_here_now">Guardado aquí ahora</string>
+    <string name="storage_place_no_room">No hay suficiente espacio</string>
+    <string name="storage_place_move">Mover aquí</string>
+    <string name="storage_place_move_downloads_title">¿Mover las descargas a %1$s?</string>
+    <string name="storage_place_move_cache_title">¿Mover el caché a %1$s?</string>
+    <string name="storage_place_move_downloads_message">Las descargas se pausan mientras se copia %1$s. BeDivine se reinicia cuando termina y se borra la copia anterior.</string>
+    <string name="storage_place_move_cache_message">Se borra el caché actual y BeDivine se reinicia; después, las canciones que reproduzcas se guardan en el nuevo lugar.</string>
+    <string name="storage_place_move_action">Mover y reiniciar</string>
+
+    <string name="storage_export_sheet_title">Exportar canciones descargadas</string>
+    <string name="storage_export_note">Se copian en una carpeta bedivine-preserve donde elijas. Tus descargas quedan donde están.</string>
+    <string name="storage_export_layout_playlists">Música y playlists</string>
+    <string name="storage_export_layout_playlists_detail">Una carpeta por cada playlist y tus canciones favoritas; el resto va a Música</string>
+    <string name="storage_export_layout_albums">Álbumes</string>
+    <string name="storage_export_layout_albums_detail">Una carpeta por cada álbum; las canciones sin álbum van a Música</string>
+    <string name="storage_export_covers">Portadas</string>
+    <string name="storage_export_lyrics">Letras</string>
+    <string name="storage_export_pick">Elegir una carpeta</string>
+    <string name="storage_export_progress">Exportando… %1$d de %2$d</string>
+    <string name="storage_export_starting">Preparando las canciones…</string>
+    <string name="storage_export_failed">La exportación se detuvo a la mitad. Revisa la carpeta que elegiste e inténtalo de nuevo.</string>
+    <plurals name="storage_export_done">
+        <item quantity="one">Se exportó %d canción</item>
+        <item quantity="other">Se exportaron %d canciones</item>
+    </plurals>
+    <plurals name="storage_export_skipped">
+        <item quantity="one">%d canción no se había descargado por completo, así que se omitió</item>
+        <item quantity="other">%d canciones no se habían descargado por completo, así que se omitieron</item>
+    </plurals>
+    <string name="storage_export_folder_music" translatable="false">Music</string>
+    <string name="storage_export_folder_playlists" translatable="false">Playlist</string>
+    <string name="storage_export_folder_albums" translatable="false">Albums</string>
+    <string name="storage_export_folder_liked" translatable="false">Liked songs</string>
+
+    <!-- moving to a new phone -->
+    <string name="storage_transfer_title">¿Te cambias de teléfono? Lleva todo contigo</string>
+    <string name="storage_export_user_data">Exportar datos de usuario</string>
+    <string name="storage_import_user_data">Importar datos de usuario</string>
+    <string name="storage_transfer_exporting">Exportando…</string>
+    <string name="storage_transfer_exporting_percent">Exportando… %1$d%%</string>
+    <string name="storage_transfer_exported">¡Exportado! Importa el .zip en BeDivine en el otro teléfono</string>
+    <string name="storage_transfer_importing">Importando…</string>
+    <string name="storage_transfer_importing_percent">Importando… %1$d%%. BeDivine se reinicia cuando termina</string>
+    <string name="storage_transfer_restarting">Listo, reiniciando…</string>
+    <string name="storage_import_title">¿Reemplazar tu biblioteca?</string>
+    <string name="storage_import_message">Todo lo que hay ahora en BeDivine se reemplaza por lo de la exportación, incluyendo tu biblioteca, historial, descargas y ajustes. Tus inicios de sesión quedan como están. BeDivine se reinicia una vez para terminar.</string>
+    <string name="storage_import_action">Elegir el .zip</string>
+</resources>

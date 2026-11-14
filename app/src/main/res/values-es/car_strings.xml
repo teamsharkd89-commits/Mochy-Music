@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="car_tab_home">Inicio</string>
+    <string name="car_tab_remote">Control remoto</string>
+    <string name="car_tab_recent">Recientes</string>
+    <string name="car_tab_library">Biblioteca</string>
+    <string name="car_quick_picks">Selección rápida</string>
+    <string name="car_categories">Categorías</string>
+    <string name="car_home_empty">Reproduce algunas canciones en tu teléfono y tus selecciones aparecerán aquí.</string>
+    <string name="car_recent_songs">Canciones</string>
+    <string name="car_recent_lists">Álbumes y listas</string>
+    <string name="car_recent_empty">Las canciones que reproduzcas aparecerán aquí.</string>
+    <string name="car_liked">Canciones que te gustan</string>
+    <string name="car_downloaded">Descargado</string>
+    <string name="car_playlists">Listas</string>
+    <string name="car_albums">Álbumes</string>
+    <string name="car_artists">Artistas</string>
+    <string name="car_list_empty">Aún no hay nada aquí.</string>
+    <string name="car_couldnt_load">No se pudo cargar esto. Revisa tu conexión e inténtalo de nuevo.</string>
+    <string name="car_shuffle">Aleatorio</string>
+    <string name="car_lyrics">Letra</string>
+    <string name="car_lyrics_on_player">En el reproductor</string>
+    <string name="car_lyrics_none">No hay letra para esta canción.</string>
+    <string name="car_lyrics_player_on">La letra ahora se muestra en el reproductor mientras conduces.</string>
+    <string name="car_lyrics_player_off">La letra en el reproductor está desactivada.</string>
+    <string name="car_pair_code">Código de vinculación</string>
+    <string name="car_pair_status">Estado</string>
+    <string name="car_pair_how">Cómo vincular</string>
+    <string name="car_pair_steps">En el otro teléfono, abre BeDivine y ve a Ajustes › Integración de dispositivos › Agregar dispositivo, y luego escribe este código. Ambos teléfonos necesitan la misma red Wi-Fi.</string>
+    <string name="car_pair_waiting">Sin conexión. Esperando un teléfono para vincular.</string>
+    <string name="car_pair_connected">Conectado a %1$s</string>
+    <plurals name="car_pair_connected_more">
+        <item quantity="one">Conectado a %1$s y a %2$d teléfono más</item>
+        <item quantity="other">Conectado a %1$s y a %2$d teléfonos más</item>
+    </plurals>
+    <string name="car_pair_getting_code">Preparando un código…</string>
+</resources>

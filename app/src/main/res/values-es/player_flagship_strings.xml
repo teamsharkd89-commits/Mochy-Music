@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flagship_output_speaker">Altavoz interno</string>
+    <string name="flagship_output_wired">Auriculares con cable</string>
+    <string name="flagship_output_usb">Audio USB</string>
+    <string name="flagship_output_bluetooth">Bluetooth</string>
+    <string name="flagship_output_hdmi">HDMI</string>
+    <string name="flagship_output_change">Cambiar dónde suena la música</string>
+    <string name="flagship_play">Reproducir</string>
+    <string name="flagship_pause">Pausa</string>
+    <string name="flagship_next">Siguiente canción</string>
+    <string name="flagship_previous">Canción anterior</string>
+    <string name="flagship_back_ten">Atrás 10 segundos</string>
+    <string name="flagship_forward_ten">Adelante 10 segundos</string>
+    <string name="flagship_lyrics">Letra</string>
+    <string name="flagship_queue">Cola</string>
+    <string name="flagship_volume">Volumen</string>
+    <string name="flagship_layout_three">Atrás, reproducir, siguiente</string>
+    <string name="flagship_layout_three_caption">Tres botones grandes, nada alrededor</string>
+    <string name="flagship_layout_ten">Con saltos de 10 segundos</string>
+    <string name="flagship_layout_ten_caption">Salta 10 segundos en cualquier dirección, reproduce en círculo</string>
+</resources>

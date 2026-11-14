@@ -60,4 +60,7 @@
     <string name="library_imported_albums_subtitle">Albums with songs you imported from %1$s.</string>
     <string name="search_top_result">Top result</string>
     <string name="search_offline_no_matches">Offline mode: nothing in your library matches</string>
+    <string name="app_language_restart_title">Restart to apply %1$s?</string>
+    <string name="app_language_restart_message">The app will restart and the new language will show everywhere.</string>
+    <string name="app_language_restart_apply">Restart</string>
 </resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- "hey google, play … on BeDivine" -->
+    <string name="voice_nothing_found">No encontré nada para “%1$s”. Prueba a decirlo de otra forma.</string>
+    <string name="voice_nothing_to_play">Aún no hay nada para reproducir. Pide una canción, un artista o una lista de reproducción.</string>
+    <string name="voice_offline">No se pudo conectar con YouTube Music. Revisa tu conexión e inténtalo de nuevo.</string>
+</resources>

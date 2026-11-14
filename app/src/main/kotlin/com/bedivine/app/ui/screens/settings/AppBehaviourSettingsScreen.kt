@@ -16,6 +16,7 @@ import androidx.compose.material.icons.rounded.HighQuality
 import androidx.compose.material.icons.rounded.SignalCellularAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -76,6 +77,7 @@ import com.bedivine.app.core.updater.saveUpdateNotificationsSetting
 import com.bedivine.app.i18n.AppLanguage
 import com.bedivine.app.i18n.activityOrNull
 import com.bedivine.app.ui.component.AppSwitch
+import com.bedivine.app.ui.component.DefaultDialog
 import com.bedivine.app.ui.player.LarpLevel
 import com.bedivine.app.ui.component.DefaultPlayerSeekBarSlider
 import com.bedivine.app.ui.component.LocalZoomOutOverlayState
@@ -327,8 +329,11 @@ private fun languageItem(): SettingsItem {
     val languageName = if (language == SYSTEM_DEFAULT) stringResource(R.string.system_default) else appLanguageNativeName(language)
     val failure = stringResource(R.string.app_language_update_failed)
     val scope = rememberCoroutineScope()
-    val pick = { tag: String ->
-        if (tag != language && activity != null) {
+    // picking a language asks first: the app restarts to apply it in full, so the
+    // choice is confirmed instead of the screen restarting under the user's finger
+    var pendingTag by remember { mutableStateOf<String?>(null) }
+    val apply = { tag: String ->
+        if (activity != null) {
             scope.launch {
                 try {
                     AppLanguage.select(activity, tag)
@@ -338,6 +343,31 @@ private fun languageItem(): SettingsItem {
                     Toast.makeText(context, failure, Toast.LENGTH_LONG).show()
                 }
             }
+        }
+    }
+    val pick = { tag: String ->
+        if (tag != language && activity != null) {
+            pendingTag = tag
+        }
+    }
+    pendingTag?.let { tag ->
+        val pickedName = if (tag == SYSTEM_DEFAULT) stringResource(R.string.system_default) else appLanguageNativeName(tag)
+        DefaultDialog(
+            onDismiss = { pendingTag = null },
+            title = { Text(stringResource(R.string.app_language_restart_title, pickedName)) },
+            buttons = {
+                TextButton(onClick = { pendingTag = null }) {
+                    Text(stringResource(R.string.cancel))
+                }
+                TextButton(onClick = {
+                    pendingTag = null
+                    apply(tag)
+                }) {
+                    Text(stringResource(R.string.app_language_restart_apply))
+                }
+            },
+        ) {
+            Text(stringResource(R.string.app_language_restart_message))
         }
     }
     return SettingsItem(

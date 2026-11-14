@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- audio pass: audio lab's page for usb dacs, bluetooth codecs and bit-perfect output -->
+    <string name="audiopass_hub_title">Audio Pass</string>
+    <string name="audiopass_title_first">Cosas</string>
+    <string name="audiopass_title_second">del DAC</string>
+    <string name="audiopass_joined">%1$s · %2$s</string>
+
+    <string name="audiopass_status_label">estado</string>
+    <string name="audiopass_status_connected">Conectado</string>
+    <string name="audiopass_status_driven">Controlado por BeDivine</string>
+    <string name="audiopass_status_bluetooth">Bluetooth</string>
+    <string name="audiopass_status_wired">Auriculares</string>
+    <string name="audiopass_status_none">Sin conectar</string>
+    <string name="audiopass_status_none_hint">Conecta un DAC USB o tus auriculares.</string>
+    <string name="audiopass_kind_usb">DAC USB</string>
+    <string name="audiopass_kind_speaker">Altavoz del teléfono</string>
+
+    <string name="audiopass_info_dac">DAC</string>
+    <string name="audiopass_info_maker">Fabricante</string>
+    <string name="audiopass_info_usb">Audio USB</string>
+    <string name="audiopass_info_takes">Acepta</string>
+    <string name="audiopass_info_bitperfect">Bit-perfect</string>
+    <string name="audiopass_info_mixer">Mezclador de Android</string>
+    <string name="audiopass_info_id">ID</string>
+    <string name="audiopass_info_power">Alimentación</string>
+    <string name="audiopass_info_mic">Micrófono</string>
+    <string name="audiopass_info_headphones">Auriculares</string>
+    <string name="audiopass_info_codec">Códec</string>
+    <string name="audiopass_info_quality">Calidad</string>
+    <string name="audiopass_info_also">También acepta</string>
+    <string name="audiopass_info_output">Salida</string>
+    <string name="audiopass_info_playing">Sonando</string>
+
+    <string name="audiopass_value_uac">UAC %1$d</string>
+    <string name="audiopass_value_uac_async">UAC %1$d · funciona con su propio reloj</string>
+    <string name="audiopass_value_any_rate">Cualquier frecuencia</string>
+    <string name="audiopass_value_khz">%1$s kHz</string>
+    <string name="audiopass_value_bits">%1$s bits</string>
+    <string name="audiopass_value_needs_14">Necesita Android 14</string>
+    <string name="audiopass_value_not_offered">Este DAC no lo ofrece</string>
+    <string name="audiopass_value_power">Pide hasta %1$d mA</string>
+    <string name="audiopass_value_firmware">%1$s · firmware %2$s</string>
+    <string name="audiopass_value_yes">Sí</string>
+    <string name="audiopass_value_no">No</string>
+    <string name="audiopass_value_kbps">%1$d kbps</string>
+    <string name="audiopass_value_adaptive">Adaptativo</string>
+    <string name="audiopass_value_jack">Conector de auriculares</string>
+    <string name="audiopass_value_le_audio">LE Audio</string>
+    <string name="audiopass_value_unknown">Este teléfono aún no lo comparte</string>
+
+    <string name="audiopass_bt_reencoded">Bluetooth siempre vuelve a codificar la música, así que nunca es bit-perfect. Un mejor códec solo pierde menos.</string>
+    <string name="audiopass_bt_lossless">aptX Lossless mantiene la calidad de CD mientras la señal es fuerte.</string>
+    <string name="audiopass_bt_better">Tus auriculares pueden usar %1$s, pero ahora está sonando %2$s. Puedes cambiarlo en Opciones para desarrolladores.</string>
+    <string name="audiopass_bt_ldac_low">LDAC está en %1$s. 990 kbps suena mejor cuando el teléfono está cerca.</string>
+    <string name="audiopass_bt_open_developer">Abrir Opciones para desarrolladores</string>
+    <string name="audiopass_bt_developer_off">Activa primero las Opciones para desarrolladores: toca 7 veces «Número de compilación» en «Acerca del teléfono».</string>
+    <string name="audiopass_bt_permission">Mostrar el códec</string>
+    <string name="audiopass_bt_permission_hint">BeDivine necesita el permiso de Dispositivos cercanos para ver qué códec usan tus auriculares.</string>
+    <string name="audiopass_bt_unknown_hint">Este teléfono no les dice a las apps el códec de inmediato. Aparece aquí en cuanto cambia.</string>
+
+    <string name="audiopass_options">Opciones</string>
+    <string name="audiopass_prefer_usb">Usar el DAC al conectarlo</string>
+    <string name="audiopass_hires">Salida de alta resolución (32 bits)</string>
+    <string name="audiopass_exclusive">Contenido exclusivo</string>
+    <string name="audiopass_resampler">Resampleador hi-fi propio de BeDivine</string>
+    <string name="audiopass_resampler_desc">Solo altavoz y conector de auriculares. Las canciones se llevan a la frecuencia propia del teléfono con un filtro más limpio que el de Android.</string>
+    <string name="audiopass_passthrough">Passthrough bit-perfect</string>
+    <string name="audiopass_passthrough_desc">Las canciones llegan al DAC tal como son, sin que Android las mezcle ni las vuelva a muestrear.</string>
+    <string name="audiopass_modes">Modos</string>
+    <string name="audiopass_mode_song_rate">Frecuencia de la canción</string>
+    <string name="audiopass_mode_song_rate_desc">Android usa el DAC a la frecuencia propia de cada canción. Los efectos siguen funcionando.</string>
+    <string name="audiopass_mode_bit_perfect">Bit-perfect</string>
+    <string name="audiopass_mode_bit_perfect_desc">Android pasa cada canción sin pérdida al DAC sin tocarla.</string>
+    <string name="audiopass_mode_direct_usb">USB directo</string>
+    <string name="audiopass_mode_direct_usb_desc">BeDivine controla el DAC directamente en cualquier Android y ajusta el volumen en el DAC. Pide acceso USB.</string>
+    <string name="audiopass_mode_exclusive_usb">USB exclusivo</string>
+    <string name="audiopass_mode_exclusive_usb_desc">El DAC se abre solo para BeDivine a la frecuencia de la canción. No todos los teléfonos lo permiten.</string>
+    <string name="audiopass_mode_exclusive_dac">DAC integrado</string>
+    <string name="audiopass_mode_exclusive_dac_desc">Para reproductores de música con DAC propio: el conector de auriculares se abre solo para BeDivine.</string>
+    <string name="audiopass_mode_needs">Necesita Android %1$s</string>
+
+    <string name="audiopass_blockers_title">El bit-perfect espera a que se apaguen estos</string>
+    <string name="audiopass_blockers_clear_title">Nada se interpone</string>
+    <string name="audiopass_blockers_button">Apaga estos</string>
+    <string name="audiopass_blocker_equalizer">Ecualizador</string>
+    <string name="audiopass_blocker_fx">Efectos de audio</string>
+    <string name="audiopass_blocker_volume">Volumen por debajo del 100%</string>
+    <string name="audiopass_blocker_normalization">Igualar canciones (normalización)</string>
+    <string name="audiopass_blocker_speed">Velocidad o tono cambiados</string>
+    <string name="audiopass_blocker_transitions">Crossfade o efecto de fundido</string>
+    <string name="audiopass_blocker_silence">Saltar silencios o hápticos</string>
+    <string name="audiopass_blocker_lossy">Las canciones con pérdida (YouTube, Apple Music) siempre suenan de forma normal.</string>
+    <string name="audiopass_now_bitperfect">Bit-perfect a %1$s · %2$s kHz · %3$s bits</string>
+    <string name="audiopass_now_untouched">Sin tocar a %1$s · %2$s kHz · %3$s bits. La canción ya estaba comprimida antes de llegar aquí.</string>
+    <string name="audiopass_now_inexact">Llega a %1$s sin cambios, pero las muestras de esta canción ya estaban redondeadas antes de que BeDivine las recibiera.</string>
+    <string name="audiopass_now_waiting">Ya está listo. La próxima canción que pueda irá directa al DAC.</string>
+    <string name="audiopass_now_fell">Una canción de %1$s kHz y %2$s bits no pudo abrir el DAC de esta forma, así que suena de forma normal.</string>
+    <string name="audiopass_usb_title">USB directo</string>
+    <string name="audiopass_usb_permission">Permitir acceso USB</string>
+    <string name="audiopass_usb_permission_hint">Android pregunta cada vez que se conecta el DAC. Hasta que lo permitas, las canciones suenan de forma normal.</string>
+    <string name="audiopass_usb_no_dac">Conecta un DAC USB y BeDivine se encarga desde aquí.</string>
+    <string name="audiopass_fixed_volume">DACs sin volumen propio</string>
+    <string name="audiopass_fixed_volume_desc">Los reproduce a escala completa, así que solo su propia perilla los baja. Esto puede ser muy fuerte con auriculares sensibles.</string>
+    <string name="audiopass_dac_volume">Volumen del DAC</string>
+    <string name="audiopass_dac_volume_desc">Se ajusta en el propio DAC, así que la música no se escala. Las teclas de volumen también lo mueven.</string>
+    <string name="audiopass_value_db">%1$s dB</string>
+    <string name="audiopass_blocker_lossy_direct">Las canciones con pérdida también llegan al DAC sin tocar. Solo se comprimieron antes de llegar aquí.</string>
+    <string name="audiopass_blockers_restore">Vuelve a encender estos</string>
+    <string name="audiopass_beta">BETA</string>
+
+    <!-- the stats sheet's line on whether this song went straight to the DAC, and why not -->
+    <string name="audiopass_stat_label">Passthrough</string>
+    <string name="audiopass_stat_off">Apagado: las canciones pasan por el mezclador de Android</string>
+    <string name="audiopass_stat_song_rate">Frecuencia de la canción: Android sigue mezclando el sonido</string>
+    <string name="audiopass_stat_old_android">Este modo necesita Android %1$s</string>
+    <string name="audiopass_stat_blocked">Esperando a que se apaguen: %1$s</string>
+    <string name="audiopass_stat_skip_busy">La otra canción del crossfade está usando el DAC ahora mismo</string>
+    <string name="audiopass_stat_skip_format">El formato de esta canción no puede ir directo al DAC</string>
+    <string name="audiopass_stat_skip_lossy">Las canciones con pérdida suenan de forma normal en este modo</string>
+    <string name="audiopass_stat_skip_fell">Esta frecuencia y profundidad de bits no pudieron abrir el DAC antes, así que suena de forma normal</string>
+    <string name="audiopass_stat_skip_no_dac">No se encontró DAC para este modo. Conéctalo o elige otro modo</string>
+    <string name="audiopass_stat_skip_no_access">BeDivine aún no puede usar el DAC. Toca «Permitir acceso USB» en la página de Audio Pass</string>
+    <string name="audiopass_stat_skip_dac_cant">Tu DAC no tiene ajuste para la frecuencia y profundidad de bits de esta canción</string>
+    <string name="audiopass_stat_unknown">Activado, pero esta canción sonó de forma normal</string>
+
+    <!-- asked when passthrough is switched on while something still changes the sound -->
+    <string name="audiopass_offer_title">Hay algunas cosas en el camino</string>
+    <string name="audiopass_offer_body">El passthrough solo acepta canciones mientras nada cambie el sonido. Esto está activado ahora mismo:</string>
+    <string name="audiopass_offer_keep">Dejarlos encendidos</string>
+</resources>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- device integration: the sheet that lists paired devices -->
+    <string name="devices_title">Integración de dispositivos</string>
+    <string name="devices_row_detail">Vincula tu TV, otro teléfono o una tablet en el mismo Wi-Fi</string>
+    <string name="devices_hero">Conecta hasta 10 dispositivos en tu Wi-Fi: tu otro teléfono, tablet, TV, la unidad principal del auto y más.</string>
+    <string name="devices_mine">Mis dispositivos</string>
+    <string name="devices_add_more">Agrega más dispositivos aquí</string>
+    <string name="devices_full">Son 10 dispositivos, el máximo que guarda un teléfono. Desvincula uno para agregar otro.</string>
+    <string name="devices_options">Opciones</string>
+    <string name="devices_control">Control</string>
+    <string name="devices_controlling_button">Controlando</string>
+    <string name="devices_device_settings">Ajustes del dispositivo</string>
+    <string name="devices_status_controlling">Controlándolo desde aquí</string>
+    <string name="devices_status_connected_detail">Pueden controlarse entre sí</string>
+    <string name="devices_stay_reachable">Seguir accesible en segundo plano</string>
+    <string name="devices_stay_reachable_detail">Tus dispositivos pueden sincronizar, transmitir y controlar aunque BeDivine esté cerrado. Muestra una notificación silenciosa.</string>
+    <string name="devices_in_player_menu">Mostrar mis dispositivos en el menú del reproductor</string>
+    <string name="devices_in_player_menu_detail">Reproduce en ellos, pon canciones en cola ahí o contrólalos desde el menú del reproductor</string>
+    <string name="devices_notification_title">Tus dispositivos pueden acceder a este teléfono</string>
+    <string name="devices_notification_text">%1$s puede sincronizar, transmitir y controlar desde aquí</string>
+    <string name="devices_kind_phone">Teléfono</string>
+    <string name="devices_kind_tablet">Tablet</string>
+    <string name="devices_kind_tv">TV</string>
+    <string name="devices_kind_car">Auto</string>
+
+    <!-- one device's own sheet -->
+    <string name="devices_ok">Aceptar</string>
+    <string name="devices_remote_control">Activar control remoto</string>
+    <string name="devices_remote_control_tv_detail">Reproduce, salta y cambia sus ajustes desde este teléfono</string>
+    <string name="devices_remote_control_phone_detail">Reproduzcan, salten y cambien ajustes entre sí desde cualquiera de los dos teléfonos</string>
+    <string name="devices_auto_control">Tomar el control cuando se conecte</string>
+    <string name="devices_auto_control_detail">En cuanto se abra BeDivine en ese dispositivo, este teléfono se convierte en su control remoto</string>
+    <string name="devices_stream_local">Transmitir contenido local desde este dispositivo</string>
+    <string name="devices_stream_local_detail">Tus descargas y archivos de canciones suenan en ese dispositivo directamente desde este teléfono</string>
+    <string name="devices_override_library">Reemplazar la biblioteca del dispositivo</string>
+    <string name="devices_override_library_detail">Su biblioteca se reemplaza por la de este teléfono y se mantiene sincronizada</string>
+    <string name="devices_sync_now">Sincronizar ahora</string>
+    <string name="devices_sync_asked">%1$s está recibiendo tu biblioteca más reciente</string>
+    <string name="devices_unlink_question">¿Desvincular %1$s? Se queda con lo que ya tiene.</string>
+
+    <!-- adding a device -->
+    <string name="devices_add_title">Agregar dispositivo</string>
+    <string name="devices_pairing_code">Código del modo de vinculación</string>
+    <string name="devices_detected">Detectado</string>
+    <string name="devices_looking">Buscando dispositivos…</string>
+    <string name="devices_looking_detail">Abre «Agregar dispositivo» en tu otro teléfono, o la página del teléfono en BeDivine en tu TV</string>
+    <string name="devices_connect">Conectar</string>
+    <string name="devices_or">O</string>
+    <string name="devices_enter_code">Ingresar código</string>
+    <string name="devices_enter_code_none">Todavía no hay nada en modo de vinculación en este Wi-Fi. Ábrelo primero en el otro dispositivo.</string>
+    <string name="devices_pair_detail">Escribe el código que muestra %1$s</string>
+    <string name="devices_paired_with">Vinculado con %1$s</string>
+    <string name="devices_wrong_code">Ese código no coincidió. Revisa la otra pantalla e inténtalo de nuevo.</string>
+    <string name="devices_pair_full">Uno de los dos ya tiene 10 dispositivos. Desvincula uno primero.</string>
+    <string name="devices_pair_failed">No se pudo conectar. Asegúrate de que ambos estén en el mismo Wi-Fi.</string>
+    <string name="devices_pair_outdated">Ese dispositivo tiene una versión más antigua de BeDivine. Actualízalo y vuelve a intentar con el código</string>
+
+    <!-- remote control mode -->
+    <string name="remote_controlling">Controlando %1$s</string>
+    <string name="remote_stop">Dejar de controlar</string>
+    <string name="remote_playing">Reproduciendo</string>
+    <string name="remote_paused">En pausa</string>
+    <string name="remote_connecting">Preguntando qué está sonando…</string>
+    <string name="remote_unreachable">No se puede conectar ahora mismo. ¿Está abierto BeDivine en ese dispositivo?</string>
+    <string name="remote_up_next">A continuación</string>
+    <string name="remote_hand_over">Reproducir la cola de este teléfono en %1$s</string>
+    <string name="remote_queued_on">Agregado a la cola en %1$s</string>
+    <string name="remote_like">Me gusta</string>
+    <string name="remote_add_to_playlist">Agregar a la playlist</string>
+    <string name="remote_previous">Anterior</string>
+    <string name="remote_play_pause">Reproducir o pausar</string>
+    <string name="remote_next">Siguiente</string>
+    <string name="remote_remove_from_queue">Quitar de la cola</string>
+    <string name="remote_settings_on">Ajustes en %1$s</string>
+    <string name="remote_settings_loading">Obteniendo sus ajustes…</string>
+    <string name="remote_settings_failed">No se pudieron obtener sus ajustes. Asegúrate de que BeDivine esté abierto ahí y de que permita que este teléfono lo controle.</string>
+    <string name="remote_settings_retry">Intentar de nuevo</string>
+    <string name="remote_setting_failed">No se pudo cambiar eso en %1$s</string>
+    <string name="remote_seconds">%1$d s</string>
+
+    <!-- the settings a controlling phone sees, sent by the device that has them -->
+    <string name="link_section_playback">Reproducción</string>
+    <string name="link_section_audio_lab">Laboratorio de audio</string>
+    <string name="link_section_youtube">YouTube</string>
+    <string name="link_section_player">Reproductor</string>
+    <string name="link_setting_transition">Transiciones de canciones</string>
+    <string name="link_transition_off">Apagado</string>
+    <string name="link_transition_auto">Crossfade automático</string>
+    <string name="link_transition_manual">Crossfade</string>
+    <string name="link_transition_crossmix">Crossmix</string>
+    <string name="link_setting_crossfade_length">Duración del crossfade</string>
+    <string name="link_setting_transport_fade">Fundido al reproducir, pausar y saltar</string>
+    <string name="link_setting_skip_silence">Saltar silencios</string>
+    <string name="link_setting_normalize">Igualar el volumen de las canciones</string>
+    <string name="link_setting_autoplay">Seguir reproduciendo canciones similares</string>
+    <string name="link_setting_eq">Ecualizador</string>
+    <string name="link_setting_eq_preset">Curva del ecualizador</string>
+    <string name="link_setting_loudness">Refuerzo de volumen</string>
+    <string name="link_setting_reverb">Reverb</string>
+    <string name="link_setting_spatial">Audio espacial</string>
+    <string name="link_setting_speed">Velocidad</string>
+    <string name="link_speed_times">%1$s×</string>
+    <string name="link_setting_audio_quality">Calidad de audio</string>
+    <string name="link_quality_auto">Automática</string>
+    <string name="link_quality_high">Alta</string>
+    <string name="link_quality_medium">Media</string>
+    <string name="link_quality_low">Baja</string>
+    <string name="link_setting_video_quality">Calidad de video</string>
+    <string name="link_video_lines">%1$dp</string>
+    <string name="link_setting_studio_for_videos">Reproducir la versión de estudio de los videos musicales</string>
+    <string name="link_setting_data_saver">Ahorro de datos</string>
+    <string name="link_setting_player_style">Apariencia del reproductor</string>
+</resources>
