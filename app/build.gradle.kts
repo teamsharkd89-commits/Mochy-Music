@@ -27,8 +27,8 @@ extensions.configure<ApplicationExtension> {
         applicationId = "com.bedivine.app"
         minSdk = 24
         targetSdk = 36
-        versionCode = 73
-        versionName = "8.4.0 build#" + ((project.findProperty("bedivineBuild") as String?) ?: "0")
+        versionCode = 74
+        versionName = "2.0 build#" + ((project.findProperty("bedivineBuild") as String?) ?: "0")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true

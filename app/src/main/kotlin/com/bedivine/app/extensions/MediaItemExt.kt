@@ -86,3 +86,22 @@ fun MediaItem.withAutoplay(autoplay: Boolean): MediaItem {
         .setMediaMetadata(mediaMetadata.buildUpon().setExtras(extras).build())
         .build()
 }
+
+/**
+ * Flags a song the user queued themselves (swipe, "Add to queue", "Play next"), as opposed to
+ * one the queue lined up on its own (playlist remainder, mix pages, radio). Songs flagged this
+ * way play before anything automatic: "Add to queue" puts them right after the song playing,
+ * after the ones the user queued before them. Same extras mechanism as [isAutoplay].
+ */
+private const val UserQueuedExtra = "bedivine.user_queued"
+
+val MediaItem.isUserQueued: Boolean
+    get() = mediaMetadata.extras?.getBoolean(UserQueuedExtra, false) == true
+
+fun MediaItem.withUserQueued(queued: Boolean): MediaItem {
+    if (isUserQueued == queued) return this
+    val extras = Bundle(mediaMetadata.extras ?: Bundle()).apply { putBoolean(UserQueuedExtra, queued) }
+    return buildUpon()
+        .setMediaMetadata(mediaMetadata.buildUpon().setExtras(extras).build())
+        .build()
+}

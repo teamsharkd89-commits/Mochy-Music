@@ -189,7 +189,9 @@ import com.bedivine.app.extensions.collectLatest
 import com.bedivine.app.extensions.currentMetadata
 import com.bedivine.app.extensions.findNextMediaItemById
 import com.bedivine.app.extensions.isAutoplay
+import com.bedivine.app.extensions.isUserQueued
 import com.bedivine.app.extensions.withAutoplay
+import com.bedivine.app.extensions.withUserQueued
 import com.bedivine.app.extensions.mediaItems
 import com.bedivine.app.extensions.metadata
 import com.bedivine.app.extensions.setOffloadEnabled
@@ -2526,6 +2528,9 @@ class MusicService :
     }
 
     fun playNext(items: List<MediaItem>) {
+        // the user chose these to play next, so they count as user-queued: a later "Add to
+        // queue" goes after them, not before them
+        val items = items.map { it.withUserQueued(true) }
 
         if (player.mediaItemCount == 0 || player.playbackState == STATE_IDLE) {
             player.setMediaItems(items)
@@ -2613,6 +2618,9 @@ class MusicService :
     }
 
     fun addToQueue(items: List<MediaItem>) {
+        // the user queued these themselves, so they play before anything the queue lined up
+        // on its own (playlist remainder, mix pages, radio)
+        val items = items.map { it.withUserQueued(true) }
 
         if (dataStore.get(PreventDuplicateTracksInQueueKey, false)) {
             val itemIds = items.map { it.mediaId }.toSet()
@@ -2630,8 +2638,18 @@ class MusicService :
             }
         }
 
-        // The end of what the user queued, which is in front of any Autoplay songs.
-        val insertAt = upcomingAutoplayStart()
+        // Right after the song playing, after the songs the user queued before these, and
+        // before anything automatic. Before, they landed at the end of the queue, under all
+        // the songs the queue had lined up on its own, so the next song to play was never the
+        // one the user had just queued.
+        val current = player.currentMediaItemIndex
+        val insertAt = if (current == C.INDEX_UNSET) {
+            upcomingAutoplayStart()
+        } else {
+            var end = current + 1
+            while (end < player.mediaItemCount && player.getMediaItemAt(end).isUserQueued) end++
+            end
+        }
         player.addMediaItems(insertAt, items)
         if (player.shuffleModeEnabled) {
             placeAddedInShuffleOrder(insertAt until insertAt + items.size, shuffleThem = false)
@@ -2643,8 +2661,9 @@ class MusicService :
      * Fits songs just added while shuffled into the shuffle order without reshuffling the rest.
      * Reshuffling everything on each addition (as before) rearranged the whole upcoming queue
      * every time a page loaded or a song was queued, and threw History back into it. Now history
-     * and what's lined up keep their order; the new songs go after the user's songs and before
-     * Autoplay - or at the very end, if they are Autoplay.
+     * and what's lined up keep their order; songs the user queued go right after the song
+     * playing and the ones they queued before them, other new songs go after the user's songs
+     * and before Autoplay - or at the very end, if they are Autoplay.
      */
     private fun placeAddedInShuffleOrder(added: IntRange, shuffleThem: Boolean) {
         val timeline = player.currentTimeline
@@ -2657,7 +2676,13 @@ class MusicService :
         }
         val block = added.toMutableList()
         if (shuffleThem) block.shuffle()
-        val insertAt = if (player.getMediaItemAt(block.first()).isAutoplay) {
+        val insertAt = if (player.getMediaItemAt(block.first()).isUserQueued) {
+            // right after the song playing and the songs the user already queued, before the rest
+            val currentPos = order.indexOf(player.currentMediaItemIndex)
+            var pos = currentPos + 1
+            while (pos < order.size && player.getMediaItemAt(order[pos]).isUserQueued) pos++
+            pos
+        } else if (player.getMediaItemAt(block.first()).isAutoplay) {
             order.size
         } else {
             val currentPos = order.indexOf(player.currentMediaItemIndex)

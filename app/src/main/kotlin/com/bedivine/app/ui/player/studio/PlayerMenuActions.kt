@@ -1,9 +1,11 @@
 package com.bedivine.app.ui.player.studio
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
 import com.bedivine.app.R
 import com.bedivine.app.constants.PlayerMenuSlotsKey
 import com.bedivine.app.constants.PlayerSideButtonKey
@@ -13,7 +15,12 @@ import com.bedivine.app.utils.rememberPreference
  * Everything the player's round buttons can do: the button beside the chevron and the four in the
  * menu the chevron opens are each set to one of these in the editor ("Edit menu").
  */
-enum class PlayerMenuAction(val label: String, @param:DrawableRes val icon: Int) {
+enum class PlayerMenuAction(
+    val label: String,
+    @param:DrawableRes val icon: Int,
+    // only the actions with a translated label set this; the rest keep their plain label
+    @param:StringRes val labelRes: Int? = null,
+) {
     LIKE("Like", R.drawable.ic_untitled_heart_unfill),
     OTHER_MENU("Other menu", R.drawable.more_horiz),
     SLEEP_TIMER("Sleep timer", R.drawable.sleep_timer),
@@ -33,7 +40,11 @@ enum class PlayerMenuAction(val label: String, @param:DrawableRes val icon: Int)
     KEEP_AWAKE("Keep screen on", R.drawable.lock_open),
     TRANSLATE_LYRICS("Translate lyrics", R.drawable.translate),
     DOWNLOAD("Download", R.drawable.download),
-    ADD_TO_PLAYLIST("Add to playlist", R.drawable.playlist_add);
+    ADD_TO_PLAYLIST("Add to playlist", R.drawable.playlist_add, R.string.add_to_playlist);
+
+    /** the label in the app language when one exists, otherwise the plain label */
+    @Composable
+    fun localizedLabel(): String = labelRes?.let { stringResource(it) } ?: label
 
     companion object {
         val DefaultSlots = listOf(OTHER_MENU, SLEEP_TIMER, SEE_VIDEO, REPEAT)

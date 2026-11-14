@@ -189,7 +189,7 @@ fun LocalPlaylistMenu(
                     )
                 } else null,
                 Material3MenuItemData(
-                    title = { Text("Add to playlist") },
+                    title = { Text(stringResource(R.string.add_to_playlist)) },
                     icon = {
                         Icon(
                             painter = painterResource(R.drawable.playlist_add),

@@ -3,6 +3,7 @@ package com.bedivine.app.ui.player.ipod
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -11,6 +12,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
+import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 import com.bedivine.app.db.entities.Song
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -34,6 +37,14 @@ sealed class IpodPage(val title: String) {
     val isSidebar: Boolean get() = this == Main || this == Music
 }
 
+/** the page's header in the app language; dynamic pages (playlist/artist/album) keep their name */
+@Composable
+fun IpodPage.localizedTitle(): String = when (this) {
+    IpodPage.NowPlaying -> stringResource(R.string.now_playing)
+    IpodPage.Songs -> stringResource(R.string.songs)
+    else -> title
+}
+
 // what picking a row does: open a page, play a song from the list, or shuffle everything
 @Immutable
 sealed interface IpodPick {
@@ -53,6 +64,13 @@ class IpodRow(
     val roundArt: Boolean = false,
 ) {
     val opensPage: Boolean get() = pick is IpodPick.Open
+}
+
+/** a row's label in the app language; rows that open a page show that page's localized title */
+@Composable
+fun IpodRow.localizedTitle(): String = when (val p = pick) {
+    is IpodPick.Open -> p.page.localizedTitle()
+    else -> title
 }
 
 // a page's lines, plus the songs behind them when it's a song list; art lists get taller rows

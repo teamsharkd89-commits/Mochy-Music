@@ -432,7 +432,11 @@ class PlayerConnection(
         }
         val first = items.firstOrNull() ?: return
         TopToaster.show(
-            text = if (items.size == 1) "Added ${first.mediaMetadata.title ?: "song"} to Queue" else "Added ${items.size} songs to Queue",
+            text = if (items.size == 1) {
+                context.getString(R.string.queue_added_one, first.mediaMetadata.title ?: context.getString(R.string.queue_untitled_song))
+            } else {
+                context.getString(R.string.queue_added_many, items.size)
+            },
             thumbnail = first.mediaMetadata.artworkUri?.toString(),
             iconRes = R.drawable.queue_music,
         )
@@ -539,10 +543,14 @@ class PlayerConnection(
         }
         val first = removed.first().second
         TopToaster.show(
-            text = if (removed.size == 1) "Removed ${first.mediaMetadata.title ?: "song"} from queue" else "Removed ${removed.size} songs from queue",
+            text = if (removed.size == 1) {
+                context.getString(R.string.queue_removed_one, first.mediaMetadata.title ?: context.getString(R.string.queue_untitled_song))
+            } else {
+                context.getString(R.string.queue_removed_many, removed.size)
+            },
             thumbnail = first.mediaMetadata.artworkUri?.toString(),
             iconRes = R.drawable.queue_music,
-            actionLabel = "Undo",
+            actionLabel = context.getString(R.string.undo),
             onAction = {
                 // ascending, so each lands at its old index once the ones before it are back
                 removed.forEach { (index, item) -> player.addMediaItem(index.coerceAtMost(player.mediaItemCount), item) }

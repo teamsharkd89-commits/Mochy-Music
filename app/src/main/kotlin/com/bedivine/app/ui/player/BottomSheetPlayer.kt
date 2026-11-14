@@ -1963,7 +1963,7 @@ private fun ExpandMenuOverlay(
     controlsDrawShift: androidx.compose.ui.unit.Dp,
     modifier: Modifier = Modifier
 ) {
-    val menuItems = remember(slots) { slots.map { it.label to it.icon } }
+    val menuItems = slots.map { it.localizedLabel() to it.icon }
 
     val density = LocalDensity.current
     // one per item, so a style that adds items gets its own set instead of reading past the end

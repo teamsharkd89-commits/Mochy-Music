@@ -62,10 +62,10 @@ jobs:
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: bedivine-8.4.0-${{ github.run_number }}
-          name: BeDivine 8.4.0 build#${{ github.run_number }}
+          tag_name: bedivine-2.0-${{ github.run_number }}
+          name: BeDivine 2.0 build#${{ github.run_number }}
           body: |
-            BeDivine 8.4.0 build#${{ github.run_number }}.
+            BeDivine 2.0 build#${{ github.run_number }}.
             Instala el APK arm64 en el Redmi Note 10S (o el universal en cualquier otro Android).
           prerelease: false
           files: |

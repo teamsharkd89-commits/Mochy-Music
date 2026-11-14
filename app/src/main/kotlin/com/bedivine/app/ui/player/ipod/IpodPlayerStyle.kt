@@ -191,7 +191,7 @@ private fun BarTimeout(nowPlaying: IpodNowPlayingState) {
 @Composable
 private fun TitleBar(nav: IpodNavigator, coverFlow: IpodCoverFlowState, scale: IpodScale) {
     val page = nav.top.page
-    val title = if (page == IpodPage.CoverFlow && coverFlow.flipped) coverFlow.current?.title ?: page.title else page.title
+    val title = if (page == IpodPage.CoverFlow && coverFlow.flipped) coverFlow.current?.title ?: page.localizedTitle() else page.localizedTitle()
     IpodHeader(title, scale)
 }
 

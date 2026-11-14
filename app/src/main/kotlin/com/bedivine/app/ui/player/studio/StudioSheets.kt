@@ -168,7 +168,7 @@ fun StudioSheets(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(painterResource(action.icon), null, tint = Color.White, modifier = Modifier.size(22.dp))
                                 Spacer(Modifier.width(14.dp))
-                                Text(action.label, color = Color.White, style = studioText(StudioType.Body))
+                                Text(action.localizedLabel(), color = Color.White, style = studioText(StudioType.Body))
                             }
                         }
                     }

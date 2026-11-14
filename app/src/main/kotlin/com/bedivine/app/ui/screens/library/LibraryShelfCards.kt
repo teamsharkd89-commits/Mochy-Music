@@ -15,10 +15,12 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.bedivine.app.R
 import com.bedivine.app.db.entities.Artist
 import com.bedivine.app.db.entities.Playlist
 import com.bedivine.app.db.entities.Song
@@ -76,7 +78,7 @@ internal fun LazyListScope.libraryShelfCards(
         Spacer(modifier = Modifier.height(spaceAbove))
         LibraryCardGrid(
             listOf(
-                LibraryCardEntry("Songs", data.songs.size, data.songs.take(4).map { it.song.thumbnailUrl }, {
+                LibraryCardEntry(stringResource(R.string.songs), data.songs.size, data.songs.take(4).map { it.song.thumbnailUrl }, {
                     navController.navigate("auto_playlist/$key")
                 }),
                 LibraryCardEntry("Playlist", data.playlists.size, data.playlists.take(2).flatMap { it.thumbnails }, {

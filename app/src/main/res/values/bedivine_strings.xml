@@ -60,6 +60,11 @@
 
     <string name="added_to_play_next">Added to play next</string>
     <string name="added_to_queue">Added to the queue</string>
+    <string name="queue_added_one">Added %1$s to queue</string>
+    <string name="queue_added_many">Added %1$d songs to queue</string>
+    <string name="queue_removed_one">Removed %1$s from queue</string>
+    <string name="queue_removed_many">Removed %1$d songs from queue</string>
+    <string name="queue_untitled_song">song</string>
     <string name="remove_from_cache">Remove from cache</string>
     <string name="save_album">Save</string>
     <!-- Artist about section -->
@@ -422,7 +427,7 @@
     <string name="edit_desc">Change the title or artist</string>
     <string name="start_radio_desc">Create a station based on this item</string>
     <string name="play_next_desc">Add to the top of your queue</string>
-    <string name="add_to_queue_desc">Add to the bottom of your queue</string>
+    <string name="add_to_queue_desc">Add after the songs you queued</string>
     <string name="add_to_library_desc">Save to your library</string>
     <string name="download_desc">Make available for offline playback</string>
     <string name="add_to_playlist_desc">Add to one of your playlists</string>
@@ -1210,4 +1215,10 @@
     <string name="recent_search_playlist">Playlist · %1$s</string>
     <string name="recent_search_artist">Artist</string>
     <string name="recent_search_remove">Remove from recent searches</string>
+    <string name="swipe_action_library">Add or remove from library</string>
+    <string name="library_songs_subtitle">All songs on your library listed here.</string>
+    <string name="library_songs_search_hint">Find a song by its title or artist</string>
+    <string name="queue_autoplay">Autoplay</string>
+    <string name="queue_from">Queue from %1$s</string>
+    <string name="queue_similar_music">Similar music</string>
 </resources>

@@ -553,14 +553,14 @@ private fun QueueSectionHeader(
 ) {
     val title = when (section) {
         QueueSection.HISTORY -> stringResource(R.string.history)
-        QueueSection.NOW_PLAYING -> "Now Playing"
-        QueueSection.CONTINUE -> "Continue Playing"
-        QueueSection.AUTOPLAY -> "Autoplay"
+        QueueSection.NOW_PLAYING -> stringResource(R.string.now_playing)
+        QueueSection.CONTINUE -> stringResource(R.string.continue_playing)
+        QueueSection.AUTOPLAY -> stringResource(R.string.queue_autoplay)
     }
     val subtitle = when (section) {
         QueueSection.HISTORY, QueueSection.NOW_PLAYING -> null
-        QueueSection.CONTINUE -> queueTitle?.takeIf { it.isNotBlank() }?.let { "Queue from $it" }
-        QueueSection.AUTOPLAY -> "Similar music"
+        QueueSection.CONTINUE -> queueTitle?.takeIf { it.isNotBlank() }?.let { stringResource(R.string.queue_from, it) }
+        QueueSection.AUTOPLAY -> stringResource(R.string.queue_similar_music)
     }
 
     Row(
@@ -590,7 +590,7 @@ private fun QueueSectionHeader(
         }
         if (section == QueueSection.HISTORY) {
             Text(
-                text = "Clear",
+                text = stringResource(R.string.clear),
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color.White.copy(alpha = 0.85f),

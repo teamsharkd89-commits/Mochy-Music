@@ -60,6 +60,11 @@
 
     <string name="added_to_play_next">Añadido a reproducir a continuación</string>
     <string name="added_to_queue">Añadido a la cola</string>
+    <string name="queue_added_one">Se añadió %1$s a la cola</string>
+    <string name="queue_added_many">Se añadieron %1$d canciones a la cola</string>
+    <string name="queue_removed_one">Se quitó %1$s de la cola</string>
+    <string name="queue_removed_many">Se quitaron %1$d canciones de la cola</string>
+    <string name="queue_untitled_song">canción</string>
     <string name="remove_from_cache">Eliminar de la caché</string>
     <string name="save_album">Guardar</string>
     
@@ -422,7 +427,7 @@
     <string name="edit_desc">Cambiar el título o el artista</string>
     <string name="start_radio_desc">Crea una estación basada en este elemento</string>
     <string name="play_next_desc">Añadir al inicio de la cola</string>
-    <string name="add_to_queue_desc">Añadir al final de la cola</string>
+    <string name="add_to_queue_desc">Añade después de las canciones que pusiste en cola</string>
     <string name="add_to_library_desc">Guardar en la biblioteca</string>
     <string name="download_desc">Hacer disponible para reproducir sin conexión</string>
     <string name="add_to_playlist_desc">Añadir a una de tus listas de reproducción</string>
@@ -1208,4 +1213,10 @@
     <string name="recent_search_playlist">Lista · %1$s</string>
     <string name="recent_search_artist">Artista</string>
     <string name="recent_search_remove">Quitar de las búsquedas recientes</string>
+    <string name="swipe_action_library">Añadir o quitar de la biblioteca</string>
+    <string name="library_songs_subtitle">Todas las canciones de tu biblioteca, aquí.</string>
+    <string name="library_songs_search_hint">Busca una canción por su título o artista</string>
+    <string name="queue_autoplay">Reproducción automática</string>
+    <string name="queue_from">Cola de %1$s</string>
+    <string name="queue_similar_music">Música similar</string>
 </resources>

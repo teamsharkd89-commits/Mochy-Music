@@ -205,10 +205,13 @@ internal fun MiddleEditor(
     val measurer = rememberTextMeasurer()
     val slots = menuLayout.slots
     val sideAction = menuLayout.side
-    val labelWidths = remember(slots) {
-        FloatArray(slots.size) { i -> measurer.measure(slots[i].label, MenuLabelStyle).size.width.toFloat() }
+    // resolved up front: the measurer runs inside remember, where stringResource can't be called
+    val slotLabels = slots.map { it.localizedLabel() }
+    val sideLabel = sideAction.localizedLabel()
+    val labelWidths = remember(slotLabels) {
+        FloatArray(slotLabels.size) { i -> measurer.measure(slotLabels[i], MenuLabelStyle).size.width.toFloat() }
     }
-    val sideLabelWidth = remember(sideAction) { measurer.measure(sideAction.label, MenuLabelStyle).size.width.toFloat() }
+    val sideLabelWidth = remember(sideLabel) { measurer.measure(sideLabel, MenuLabelStyle).size.width.toFloat() }
     val sideRect = anchors.sideButton.value
     val chevronRect = anchors.chevron.value
     val seekRect = anchors.seekBar.value
@@ -280,7 +283,7 @@ internal fun MiddleEditor(
                 alpha = { item(i) },
             )
             MenuItemLabel(
-                text = action.label,
+                text = slotLabels[i],
                 rightX = { stage.rowCircles[i].x - stage.menuZoom * chevronRect.width / 2f - stage.labelGap },
                 centerY = { lerpF(chevronCenter().y, stage.rowCircles[i].y, item(i)) },
                 scale = stage.labelScale,
@@ -288,7 +291,7 @@ internal fun MiddleEditor(
             )
         }
         MenuItemLabel(
-            text = sideAction.label,
+            text = sideLabel,
             rightX = { stage.sideMenu.x - stage.menuZoom * sideRect.width / 2f - stage.labelGap },
             centerY = { stage.sideMenu.y },
             scale = stage.labelScale,
