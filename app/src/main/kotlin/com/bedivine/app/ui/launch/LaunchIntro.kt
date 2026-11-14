@@ -3,6 +3,7 @@
 package com.bedivine.app.ui.launch
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
@@ -48,7 +49,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.PathParser
+import com.bedivine.app.R
 import com.bedivine.app.ui.component.BlurEffectCache
 import com.bedivine.app.utils.AppIcon
 import kotlinx.coroutines.coroutineScope
@@ -69,14 +70,15 @@ import kotlin.math.sin
 /*
  * A cold start, in order:
  *
- *  1. The system splash shows the filled mark (an anime launcher icon on android 13+: the icon
+ *  1. The system splash shows the filled mark (the launcher icon on android 13+: the icon
  *     itself). On the app's first frame [LaunchIntroOverlay] draws the very same thing in the very
- *     same spot and the splash goes (see SplashScreenExit). The anime icon then zooms out with a
- *     bounce into the filled mark, a ripple running out from it, before step 3.
+ *     same spot and the splash goes (see SplashScreenExit). With a launcher icon whose splash
+ *     shows the icon itself, the icon then zooms out with a bounce into the filled mark, a ripple
+ *     running out from it, before step 3.
  *  2. The mark holds still while the essentials come up underneath it: the player service, the
  *     theme, and Home (its logo and bones). Anything slow here is invisible, nothing moves.
- *  3. The mark flies into Home's logo, crossfading from the filled splash mark into the outline
- *     one with a blur through the middle, while the skeleton rises in ([launchRise]).
+ *  3. The mark flies into Home's logo, the same filled mark all the way with a blur through the
+ *     middle, while the skeleton rises in ([launchRise]).
  *  4. Only then does the heavy work get the main thread: Home swaps its bones for content, the
  *     PoToken WebView boots, auto-sync runs ([LaunchGate.awaitIntro]).
  */
@@ -151,7 +153,7 @@ private const val SplashTimeoutMillis = 1_500L
 // blur through the middle of the morph, in the mark's own units (it scales with the mark)
 private const val BlurPeak = 8f
 
-// the anime icon bouncing out into the mark, ripple and all
+// the launcher icon bouncing out into the mark, ripple and all
 private const val PreludeMillis = 1_100
 
 // an adaptive icon on the splash: its 108dp layers drawn at 240dp, shown through a 160dp circle
@@ -161,26 +163,24 @@ private const val IconCircleRadius = 80f / 288f * 235f
 // the system splash draws an icon with no background at 288dp, masked to a 192dp circle
 private val SplashIconSize = 288.dp
 private const val SplashViewport = 235f
-private const val SplashMaskRadius = 96f / 288f * SplashViewport
 
-// ic_splash_mark and ic_bedivine_mark are the same shapes; the splash one sits 58,48 further in
-private val MarkOffset = Offset(58f, 48f)
+// the mark is ic_bedivine_mark itself: a square png with the symbol at 62% in the middle, so
+// the mark box is the png, centred on the splash viewport's centre; the flying mark then lands
+// on Home's logo exactly, since Home shows the same png in its logo box
+private val MarkOffset = Offset(53.5f, 53.5f)
 private const val MarkViewportWidth = 128f
-private const val MarkViewportHeight = 139f
+private const val MarkViewportHeight = 128f
 
 // the splash viewport's centre: the point the flight scales around
 private val Pivot = Offset(SplashViewport / 2f, SplashViewport / 2f)
 
-// everything the marks draw, plus room for the blur, in splash units
-private val ArtBounds = RectF(44f, 36f, 204f, 200f)
-
-// the layer the blur runs on: the marks, and the anime icon's circle as it winds up
+// the layer the blur runs on: the mark, and the launcher icon's circle as it winds up
 private val LayerBounds = RectF(28f, 28f, 207f, 207f)
 
 @Stable
 class LaunchIntroState internal constructor(
     val plays: Boolean,
-    // the anime icon the splash showed (android 13+); null starts from the filled mark as always
+    // the launcher icon the splash showed (android 13+); null starts from the filled mark as always
     internal val icon: AppIcon? = null,
 ) {
     internal val prelude = Animatable(if (plays && icon != null) 0f else 1f)
@@ -285,9 +285,9 @@ private class MarkFrame {
 fun LaunchIntroOverlay(state: LaunchIntroState, essentialsReady: Boolean) {
     if (state.done) return
     val ready by rememberUpdatedState(essentialsReady)
-    val art = remember { LaunchMarkArt() }
-    val frame = remember { MarkFrame() }
     val context = LocalContext.current
+    val art = remember { LaunchMarkArt(context) }
+    val frame = remember { MarkFrame() }
     // read once for the first frame: it has to match what the splash showed
     val iconArt = remember { state.icon?.let { LaunchIconArt(context, it) } }
 
@@ -351,7 +351,7 @@ fun LaunchIntroOverlay(state: LaunchIntroState, essentialsReady: Boolean) {
                 }
         )
 
-        // the anime icon's ripple, running out from under the mark as it bounces in; drawn flat, never blurred
+        // the launcher icon's ripple, running out from under the mark as it bounces in; drawn flat, never blurred
         if (iconArt != null) {
             Spacer(
                 modifier = Modifier
@@ -451,69 +451,27 @@ private fun Density.placementAt(state: LaunchIntroState, size: IntSize): MarkPla
     return MarkPlacement(origin = pivot - Pivot * unit, unit = unit)
 }
 
-/** the two marks, in the splash drawable's units, ready to draw at any scale */
-private class LaunchMarkArt {
-    private val triangle = path(
-        "M163.5 96.3493C180.167 105.972 180.167 130.028 163.5 139.651L108 171.694C91.3333 181.316 " +
-            "70.5 169.288 70.5 150.043V85.9569C70.5 66.7119 91.3333 54.6838 108 64.3063L163.5 96.3493Z"
+/** the mark, in the splash drawable's units, ready to draw at any scale */
+private class LaunchMarkArt(context: Context) {
+    private val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.ic_bedivine_mark)
+    private val box = RectF(
+        MarkOffset.x, MarkOffset.y,
+        MarkOffset.x + MarkViewportWidth, MarkOffset.y + MarkViewportHeight,
     )
-    // the face: the little chevron and the smile under it
-    private val face = path("M97 112L108.5 98L120 112M110.325 125C111.871 133.439 121.868 148.704 142.944 149.92")
-    private val mask = Path().apply { addCircle(Pivot.x, Pivot.y, SplashMaskRadius, Path.Direction.CW) }
-
-    // ic_splash_mark: a white shape with a dark outline and a dark face
-    private val fill = paint(android.graphics.Color.WHITE) { style = Paint.Style.FILL }
-    private val darkOutline = paint(0xFF212121.toInt()) {
-        style = Paint.Style.STROKE
-        strokeWidth = 19f
-        strokeJoin = Paint.Join.ROUND
-    }
-    private val darkFace = paint(0xFF212121.toInt()) {
-        style = Paint.Style.STROKE
-        strokeWidth = 11f
-        strokeCap = Paint.Cap.ROUND
-        strokeJoin = Paint.Join.ROUND
-    }
-
-    // ic_bedivine_mark: the same outline and face, white, nothing filled
-    private val lightOutline = paint(android.graphics.Color.WHITE) {
-        style = Paint.Style.STROKE
-        strokeWidth = 19f
-        strokeJoin = Paint.Join.ROUND
-    }
-    private val lightFace = paint(android.graphics.Color.WHITE) {
-        style = Paint.Style.STROKE
-        strokeWidth = 11f
-        strokeCap = Paint.Cap.ROUND
-        strokeJoin = Paint.Join.ROUND
-    }
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { isFilterBitmap = true }
 
     fun draw(canvas: android.graphics.Canvas, filledAlpha: Float, outlineAlpha: Float, filledScale: Float = 1f) {
-        // each mark is faded as a whole, so its overlapping strokes never show through each other
-        if (filledAlpha > 0.002f) {
-            canvas.saveLayerAlpha(LayerBounds, (filledAlpha * 255f).toInt())
-            canvas.scale(filledScale, filledScale, Pivot.x, Pivot.y)
-            canvas.clipPath(mask)
-            canvas.drawPath(triangle, fill)
-            canvas.drawPath(triangle, darkOutline)
-            canvas.drawPath(face, darkFace)
-            canvas.restore()
-        }
-        if (outlineAlpha > 0.002f) {
-            canvas.saveLayerAlpha(ArtBounds, (outlineAlpha * 255f).toInt())
-            canvas.drawPath(triangle, lightOutline)
-            canvas.drawPath(face, lightFace)
-            canvas.restore()
-        }
+        val bitmap = this.bitmap ?: return
+        // our mark has no outline twin: the same filled symbol flies the whole way, so it lands
+        // on Home's logo exactly instead of popping from an outline into the filled logo
+        val alpha = maxOf(filledAlpha, outlineAlpha)
+        if (alpha <= 0.002f) return
+        paint.alpha = (alpha * 255f).toInt()
+        canvas.save()
+        canvas.scale(filledScale, filledScale, Pivot.x, Pivot.y)
+        canvas.drawBitmap(bitmap, null, box, paint)
+        canvas.restore()
     }
-
-    private fun path(data: String): Path = PathParser.createPathFromPathData(data)
-
-    private inline fun paint(color: Int, setup: Paint.() -> Unit) =
-        Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            this.color = color
-            setup()
-        }
 }
 
 /** the launcher icon as the splash drew it: its background and art through a circle, in splash units */
@@ -545,7 +503,7 @@ private class LaunchIconArt(context: Context, icon: AppIcon) {
 /** the icon and the mark at one point of the prelude, and the blur over both */
 private class PreludeLook(val iconAlpha: Float, val iconScale: Float, val markAlpha: Float, val markScale: Float, val blur: Float)
 
-// mochy winds up a little and zooms out, then the mark pops in past its size and settles while the ripple runs out
+// the icon winds up a little and zooms out, then the mark pops in past its size and settles while the ripple runs out
 private fun preludeLook(t: Float): PreludeLook {
     val out = (t / 0.5f).coerceIn(0f, 1f)
     val pop = ((t - 0.38f) / 0.62f).coerceIn(0f, 1f)
