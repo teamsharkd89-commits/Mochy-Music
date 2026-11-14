@@ -269,7 +269,7 @@ fun PlayerActionMenu(
                     )
                     SheetActionCard(
                         icon = R.drawable.playlist_add,
-                        title = stringResource(R.string.add_to_playlist),
+                        title = androidx.compose.ui.res.stringResource(R.string.add_to_playlist),
                         enabled = currentMetadata != null,
                         onClick = { showChoosePlaylistDialog = true },
                         modifier = Modifier.weight(1f),
