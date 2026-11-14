@@ -50,6 +50,7 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
@@ -59,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.bedivine.app.LocalPlayerConnection
+import com.bedivine.app.R
 import com.bedivine.app.constants.PlayerStyle
 import com.bedivine.app.db.entities.LyricsEntity.Companion.LYRICS_NOT_FOUND
 import com.bedivine.app.lyrics.LyricsEntry
@@ -790,7 +792,7 @@ private fun LyricsPlayerStyle(actions: StyleActions, modifier: Modifier, preview
                                 Column {
                                     ExpressiveTitle(text = song.track.title, baseSize = r.sp(0.112f, 32f, 56f), color = tones.ink.copy(alpha = 0.55f))
                                     Spacer(Modifier.height(10.dp))
-                                    Text("No synced lyrics for this song", color = tones.inkSoft, fontSize = r.sp(0.034f, 12f, 15f), fontWeight = FontWeight.Medium)
+                                    Text(stringResource(R.string.misc_lyrics_no_synced), color = tones.inkSoft, fontSize = r.sp(0.034f, 12f, 15f), fontWeight = FontWeight.Medium)
                                 }
                             } else {
                                 ExpressiveLyrics(

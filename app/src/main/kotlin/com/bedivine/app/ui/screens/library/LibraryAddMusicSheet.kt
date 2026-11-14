@@ -46,6 +46,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.annotation.StringRes
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -92,15 +94,16 @@ fun PopupSheetState.showAddLocalMusicSheet(viewModel: LibraryImportViewModel, on
         buttonBar = {
             val scan by viewModel.scan.collectAsState()
             val count = selection.keys.size
+            val importRunningText = stringResource(R.string.misc_lib_import_running)
             SheetPillButton(
-                text = if (count == 0) "Done" else "Add ${songCount(count)}",
+                text = if (count == 0) stringResource(R.string.done) else "Add ${songCount(count)}",
                 onClick = {
                     val found = (scan as? DeviceScan.Found)?.songs.orEmpty()
                     val picked = found.filter { it.uri.toString() in selection.keys }
                     sheet?.dismiss()
                     if (picked.isEmpty()) return@SheetPillButton
                     if (!viewModel.importDeviceSongs(picked)) {
-                        TopToaster.show("An import is still running. Try again once it's done.", iconRes = R.drawable.library_music)
+                        TopToaster.show(importRunningText, iconRes = R.drawable.library_music)
                     }
                     onStarted()
                 },
@@ -118,11 +121,11 @@ fun PopupSheetState.showAddLocalMusicSheet(viewModel: LibraryImportViewModel, on
             }
         }
         SongPickerContent(
-            title = "Add music",
+            title = stringResource(R.string.misc_lib_add_music),
             songs = songs,
             selection = selection,
-            loadingText = "Looking for music on your phone…",
-            emptyText = "Every song on your phone is already in your library.",
+            loadingText = stringResource(R.string.misc_lib_looking),
+            emptyText = stringResource(R.string.misc_lib_all_in_library),
         )
     }
 }
@@ -131,9 +134,9 @@ fun PopupSheetState.showAddLocalMusicSheet(viewModel: LibraryImportViewModel, on
 fun PopupSheetState.showRemoveLocalSheet(localFiles: List<Song>, viewModel: LibraryImportViewModel) =
     showRemoveSongsSheet(
         songs = localFiles,
-        title = "Remove from list",
-        emptyText = "No files from your phone in your library yet.",
-        hint = "The files stay on your phone.",
+        title = R.string.misc_lib_remove_list,
+        emptyText = R.string.misc_lib_no_local,
+        hint = R.string.misc_lib_files_stay,
         onRemove = { viewModel.removeLocalSongs(it) },
     )
 
@@ -141,17 +144,17 @@ fun PopupSheetState.showRemoveLocalSheet(localFiles: List<Song>, viewModel: Libr
 fun PopupSheetState.showRemoveCachedSheet(cachedSongs: List<Song>, onRemove: (Set<String>) -> Unit) =
     showRemoveSongsSheet(
         songs = cachedSongs,
-        title = "Remove from cache",
-        emptyText = "Nothing cached yet.",
-        hint = "They'll stream again the next time you play them.",
+        title = R.string.misc_lib_remove_cache,
+        emptyText = R.string.misc_lib_nothing_cached,
+        hint = R.string.misc_lib_stream_again,
         onRemove = onRemove,
     )
 
 private fun PopupSheetState.showRemoveSongsSheet(
     songs: List<Song>,
-    title: String,
-    emptyText: String,
-    hint: String,
+    @StringRes title: Int,
+    @StringRes emptyText: Int,
+    @StringRes hint: Int,
     onRemove: (Set<String>) -> Unit,
 ) {
     val selection = PickerSelection()
@@ -161,7 +164,7 @@ private fun PopupSheetState.showRemoveSongsSheet(
         buttonBar = {
             val count = selection.keys.size
             SheetPillButton(
-                text = if (count == 0) "Pick songs to remove" else "Remove ${songCount(count)}",
+                text = if (count == 0) stringResource(R.string.misc_lib_pick_remove) else "Remove ${songCount(count)}",
                 enabled = count > 0,
                 onClick = {
                     onRemove(selection.keys)
@@ -171,17 +174,18 @@ private fun PopupSheetState.showRemoveSongsSheet(
         },
     ) {
         SongPickerContent(
-            title = title,
+            title = stringResource(title),
             songs = pickerSongs,
             selection = selection,
             loadingText = "",
-            emptyText = emptyText,
-            hint = hint,
+            emptyText = stringResource(emptyText),
+            hint = stringResource(hint),
         )
     }
 }
 
-private fun songCount(count: Int) = if (count == 1) "1 song" else "$count songs"
+@Composable
+private fun songCount(count: Int) = if (count == 1) stringResource(R.string.misc_lib_1_song) else stringResource(R.string.misc_lib_n_songs, count)
 
 /** Title, search, then the songs with their checkboxes. A null [songs] is still loading. */
 @Composable
@@ -213,7 +217,7 @@ private fun ColumnScope.SongPickerContent(
         if (!songs.isNullOrEmpty()) {
             val allTicked = selection.keys.size == songs.size
             Text(
-                text = if (allTicked) "Select none" else "Select all",
+                text = if (allTicked) stringResource(R.string.misc_lib_select_none) else stringResource(R.string.select),
                 color = SearchColors.Secondary,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -230,13 +234,13 @@ private fun ColumnScope.SongPickerContent(
         Text(text = hint, color = SearchColors.Secondary, fontSize = 13.sp)
     }
     Spacer(Modifier.height(14.dp))
-    SheetSearchField(value = query, onValueChange = { query = it }, placeholder = "Search")
+    SheetSearchField(value = query, onValueChange = { query = it }, placeholder = stringResource(R.string.search))
     Spacer(Modifier.height(14.dp))
 
     val message = when {
         songs == null -> loadingText
         songs.isEmpty() -> emptyText
-        shown.isEmpty() -> "Nothing matches \"${query.trim()}\""
+        shown.isEmpty() -> stringResource(R.string.misc_lib_no_match, query.trim())
         else -> null
     }
     if (message != null) {

@@ -5,7 +5,9 @@
 
 package com.bedivine.app.ui.screens.recap
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
+import com.bedivine.app.R
 import com.bedivine.app.db.MusicDatabase
 import com.bedivine.app.db.RecapEventRow
 import com.bedivine.app.db.entities.Song
@@ -278,9 +280,10 @@ internal fun formatHoursDecimal(ms: Long): String {
 }
 
 /** Morning / afternoon / evening / night, for the hour a peak falls in. */
-internal fun timeOfDayName(hour: Int): String = when (hour) {
-    in 5..11 -> "mornings"
-    in 12..16 -> "afternoons"
-    in 17..21 -> "evenings"
-    else -> "nights"
+@StringRes
+internal fun timeOfDayName(hour: Int): Int = when (hour) {
+    in 5..11 -> R.string.misc_stats_mornings
+    in 12..16 -> R.string.misc_stats_afternoons
+    in 17..21 -> R.string.misc_stats_evenings
+    else -> R.string.misc_stats_nights
 }

@@ -115,7 +115,7 @@ class DiscordAuth @Inject constructor(
         val verifier = prefs[DiscordLoginVerifierKey]
         // a link that doesn't belong to the login we started is ignored, not trusted
         if (expectedState == null || verifier == null || redirect.getQueryParameter("state") != expectedState) {
-            _login.value = DiscordLogin.Failed("That sign-in link had expired. Try logging in again.")
+            _login.value = DiscordLogin.Failed(context.getString(R.string.misc_discord_link_expired))
             return
         }
         context.dataStore.edit {
@@ -126,9 +126,9 @@ class DiscordAuth @Inject constructor(
         if (code == null) {
             _login.value = DiscordLogin.Failed(
                 if (redirect.getQueryParameter("error") == "access_denied") {
-                    "You said no on Discord's page, so BeDivine isn't connected."
+                    context.getString(R.string.misc_discord_said_no)
                 } else {
-                    "Discord didn't let the sign-in through. Try again."
+                    context.getString(R.string.misc_discord_not_through)
                 },
             )
             return
@@ -155,7 +155,7 @@ class DiscordAuth @Inject constructor(
             throw e
         } catch (e: Exception) {
             Timber.tag(LogTag).w(e, "Discord sign-in didn't finish")
-            _login.value = DiscordLogin.Failed("Couldn't finish signing in to Discord. Check your connection and try again.")
+            _login.value = DiscordLogin.Failed(context.getString(R.string.misc_discord_not_finished))
         }
     }
 

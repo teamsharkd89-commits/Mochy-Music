@@ -24,6 +24,7 @@ import com.bedivine.app.ui.component.SettingsGroupStyle
 import com.bedivine.app.ui.component.SettingsItem
 import com.bedivine.app.ui.component.SubSettingsScaffold
 import com.bedivine.app.viewmodels.ImportSyncViewModel
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun ImportProvidersScreen(
@@ -31,24 +32,25 @@ fun ImportProvidersScreen(
     viewModel: ImportSyncViewModel = hiltViewModel(),
 ) {
     var linkSource by rememberSaveable { mutableStateOf<LinkSource?>(null) }
+    val bedivineBackupLabel = stringResource(R.string.misc_import_bedivine_backup)
 
     // some file managers label .csv as text/plain or octet-stream, so don't filter too hard
     val backupPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        if (uri != null) viewModel.loadFile(uri, sourceLabel = "BeDivine backup")
+        if (uri != null) viewModel.loadFile(uri, sourceLabel = bedivineBackupLabel)
     }
 
     SubSettingsScaffold(
-        title = "Import",
+        title = stringResource(R.string.misc_import_import),
         onBack = { navController.navigateUp() },
     ) {
         SettingsGroup(
-            title = "Sign in and choose",
+            title = stringResource(R.string.misc_import_signin_choose),
             style = SettingsGroupStyle.Grouped,
             items = listOf(
-                AccountService.SPOTIFY to "Liked Songs and your playlists",
-                AccountService.APPLE_MUSIC to "Library playlists, Favorite Songs and your whole library",
-                AccountService.YOUTUBE_MUSIC to "Liked music and your playlists, exact songs · also supports sync",
-                AccountService.TIDAL to "My Tracks and your playlists",
+                AccountService.SPOTIFY to stringResource(R.string.misc_import_spotify_desc),
+                AccountService.APPLE_MUSIC to stringResource(R.string.misc_import_apple_desc),
+                AccountService.YOUTUBE_MUSIC to stringResource(R.string.misc_import_ytm_desc),
+                AccountService.TIDAL to stringResource(R.string.misc_import_tidal_desc),
             ).map { (service, description) ->
                 SettingsItem(
                     title = { Text(service.label) },
@@ -64,17 +66,17 @@ fun ImportProvidersScreen(
         Spacer(Modifier.height(16.dp))
 
         SettingsGroup(
-            title = "Or paste a public link",
+            title = stringResource(R.string.misc_import_paste_link_title),
             style = SettingsGroupStyle.Grouped,
             items = LinkSource.entries.map { source ->
                 SettingsItem(
                     title = { Text(source.label) },
                     highlightKey = source.label,
                     descriptionText = when (source) {
-                        LinkSource.SPOTIFY -> "Public playlists (first 100 songs) and albums"
-                        LinkSource.APPLE_MUSIC -> "Public playlists and albums"
-                        LinkSource.DEEZER -> "Public playlists and albums, any length"
-                        LinkSource.YOUTUBE -> "Playlists and albums, exact songs, no searching"
+                        LinkSource.SPOTIFY -> stringResource(R.string.misc_import_link_spotify)
+                        LinkSource.APPLE_MUSIC -> stringResource(R.string.misc_import_link_apple)
+                        LinkSource.DEEZER -> stringResource(R.string.misc_import_link_deezer)
+                        LinkSource.YOUTUBE -> stringResource(R.string.misc_import_link_yt)
                     },
                     icon = painterResource(R.drawable.link),
                     iconShape = CircleShape,
@@ -87,13 +89,13 @@ fun ImportProvidersScreen(
         Spacer(Modifier.height(16.dp))
 
         SettingsGroup(
-            title = "From a file",
+            title = stringResource(R.string.misc_import_from_file),
             style = SettingsGroupStyle.Grouped,
             items = listOf(
                 SettingsItem(
-                    title = { Text("BeDivine backup") },
+                    title = { Text(bedivineBackupLabel) },
                     highlightKey = "BeDivine backup",
-                    descriptionText = "A CSV from Export to BeDivine CSV. Restores exact songs",
+                    descriptionText = stringResource(R.string.misc_import_backup_desc),
                     icon = painterResource(R.drawable.backup),
                     iconShape = CircleShape,
                     onClick = { backupPicker.launch(arrayOf("text/*", "application/csv", "application/vnd.ms-excel", "application/octet-stream")) },
@@ -101,7 +103,7 @@ fun ImportProvidersScreen(
                 SettingsItem(
                     title = { Text("TuneMyMusic CSV") },
                     highlightKey = "TuneMyMusic CSV",
-                    descriptionText = "Private playlists, liked songs, and every other service",
+                    descriptionText = stringResource(R.string.misc_import_tmm_desc),
                     icon = painterResource(R.drawable.web_link),
                     iconShape = CircleShape,
                     onClick = { navController.navigate(ImportTuneMyMusicRoute) },
@@ -112,13 +114,13 @@ fun ImportProvidersScreen(
         Spacer(Modifier.height(16.dp))
 
         SettingsGroup(
-            title = "Other services",
+            title = stringResource(R.string.misc_import_other_services_title),
             style = SettingsGroupStyle.Grouped,
             items = listOf(
                 SettingsItem(
                     title = { Text("Amazon Music, SoundCloud, Pandora…") },
-                    descriptionText = "Goes through TuneMyMusic",
-                    detail = "These go through TuneMyMusic, which can sign in to them for you",
+                    descriptionText = stringResource(R.string.misc_import_goes_tmm),
+                    detail = stringResource(R.string.misc_import_goes_tmm_detail),
                     icon = painterResource(R.drawable.library_music),
                     iconShape = CircleShape,
                     onClick = { navController.navigate(ImportTuneMyMusicRoute) },

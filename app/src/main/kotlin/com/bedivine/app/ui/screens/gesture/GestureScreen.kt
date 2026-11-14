@@ -218,11 +218,12 @@ private fun CustomiseSectionContent(section: CustomiseSection) {
         CustomiseSection.PLAYLIST -> {
             val (coverRadiusPx) = rememberPreference(ThumbnailCornerRadiusKey, defaultValue = 25f)
             val (playlistStyle, onPlaylistStyleChange) = rememberEnumPreference(PlaylistStyleKey, defaultValue = PlaylistStyle.FLOW)
+            val playlistStyleNames = PlaylistStyle.entries.associateWith { stringResource(it.displayNameRes) }
             StylePagerSection(
                 category = stringResource(R.string.customise_playlist_styles),
                 styles = PlaylistStyle.entries,
                 selected = playlistStyle,
-                nameOf = { it.displayName },
+                nameOf = { playlistStyleNames.getValue(it) },
                 onSelect = onPlaylistStyleChange,
                 modifier = pagerBleed,
             ) { PlaylistStylePreview(style = it, coverRadius = coverRadiusPx.dp) }
@@ -231,11 +232,12 @@ private fun CustomiseSectionContent(section: CustomiseSection) {
         CustomiseSection.HOME -> {
             val (coverRadiusPx) = rememberPreference(ThumbnailCornerRadiusKey, defaultValue = 25f)
             val (homeStyle, onHomeStyleChange) = rememberEnumPreference(HomeStyleKey, defaultValue = HomeStyle.MOCHYY)
+            val homeStyleNames = HomeStyle.entries.associateWith { stringResource(it.displayNameRes) }
             StylePagerSection(
                 category = stringResource(R.string.customise_home_styles),
                 styles = HomeStyle.entries,
                 selected = homeStyle,
-                nameOf = { it.displayName },
+                nameOf = { homeStyleNames.getValue(it) },
                 onSelect = onHomeStyleChange,
                 modifier = pagerBleed,
             ) { HomeStylePreview(style = it, coverRadius = coverRadiusPx.dp) }

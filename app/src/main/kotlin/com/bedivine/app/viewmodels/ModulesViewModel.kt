@@ -347,7 +347,7 @@ class ModulesViewModel @Inject constructor(
             val drm = stream?.drm as? StreamDrm.Widevine
             var licensed = stream != null && drm == null
             if (drm != null) {
-                report(DiagnosticStep("License", null, "Asking for a license on this phone…"))
+                report(DiagnosticStep("License", null, context.getString(R.string.misc_mod_license)))
                 val outcome = withContext(Dispatchers.IO) { runCatching { checkWidevine(drm) } }
                 licensed = outcome.isSuccess
                 report(
@@ -360,7 +360,7 @@ class ModulesViewModel @Inject constructor(
             // a license alone isn't proof: Apple's enhanced streams licensed fine and then
             // decrypted nothing, so the test ends by really decoding the start of the song
             if (stream != null && licensed) {
-                report(DiagnosticStep("Play", null, "Decoding the start of the song, muted…"))
+                report(DiagnosticStep("Play", null, context.getString(R.string.misc_mod_decoding)))
                 val outcome = runCatching { checkPlayback(stream) }
                 report(
                     outcome.fold(
@@ -375,15 +375,15 @@ class ModulesViewModel @Inject constructor(
     }
 
     private suspend fun testLyrics(module: LyricsModule, track: TrackQuery) {
-        report(DiagnosticStep(StepLyrics, null, "Asking ${module.info.name} for the lyrics…"))
+        report(DiagnosticStep(StepLyrics, null, context.getString(R.string.misc_mod_lyrics, module.info.name)))
         val lyrics = withContext(Dispatchers.IO) { runCatching { module.lyrics(track) } }
         report(
             lyrics.fold(
                 onSuccess = { text ->
                     val lines = text?.lines()?.map { it.replace(LrcTime, "").trim() }?.filter { it.isNotEmpty() }.orEmpty()
                     val timed = text?.let { LrcTime.containsMatchIn(it) } == true
-                    if (lines.isEmpty()) DiagnosticStep(StepLyrics, false, "No lyrics for “${track.title}”")
-                    else DiagnosticStep(StepLyrics, true, "${lines.size} ${if (timed) "timed" else "plain"} lines · “${lines.first()}”")
+                    if (lines.isEmpty()) DiagnosticStep(StepLyrics, false, context.getString(R.string.misc_mod_no_lyrics, track.title))
+                    else DiagnosticStep(StepLyrics, true, if (timed) context.getString(R.string.misc_mod_lines_timed, lines.size, lines.first()) else context.getString(R.string.misc_mod_lines_plain, lines.size, lines.first()))
                 },
                 onFailure = { DiagnosticStep(StepLyrics, false, it.message ?: it.javaClass.simpleName) },
             )
@@ -391,21 +391,21 @@ class ModulesViewModel @Inject constructor(
     }
 
     private suspend fun testMetadata(module: MetadataModule, track: TrackQuery) {
-        report(DiagnosticStep(StepInfo, null, "Asking ${module.info.name} about the song…"))
+        report(DiagnosticStep(StepInfo, null, context.getString(R.string.misc_mod_about, module.info.name)))
         val found = withContext(Dispatchers.IO) { runCatching { module.metadata(track) } }
         report(
             found.fold(
                 onSuccess = { info ->
-                    if (info == null) return@fold DiagnosticStep(StepInfo, false, "Nothing about “${track.title}”")
+                    if (info == null) return@fold DiagnosticStep(StepInfo, false, context.getString(R.string.misc_mod_nothing, track.title))
                     val facts = listOfNotNull(
                         info.genres.firstOrNull(),
                         info.releaseDate,
                         info.album,
-                        info.writers.takeIf { it.isNotEmpty() }?.let { "written by ${it.joinToString(", ")}" },
+                        info.writers.takeIf { it.isNotEmpty() }?.let { context.getString(R.string.misc_mod_written, it.joinToString(", ")) },
                         info.label,
-                        info.about?.let { "says what it's about" },
+                        info.about?.let { context.getString(R.string.misc_mod_says) },
                     )
-                    DiagnosticStep(StepInfo, true, facts.joinToString(" · ").ifBlank { "An answer with nothing in it" })
+                    DiagnosticStep(StepInfo, true, facts.joinToString(" · ").ifBlank { context.getString(R.string.misc_mod_empty) })
                 },
                 onFailure = { DiagnosticStep(StepInfo, false, it.message ?: it.javaClass.simpleName) },
             )

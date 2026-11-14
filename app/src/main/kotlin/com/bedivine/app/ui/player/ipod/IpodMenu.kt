@@ -41,7 +41,13 @@ sealed class IpodPage(val title: String) {
 @Composable
 fun IpodPage.localizedTitle(): String = when (this) {
     IpodPage.NowPlaying -> stringResource(R.string.now_playing)
+    IpodPage.Music -> stringResource(R.string.music)
+    IpodPage.CoverFlow -> stringResource(R.string.misc_ipod_cover_flow)
+    IpodPage.Playlists -> stringResource(R.string.playlists)
+    IpodPage.Artists -> stringResource(R.string.artists)
+    IpodPage.Albums -> stringResource(R.string.albums)
     IpodPage.Songs -> stringResource(R.string.songs)
+    IpodPage.LikedSongs -> stringResource(R.string.liked_songs)
     else -> title
 }
 
@@ -70,6 +76,8 @@ class IpodRow(
 @Composable
 fun IpodRow.localizedTitle(): String = when (val p = pick) {
     is IpodPick.Open -> p.page.localizedTitle()
+    is IpodPick.Shuffle -> stringResource(R.string.misc_ipod_shuffle_songs)
+    null -> if (title == "Loading…") stringResource(R.string.tv_loading) else title
     else -> title
 }
 

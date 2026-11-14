@@ -43,6 +43,7 @@ import com.music.innertube.models.ArtistItem
 import com.music.innertube.models.PlaylistItem
 import com.music.innertube.models.SongItem
 import com.music.innertube.models.YTItem
+import androidx.compose.ui.res.stringResource
 
 /**
  * Shared page frame for every Library screen: collapsing title/subtitle, a pinned search pill, and
@@ -127,7 +128,7 @@ internal fun androidx.compose.foundation.lazy.LazyListScope.librarySearchResults
     if (results.isEmpty()) {
         item(key = "no_results") {
             Text(
-                text = "Nothing in your library matches \"$query\"",
+                text = stringResource(R.string.misc_libscaffold_nomatch, query),
                 color = SearchColors.Secondary,
                 fontSize = 13.sp,
                 modifier = Modifier.padding(horizontal = SearchHorizontalPadding, vertical = 24.dp),

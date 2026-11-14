@@ -656,7 +656,7 @@ fun HomeScreen(
                     kind = com.bedivine.app.ui.component.StarterItem.Kind.Playlist,
                     id = it.id,
                     title = it.playlist.name,
-                    detail = "${it.songCount} songs",
+                    detail = stringResource(R.string.misc_lib_n_songs, it.songCount),
                     thumbnailUrl = it.thumbnails.firstOrNull() ?: it.playlist.thumbnailUrl,
                 )
             }

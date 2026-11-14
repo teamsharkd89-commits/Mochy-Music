@@ -34,6 +34,7 @@ import com.bedivine.app.utils.PlaybackLogEntry
 import com.bedivine.app.utils.PlaybackLogLevel
 import com.bedivine.app.utils.PlaybackLogManager
 import com.bedivine.app.utils.YTPlayerUtils
+import androidx.compose.ui.res.stringResource
 
 /** newest entries first, capped so the scrolling column stays responsive */
 private const val VISIBLE_ENTRIES = 200
@@ -49,7 +50,7 @@ fun PlaybackDiagnosticsScreen(navController: NavController) {
     val hasPoToken = YTPlayerUtils.hasPoToken
 
     SubSettingsScaffold(
-        title = "Playback diagnostics",
+        title = stringResource(R.string.misc_diag_title),
         onBack = { navController.navigateUp() },
     ) {
         Card(
@@ -62,7 +63,7 @@ fun PlaybackDiagnosticsScreen(navController: NavController) {
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = if (hasPoToken) "PoToken ready" else "No PoToken",
+                    text = if (hasPoToken) stringResource(R.string.misc_diag_potoken) else stringResource(R.string.misc_diag_no_potoken),
                     style = MaterialTheme.typography.titleMedium,
                     color = if (hasPoToken) {
                         MaterialTheme.colorScheme.primary
@@ -73,7 +74,7 @@ fun PlaybackDiagnosticsScreen(navController: NavController) {
 
                 Spacer(Modifier.height(8.dp))
 
-                DiagnosticsRow("Last stream", lastValidated?.details ?: "—")
+                DiagnosticsRow(stringResource(R.string.misc_diag_last), lastValidated?.details ?: "—")
             }
         }
 
@@ -81,18 +82,18 @@ fun PlaybackDiagnosticsScreen(navController: NavController) {
             style = SettingsGroupStyle.Grouped,
             items = listOf(
                 SettingsItem(
-                    title = { Text("Copy logs") },
-                    descriptionText = "Copy the full playback log to the clipboard",
+                    title = { Text(stringResource(R.string.misc_diag_copy)) },
+                    descriptionText = stringResource(R.string.misc_diag_copy_desc),
                     icon = painterResource(R.drawable.key),
                     iconShape = CircleShape,
                     onClick = {
                         copyLogs(context, logs)
-                        Toast.makeText(context, "Playback log copied", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.misc_diag_copied), Toast.LENGTH_SHORT).show()
                     },
                 ),
                 SettingsItem(
-                    title = { Text("Clear logs") },
-                    descriptionText = "Discard everything captured so far",
+                    title = { Text(stringResource(R.string.misc_diag_clear)) },
+                    descriptionText = stringResource(R.string.misc_diag_clear_desc),
                     icon = painterResource(R.drawable.delete),
                     iconShape = CircleShape,
                     onClick = { PlaybackLogManager.clearLogs() },
@@ -102,7 +103,7 @@ fun PlaybackDiagnosticsScreen(navController: NavController) {
 
         if (recent.isEmpty()) {
             Text(
-                text = "Nothing captured yet. Play a track and come back.",
+                text = stringResource(R.string.misc_diag_nothing),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),

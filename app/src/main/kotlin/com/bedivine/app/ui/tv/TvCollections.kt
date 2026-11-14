@@ -177,7 +177,7 @@ internal fun TvSongsScreen(viewModel: TvSongsViewModel = hiltViewModel()) {
     val actions = LocalTvActions.current
     val list = songs.orEmpty()
     val tracks = remember(list) { list.map { it.tvTrack() } }
-    val title = viewModel.importSource?.label ?: stringResource(viewModel.kind.title)
+    val title = viewModel.importSource?.let { stringResource(it.labelRes) } ?: stringResource(viewModel.kind.title)
     TvTrackListPage(
         title = title,
         subtitle = pluralStringResource(R.plurals.tv_song_count, list.size, list.size),

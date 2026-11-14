@@ -65,7 +65,7 @@ fun ArtistMenu(
     SheetHeader(
         thumbnailUrl = artist.artist.thumbnailUrl,
         title = artist.artist.name,
-        subtitle = if (artist.songCount == 1) "1 song in your library" else "${artist.songCount} songs in your library",
+        subtitle = if (artist.songCount == 1) stringResource(R.string.misc_artistmenu_1) else stringResource(R.string.misc_artistmenu_n, artist.songCount),
     )
 
     Spacer(Modifier.height(SheetHeaderGap))
@@ -161,7 +161,7 @@ fun ArtistMenu(
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             },
-                            text = if (isPinned) "Unpin" else "Pin",
+                            text = if (isPinned) stringResource(R.string.misc_menu_unpin) else stringResource(R.string.misc_menu_pin),
                             onClick = {
                                 coroutineScope.launch(Dispatchers.IO) {
                                     if (isPinned) {

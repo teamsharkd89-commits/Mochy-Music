@@ -2,7 +2,10 @@
 
 package com.bedivine.app.viewmodels
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
+import com.bedivine.app.R
 import androidx.lifecycle.viewModelScope
 import com.bedivine.app.eq.AudioLabStore
 import com.bedivine.app.eq.AutoEqCorrection
@@ -251,12 +254,13 @@ fun frequencyLabel(hz: Double): String = when {
 
 fun gainLabel(db: Double): String = (if (db > 0.04) "+" else if (db < -0.04) "−" else "") + String.format("%.1f dB", abs(db))
 
+@Composable
 fun filterTypeLabel(type: FilterType): String = when (type) {
-    FilterType.PK -> "Peak"
-    FilterType.LSC -> "Low shelf"
-    FilterType.HSC -> "High shelf"
-    FilterType.LPQ -> "Low pass"
-    FilterType.HPQ -> "High pass"
+    FilterType.PK -> stringResource(R.string.misc_eq_peak)
+    FilterType.LSC -> stringResource(R.string.misc_eq_low_shelf)
+    FilterType.HSC -> stringResource(R.string.misc_eq_high_shelf)
+    FilterType.LPQ -> stringResource(R.string.misc_eq_low_pass)
+    FilterType.HPQ -> stringResource(R.string.misc_eq_high_pass)
 }
 
 /** whether a band is doing anything, for the "On · Custom" line */

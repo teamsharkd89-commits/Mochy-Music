@@ -47,18 +47,19 @@ import com.bedivine.app.ui.theme.InterFontFamily
 import com.bedivine.app.viewmodels.frequencyLabel
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun EqBandsSection(
     nodes: List<ParametricEQBand>,
     onGain: (index: Int, gain: Double) -> Unit,
 ) {
-    LabSectionLabel("Bands")
+    LabSectionLabel(stringResource(R.string.misc_eq_bands))
     LabCard(padding = 12.dp) {
         BandSliders(nodes, onGain)
         Spacer(Modifier.height(10.dp))
         Text(
-            "Sweep across the sliders to draw a curve",
+            stringResource(R.string.misc_eq_sweep),
             fontFamily = InterFontFamily, fontSize = 12.sp, color = LabColors.Faint,
             modifier = Modifier.padding(horizontal = 6.dp),
         )

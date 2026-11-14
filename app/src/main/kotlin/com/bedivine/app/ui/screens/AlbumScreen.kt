@@ -384,7 +384,7 @@ fun AlbumScreen(
 
         albumShelf(
             key = "more_by_artist",
-            title = if (mainArtistName != null) "More by $mainArtistName" else "More by this artist",
+            title = if (mainArtistName != null) stringResource(R.string.misc_album_more_by, mainArtistName) else stringResource(R.string.misc_album_more_this),
             albums = moreByArtist,
             onTitleClick = album.artists.firstOrNull()?.id?.let { id -> { navController.navigate("artist/$id") } },
             navController = navController,
@@ -397,7 +397,7 @@ fun AlbumScreen(
         )
         albumShelf(
             key = "other_versions",
-            title = "Other versions",
+            title = stringResource(R.string.misc_album_other),
             albums = otherVersions,
             navController = navController,
             onLongClick = { item ->
@@ -409,7 +409,7 @@ fun AlbumScreen(
         )
         albumShelf(
             key = "releases_for_you",
-            title = "Releases for you",
+            title = stringResource(R.string.misc_album_releases),
             albums = releasesForYou,
             navController = navController,
             onLongClick = { item ->
@@ -427,14 +427,15 @@ fun AlbumScreen(
 }
 
 /** "2016 · 14 songs · 52m · Explicit · OPUS 160 kbps" */
+@Composable
 private fun albumStats(year: Int?, songCount: Int, totalSeconds: Int, explicit: Boolean, format: String?): String {
     val hours = totalSeconds / 3600
     val minutes = (totalSeconds % 3600) / 60
     return listOfNotNull(
         year?.toString(),
-        "$songCount ${if (songCount == 1) "song" else "songs"}",
+        if (songCount == 1) stringResource(R.string.misc_album_song_1, songCount) else stringResource(R.string.misc_album_song_n, songCount),
         (if (hours > 0) "${hours}h ${minutes}m" else "${minutes}m").takeIf { totalSeconds > 0 },
-        "Explicit".takeIf { explicit },
+        stringResource(R.string.explicit).takeIf { explicit },
         format?.ifBlank { null },
     ).joinToString(" · ")
 }
@@ -493,7 +494,7 @@ private fun AlbumRetry(onRetry: () -> Unit) {
             .padding(top = 24.dp)
     ) {
         Text(
-            text = "Couldn't load this album. Tap to try again",
+            text = stringResource(R.string.misc_album_failed),
             style = PlaylistStatsStyle,
             color = Color.White.copy(alpha = 0.7f),
             modifier = Modifier

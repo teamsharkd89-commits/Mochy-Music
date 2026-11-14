@@ -52,6 +52,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -275,7 +276,7 @@ internal fun ProfileIdCard(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = "PROFILE USR#$cardNumber",
+                        text = stringResource(R.string.profile_card_profile_usr, cardNumber),
                         color = mutedText,
                         fontFamily = FontFamily.Monospace,
                         fontSize = (unit.value * 11f).sp,
@@ -299,14 +300,14 @@ internal fun ProfileIdCard(
                         if (photo != null) {
                             AsyncImage(
                                 model = photo,
-                                contentDescription = "Profile picture",
+                                contentDescription = stringResource(R.string.profile_card_profile_picture),
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.fillMaxSize(),
                             )
                         } else if (onPhotoClick != null) {
                             Icon(
                                 painterResource(R.drawable.add),
-                                contentDescription = "Add a profile picture",
+                                contentDescription = stringResource(R.string.profile_card_add_picture),
                                 tint = Color.White.copy(alpha = 0.7f),
                                 modifier = Modifier.size(unit * 34f),
                             )
@@ -316,7 +317,7 @@ internal fun ProfileIdCard(
                     Column(modifier = Modifier.weight(1f)) {
                         if (showIdCardOf) {
                             Text(
-                                "ID CARD OF",
+                                stringResource(R.string.profile_card_id_card_of),
                                 color = mutedText,
                                 fontFamily = FontFamily.Monospace,
                                 fontSize = (unit.value * 10f).sp,
@@ -355,7 +356,7 @@ internal fun ProfileIdCard(
             }
             if (showMarquee) {
                 MarqueeStrip(
-                    text = "${name}`s CARD",
+                    text = stringResource(R.string.profile_card_marquee_text, name),
                     color = finish.stripText,
                     background = finish.stripBackground,
                     modifier = Modifier

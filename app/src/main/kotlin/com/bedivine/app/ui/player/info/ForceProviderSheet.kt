@@ -57,6 +57,7 @@ import com.bedivine.app.ui.player.menu.MenuSheetSurface
 import com.bedivine.app.utils.rememberPreference
 import kotlinx.coroutines.delay
 import com.bedivine.app.ui.component.RemoteFocus
+import androidx.compose.ui.res.stringResource
 
 private val YouTubeQualities = listOf(AudioQuality.AUTO, AudioQuality.HIGH, AudioQuality.MEDIUM, AudioQuality.LOW)
 
@@ -90,10 +91,10 @@ fun ForceProviderSheet(currentProviderId: String?, onDismiss: () -> Unit) {
             modifier = Modifier.fillMaxWidth().navigationBarsPadding(),
         ) {
             InfoColumn(modifier = Modifier.widthIn(max = 600.dp)) {
-                InfoSheetTitle("Play from")
+                InfoSheetTitle(stringResource(R.string.misc_force_play_from))
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = "The song stops while it's fetched from the one you pick.",
+                    text = stringResource(R.string.misc_force_stops),
                     color = InfoMuted,
                     fontSize = 13.sp,
                 )
@@ -145,8 +146,8 @@ private fun SwitchStatus(state: ProviderSwitchState, nameOf: (String) -> String)
         ) {
             when (state) {
                 is ProviderSwitchState.Working -> {
-                    Text("Fetching from ${nameOf(state.providerId)}…", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                    Text("Try ${state.attempt} of ${state.of}, up to a minute", color = InfoMuted, fontSize = 12.sp)
+                    Text(stringResource(R.string.misc_force_fetching, nameOf(state.providerId)), color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.misc_force_try, state.attempt, state.of), color = InfoMuted, fontSize = 12.sp)
                     Spacer(Modifier.height(10.dp))
                     val progress by animateFloatAsState(state.attempt / state.of.toFloat(), label = "switchTries")
                     Box(Modifier.fillMaxWidth().height(4.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.12f))) {
@@ -154,15 +155,15 @@ private fun SwitchStatus(state: ProviderSwitchState, nameOf: (String) -> String)
                     }
                 }
                 is ProviderSwitchState.Failed -> {
-                    Text("Source unavailable", color = Color(0xFFFF7A7A), fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.misc_force_unavailable), color = Color(0xFFFF7A7A), fontSize = 14.sp, fontWeight = FontWeight.Bold)
                     Text(
-                        "${nameOf(state.providerId)} didn't answer after ${ProviderSwitch.MaxTries} tries, so the song kept playing where it was. Try another one.",
+                        stringResource(R.string.misc_force_no_answer, nameOf(state.providerId), ProviderSwitch.MaxTries),
                         color = InfoMuted,
                         fontSize = 12.sp,
                     )
                 }
                 is ProviderSwitchState.Done -> {
-                    Text("Now playing from ${nameOf(state.providerId)}", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.misc_force_now_playing, nameOf(state.providerId)), color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 }
                 ProviderSwitchState.Idle -> Unit
             }
@@ -199,7 +200,7 @@ private fun ProviderChoiceRow(
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = name, color = Color.White, fontSize = 15.sp, lineHeight = 19.sp, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
                 Text(
-                    text = if (isCurrent) "Playing from here now" else "Tap to play from here",
+                    text = if (isCurrent) stringResource(R.string.misc_force_playing_here) else stringResource(R.string.misc_force_tap_here),
                     color = InfoMuted,
                     fontSize = 12.sp,
                 )

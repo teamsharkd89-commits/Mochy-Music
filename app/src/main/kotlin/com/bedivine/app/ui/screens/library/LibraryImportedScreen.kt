@@ -23,6 +23,7 @@ import com.bedivine.app.ui.component.queueSwipeAction
 import com.bedivine.app.ui.component.removeImportSwipeAction
 import com.bedivine.app.ui.menu.SongMenu
 import com.bedivine.app.viewmodels.LibraryImportedViewModel
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun LibraryImportedScreen(
@@ -36,7 +37,7 @@ fun LibraryImportedScreen(
     val menuState = LocalMenuState.current
     val source = viewModel.source
 
-    val label = source?.label ?: "an unknown source"
+    val label = source?.let { stringResource(it.labelRes) } ?: stringResource(R.string.misc_libimport_unknown)
     val sourceIcon: (@Composable () -> Unit)? = if (source != null) {
         { ImportSourceIcon(source, size = AvatarSize) }
     } else {
@@ -44,12 +45,12 @@ fun LibraryImportedScreen(
     }
 
     LibraryEntityListScreen(
-        title = source?.label ?: "Imported",
+        title = source?.let { stringResource(it.labelRes) } ?: stringResource(R.string.misc_libimport_title),
         subtitle = when (songs.size) {
-            1 -> "1 song imported from $label."
-            else -> "${songs.size} songs imported from $label."
+            1 -> stringResource(R.string.misc_libimport_1, label)
+            else -> stringResource(R.string.misc_libimport_n, songs.size, label)
         },
-        searchPlaceholder = "Find a song imported from $label",
+        searchPlaceholder = stringResource(R.string.misc_libimport_find, label),
         items = songs,
         idOf = { it.id },
         nameOf = { it.song.title },
@@ -61,7 +62,7 @@ fun LibraryImportedScreen(
             val ordered = sortForLibraryIndex(songs) { it.song.title }
             playerConnection.playQueue(
                 ListQueue(
-                    title = "Imported from $label",
+                    title = stringResource(R.string.misc_libimport_from, label),
                     items = ordered.map { it.toMediaItem() },
                     startIndex = ordered.indexOf(song).coerceAtLeast(0),
                 ),

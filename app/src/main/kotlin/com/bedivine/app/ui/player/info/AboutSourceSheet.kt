@@ -41,6 +41,7 @@ import com.bedivine.app.ui.player.menu.MenuRowSurface
 import com.bedivine.app.ui.player.menu.MenuSheetSurface
 import com.bedivine.app.ui.screens.setup.onboarding.ProviderSquircle
 import com.bedivine.app.ui.component.RemoteFocus
+import androidx.compose.ui.res.stringResource
 
 /** picks where "about" reads from; each row previews what that source says, so the choice is an easy one */
 @Composable
@@ -57,7 +58,7 @@ fun AboutSourceSheet(
             modifier = Modifier.fillMaxWidth().navigationBarsPadding(),
         ) {
             InfoColumn(modifier = Modifier.widthIn(max = 600.dp)) {
-                InfoSheetTitle("About from")
+                InfoSheetTitle(stringResource(R.string.misc_about_from))
                 Spacer(Modifier.height(16.dp))
                 AboutSource.entries.filter { it != AboutSource.Modules || com.bedivine.app.modules.ModuleMetadata.sources.isNotEmpty() }.forEach { source ->
                     SourceRow(
@@ -77,9 +78,10 @@ fun AboutSourceSheet(
     }
 }
 
+@Composable
 private fun previewOf(about: SongAbout, source: AboutSource): String = when {
-    !doneFor(about, source) -> "Looking…"
-    else -> textFor(about, source)?.lineSequence()?.firstOrNull { it.isNotBlank() }?.trim() ?: "Nothing about this song yet"
+    !doneFor(about, source) -> stringResource(R.string.misc_about_looking)
+    else -> textFor(about, source)?.lineSequence()?.firstOrNull { it.isNotBlank() }?.trim() ?: stringResource(R.string.misc_about_nothing_yet)
 }
 
 @Composable

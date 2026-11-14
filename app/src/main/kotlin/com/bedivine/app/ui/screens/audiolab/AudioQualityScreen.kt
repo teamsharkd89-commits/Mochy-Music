@@ -4,6 +4,7 @@ package com.bedivine.app.ui.screens.audiolab
 
 import android.content.Context
 import android.net.ConnectivityManager
+import androidx.annotation.StringRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -62,13 +63,18 @@ import kotlin.math.exp
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-private class QualityOption(val quality: AudioQuality, val title: String, val description: String, val format: String)
+private class QualityOption(
+    val quality: AudioQuality,
+    @StringRes val titleRes: Int,
+    @StringRes val descriptionRes: Int,
+    @StringRes val formatRes: Int,
+)
 
 private val YouTubeOptions = listOf(
-    QualityOption(AudioQuality.AUTO, "Auto", "High on Wi-Fi, Medium on mobile data", "Adaptive"),
-    QualityOption(AudioQuality.HIGH, "High", "The best the streamer has: less compression, more data", "~160 kbps · Opus"),
-    QualityOption(AudioQuality.MEDIUM, "Medium", "Around 128 kbps, easy on data", "~128 kbps · AAC"),
-    QualityOption(AudioQuality.LOW, "Low", "The smallest streams, for slow connections", "~50–70 kbps · Opus"),
+    QualityOption(AudioQuality.AUTO, R.string.audio_quality_auto, R.string.pref_audio_quality_auto_desc, R.string.pref_audio_quality_format_adaptive),
+    QualityOption(AudioQuality.HIGH, R.string.pref_download_quality_high, R.string.pref_audio_quality_high_desc, R.string.pref_audio_quality_format_160_opus),
+    QualityOption(AudioQuality.MEDIUM, R.string.pref_download_quality_medium, R.string.pref_audio_quality_medium_desc, R.string.pref_audio_quality_format_128_aac),
+    QualityOption(AudioQuality.LOW, R.string.pref_download_quality_low, R.string.pref_audio_quality_low_desc, R.string.pref_audio_quality_format_50_opus),
 )
 
 /** what the picture shows: the quality of whichever provider plays first */
@@ -101,7 +107,7 @@ fun AudioQualityScreen(navController: NavController, modules: ModulesViewModel =
     // the first provider in the order that's on plays everything it has
     val first = order.firstOrNull(usable)
     val effective = when (first) {
-        null -> Effective(AudioQuality.LOW, "Nothing is on", "Turn a provider on")
+        null -> Effective(AudioQuality.LOW, stringResource(R.string.pref_audio_quality_nothing_on), stringResource(R.string.pref_audio_quality_turn_provider_on))
         MonochromeModule.Id -> Effective(AudioQuality.LOSSLESS, "Monochrome", "FLAC · lossless")
         AppleMusicModule.Id -> {
             val pick = entries.firstOrNull { it.module.info.id == first }?.picks?.get(AppleMusicModule.ChoiceQuality)
@@ -115,7 +121,7 @@ fun AudioQualityScreen(navController: NavController, modules: ModulesViewModel =
         SourceModules.YouTubeId -> {
             val tier = if (quality == AudioQuality.AUTO) (if (metered) AudioQuality.MEDIUM else AudioQuality.HIGH) else quality
             val option = YouTubeOptions.first { it.quality == tier }
-            Effective(tier, "YouTube · ${option.title}", option.format)
+            Effective(tier, "YouTube · ${stringResource(option.titleRes)}", stringResource(option.formatRes))
         }
         // a module added from a link: its name, and the stream it picked when it offers a choice
         else -> {
@@ -127,24 +133,24 @@ fun AudioQualityScreen(navController: NavController, modules: ModulesViewModel =
     }
 
     AudioLabPage(
-        title = LabTitle("Audio", "Quality", firstSize = 40.sp, secondSize = 64.sp),
+        title = LabTitle(stringResource(R.string.pref_audio_quality_title_audio), stringResource(R.string.pref_audio_quality_title_quality), firstSize = 40.sp, secondSize = 64.sp),
         onBack = { navController.navigateUp() },
         subtitle = "${effective.title} · ${effective.format}",
     ) {
-        LabSheetTitle("Streaming")
+        LabSheetTitle(stringResource(R.string.pref_audio_quality_section_streaming))
         LabGroup {
             ProviderCaption(
                 logo = R.drawable.provider_youtube_music,
                 name = "YouTube Music",
                 status = when {
-                    youTubeOn -> "Plays what the others don't have"
-                    order.none(usable) -> "Off, and nothing else is on, so songs won't play"
-                    else -> "Off: songs the others don't have are skipped"
+                    youTubeOn -> stringResource(R.string.pref_audio_quality_yt_status_on)
+                    order.none(usable) -> stringResource(R.string.pref_audio_quality_yt_status_off_none)
+                    else -> stringResource(R.string.pref_audio_quality_yt_status_off_skipped)
                 },
                 on = youTubeOn,
             )
             YouTubeOptions.forEach { option ->
-                QualityRow(option.title, option.description, selected = quality == option.quality, enabled = youTubeOn) { onQuality(option.quality) }
+                QualityRow(stringResource(option.titleRes), stringResource(option.descriptionRes), selected = quality == option.quality, enabled = youTubeOn) { onQuality(option.quality) }
             }
 
             // each module's own qualities, under its name
@@ -152,7 +158,7 @@ fun AudioQualityScreen(navController: NavController, modules: ModulesViewModel =
                 val id = entry.module.info.id
                 val active = entry.enabled && entry.account is AccountState.SignedIn
                 Spacer(Modifier.height(6.dp))
-                ProviderCaption(logo = providerLogo(id), name = entry.module.info.name, status = moduleStatus(entry), on = active)
+                ProviderCaption(logo = providerLogo(id), name = entry.module.info.name, status = moduleStatus(entry, context), on = active)
                 val qualityChoice = entry.module.choices.firstOrNull { it.id == "quality" }
                 if (qualityChoice != null) {
                     val picked = entry.picks[qualityChoice.id]?.takeIf { p -> qualityChoice.options.any { it.id == p } }
@@ -163,9 +169,9 @@ fun AudioQualityScreen(navController: NavController, modules: ModulesViewModel =
                         }
                     }
                 } else if (id == MonochromeModule.Id) {
-                    QualityRow("Lossless", "FLAC, as Monochrome has it: CD quality or better", selected = true, enabled = active) {}
+                    QualityRow(stringResource(R.string.pref_audio_quality_monochrome_lossless), stringResource(R.string.pref_audio_quality_monochrome_lossless_desc), selected = true, enabled = active) {}
                 }
-                LabTextAction("${entry.module.info.name} settings", R.drawable.navigate_next) {
+                LabTextAction(stringResource(R.string.pref_audio_quality_module_settings, entry.module.info.name), R.drawable.navigate_next) {
                     navController.navigate(com.bedivine.app.ui.screens.settings.modules.moduleRoute(id))
                 }
             }
@@ -173,10 +179,10 @@ fun AudioQualityScreen(navController: NavController, modules: ModulesViewModel =
 
         // what a download from youtube is saved as; the download order below picks where each download comes from
         Spacer(Modifier.height(24.dp))
-        LabSheetTitle("Download")
+        LabSheetTitle(stringResource(R.string.pref_audio_quality_section_download))
         LabGroup {
             com.bedivine.app.constants.DownloadQuality.entries.forEach { option ->
-                QualityRow(option.title, option.description, selected = downloadQuality == option, enabled = true) {
+                QualityRow(stringResource(option.titleRes), stringResource(option.descriptionRes), selected = downloadQuality == option, enabled = true) {
                     onDownloadQuality(option)
                 }
             }
@@ -184,7 +190,7 @@ fun AudioQualityScreen(navController: NavController, modules: ModulesViewModel =
         Footnote(stringResource(R.string.quality_download_footnote))
 
         Spacer(Modifier.height(24.dp))
-        LabSheetTitle("Provider")
+        LabSheetTitle(stringResource(R.string.pref_audio_quality_section_provider))
         ProviderOrder(
             order = shownOrder,
             name = modules::nameOf,
@@ -192,9 +198,9 @@ fun AudioQualityScreen(navController: NavController, modules: ModulesViewModel =
             usable = usable,
             status = { id ->
                 if (id == SourceModules.YouTubeId) {
-                    if (youTubeOn) "On" else "Off, tap to turn on"
+                    if (youTubeOn) context.getString(R.string.pref_audio_quality_status_on) else context.getString(R.string.pref_audio_quality_status_off_tap)
                 } else {
-                    entries.firstOrNull { it.module.info.id == id }?.let(::moduleStatus) ?: "Not installed"
+                    entries.firstOrNull { it.module.info.id == id }?.let { moduleStatus(it, context) } ?: context.getString(R.string.pref_audio_quality_not_installed)
                 }
             },
             onTap = { id ->
@@ -221,7 +227,7 @@ fun AudioQualityScreen(navController: NavController, modules: ModulesViewModel =
                 if (id == SourceModules.YouTubeId) {
                     youTubeForDownloads
                 } else {
-                    entries.firstOrNull { it.module.info.id == id }?.let(::moduleStatus) ?: "Not installed"
+                    entries.firstOrNull { it.module.info.id == id }?.let { moduleStatus(it, context) } ?: context.getString(R.string.pref_audio_quality_not_installed)
                 }
             },
             // youtube is always there for downloads, so only a module's row has somewhere to go
@@ -234,11 +240,11 @@ fun AudioQualityScreen(navController: NavController, modules: ModulesViewModel =
     }
 }
 
-private fun moduleStatus(entry: com.bedivine.app.modules.ModuleEntry): String = when {
-    entry.account is AccountState.SignedOut -> "Sign in to play from it"
-    entry.account is AccountState.Expired -> "Sign in again"
-    entry.enabled -> "On"
-    else -> "Off, tap to turn on"
+private fun moduleStatus(entry: com.bedivine.app.modules.ModuleEntry, context: Context): String = when {
+    entry.account is AccountState.SignedOut -> context.getString(R.string.pref_audio_quality_status_signed_out)
+    entry.account is AccountState.Expired -> context.getString(R.string.module_sign_in_again)
+    entry.enabled -> context.getString(R.string.pref_audio_quality_status_on)
+    else -> context.getString(R.string.pref_audio_quality_status_off_tap)
 }
 
 @Composable

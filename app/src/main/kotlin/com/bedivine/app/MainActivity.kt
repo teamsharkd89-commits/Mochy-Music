@@ -1021,7 +1021,7 @@ class MainActivity : ComponentActivity() {
                                                         if (profilePicStr.isNotEmpty()) {
                                                             coil3.compose.AsyncImage(
                                                                 model = if (profilePicStr.startsWith("file://")) profilePicStr else "file://$profilePicStr",
-                                                                contentDescription = "Profile",
+                                                                contentDescription = stringResource(R.string.misc_main_profile),
                                                                 modifier = Modifier
                                                                     .size(32.dp)
                                                                     .clip(CircleShape),
@@ -1567,7 +1567,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
             com.bedivine.app.ui.component.TopToaster.show(
-                if (done == 0) "Couldn't import that" else "Imported $done song${if (done != 1) "s" else ""} to BeDivine",
+                if (done == 0) getString(R.string.misc_main_import_fail) else if (done == 1) getString(R.string.misc_main_imported_1) else getString(R.string.misc_main_imported_n, done),
             )
         }
         return true

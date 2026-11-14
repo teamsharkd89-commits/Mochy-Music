@@ -92,7 +92,7 @@ fun rememberLocalImportActions(viewModel: LibraryImportViewModel): LocalImportAc
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
         if (uris.isEmpty()) return@rememberLauncherForActivityResult
         if (!viewModel.importPicked(uris)) {
-            TopToaster.show("An import is still running. Try again once it's done.", iconRes = R.drawable.library_music)
+            TopToaster.show(context.getString(R.string.misc_lib_import_running), iconRes = R.drawable.library_music)
         }
         showProgress()
     }
@@ -104,9 +104,9 @@ fun rememberLocalImportActions(viewModel: LibraryImportViewModel): LocalImportAc
         } else {
             // a second "no" stops Android asking at all, so point to where it can still be turned on
             TopToaster.show(
-                text = "BeDivine can't see your music without access",
+                text = context.getString(R.string.misc_local_no_access),
                 iconRes = R.drawable.storage,
-                actionLabel = "Settings",
+                actionLabel = context.getString(R.string.settings),
                 onAction = {
                     context.startActivity(
                         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
@@ -131,7 +131,7 @@ fun rememberLocalImportActions(viewModel: LibraryImportViewModel): LocalImportAc
                 started -> showProgress()
                 actions.hasStorageAccess -> openAddMusic()
                 !viewModel.hasFolders() -> permission.launch(DeviceMusicScanner.permission)
-                else -> TopToaster.show("No new songs in your music folders", iconRes = R.drawable.library_music)
+                else -> TopToaster.show(context.getString(R.string.misc_local_no_new), iconRes = R.drawable.library_music)
             }
         }
         Unit

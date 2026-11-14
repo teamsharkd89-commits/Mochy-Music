@@ -108,7 +108,7 @@ internal fun TvLibraryScreen(viewModel: LibraryHomeViewModel = hiltViewModel()) 
             }
         }
         TvLibraryTab.Imported -> imported.map { card ->
-            TvShelfCard("imported_${card.source.key}", card.source.label, songCount(card.songCount), R.drawable.library_music, card.covers.take(2), "${TvRoutes.Songs}/imported:${card.source.key}")
+            TvShelfCard("imported_${card.source.key}", stringResource(card.source.labelRes), songCount(card.songCount), R.drawable.library_music, card.covers.take(2), "${TvRoutes.Songs}/imported:${card.source.key}")
         }
     }
 

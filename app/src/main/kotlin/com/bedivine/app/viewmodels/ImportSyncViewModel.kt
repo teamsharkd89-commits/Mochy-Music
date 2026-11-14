@@ -19,6 +19,7 @@ import com.bedivine.app.importer.ParsedImport
 import com.bedivine.app.importer.YouTubeSyncManager
 import com.bedivine.app.importer.YtSyncState
 import com.bedivine.app.importer.parseImportCsv
+import com.bedivine.app.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
@@ -60,17 +61,17 @@ class ImportSyncViewModel @Inject constructor(
     fun loadLink(link: String) {
         val source = LinkImporter.detect(link)?.label ?: "link"
         loadJob?.cancel()
-        _pending.value = PendingImport.Loading("Reading the $source playlist…")
+        _pending.value = PendingImport.Loading(context.getString(R.string.misc_import_reading_link, source))
         loadJob = viewModelScope.launch(Dispatchers.IO) {
             _pending.value = try {
                 PendingImport.Ready(LinkImporter.fetch(link), source)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: LinkImportException) {
-                PendingImport.Failed(e.message ?: "Couldn't read that link.")
+                PendingImport.Failed(e.message ?: context.getString(R.string.misc_import_couldnt_read_link))
             } catch (e: Exception) {
                 Timber.e(e, "Link import failed")
-                PendingImport.Failed("Couldn't read that link.")
+                PendingImport.Failed(context.getString(R.string.misc_import_couldnt_read_link))
             }
         }
     }
@@ -78,20 +79,20 @@ class ImportSyncViewModel @Inject constructor(
     /** [sourceLabel] is only for the review dialog ("BeDivine backup", "TuneMyMusic"). */
     fun loadFile(uri: Uri, sourceLabel: String) {
         loadJob?.cancel()
-        _pending.value = PendingImport.Loading("Reading the file…")
+        _pending.value = PendingImport.Loading(context.getString(R.string.misc_import_reading_file))
         loadJob = viewModelScope.launch(Dispatchers.IO) {
             _pending.value = try {
                 val size = queryColumn(uri, OpenableColumns.SIZE)?.toLongOrNull()
                 if (size != null && size > MAX_CSV_BYTES) {
-                    PendingImport.Failed("That file is too big to be a playlist export.")
+                    PendingImport.Failed(context.getString(R.string.misc_import_file_too_big))
                 } else {
                     val text = context.contentResolver.openInputStream(uri)?.bufferedReader(Charsets.UTF_8)?.use { it.readText() }
                         ?: throw IllegalStateException("Couldn't open that file")
                     val fileName = queryColumn(uri, OpenableColumns.DISPLAY_NAME)
-                        ?.substringBeforeLast('.')?.takeIf { it.isNotBlank() } ?: "Imported playlist"
+                        ?.substringBeforeLast('.')?.takeIf { it.isNotBlank() } ?: context.getString(R.string.misc_import_imported_playlist)
                     val parsed = parseImportCsv(text, fallbackPlaylistName = fileName)
                     if (parsed.totalSongs == 0 && parsed.totalPlaylists == 0) {
-                        PendingImport.Failed("No songs in that file. It needs a header row with at least a \"Track name\" column.")
+                        PendingImport.Failed(context.getString(R.string.misc_import_no_songs_file))
                     } else {
                         PendingImport.Ready(parsed, sourceLabel)
                     }
@@ -100,7 +101,7 @@ class ImportSyncViewModel @Inject constructor(
                 throw e
             } catch (e: Exception) {
                 Timber.e(e, "File import failed")
-                PendingImport.Failed("Couldn't read that file. Make sure it's a .csv export.")
+                PendingImport.Failed(context.getString(R.string.misc_import_couldnt_read_file))
             }
         }
     }
@@ -128,7 +129,7 @@ class ImportSyncViewModel @Inject constructor(
     fun clearFinishedImport() = importService.clearFinished()
 
     fun export(uri: Uri) {
-        _exportMessage.value = "Exporting…"
+        _exportMessage.value = context.getString(R.string.misc_import_exporting)
         viewModelScope.launch(Dispatchers.IO) {
             _exportMessage.value = try {
                 val (csv, summary) = BeDivineCsvExporter.build(database)
@@ -137,12 +138,12 @@ class ImportSyncViewModel @Inject constructor(
                     out.write(byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte()))
                     out.write(csv.toByteArray(Charsets.UTF_8))
                 } ?: throw IllegalStateException("Couldn't write the file")
-                "Exported ${summary.likedSongs} liked songs and ${summary.playlists} playlists (${summary.playlistSongs} songs)."
+                context.getString(R.string.misc_import_exported, summary.likedSongs, summary.playlists, summary.playlistSongs)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 Timber.e(e, "Export failed")
-                "Export failed: ${e.message ?: "unknown error"}"
+                context.getString(R.string.misc_import_export_failed, e.message ?: context.getString(R.string.misc_import_unknown_error))
             }
         }
     }

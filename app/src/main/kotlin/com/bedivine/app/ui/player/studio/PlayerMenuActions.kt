@@ -21,25 +21,25 @@ enum class PlayerMenuAction(
     // only the actions with a translated label set this; the rest keep their plain label
     @param:StringRes val labelRes: Int? = null,
 ) {
-    LIKE("Like", R.drawable.ic_untitled_heart_unfill),
-    OTHER_MENU("Other menu", R.drawable.more_horiz),
-    SLEEP_TIMER("Sleep timer", R.drawable.sleep_timer),
-    SEE_VIDEO("See video", R.drawable.slow_motion_video),
-    REPEAT("Repeat", R.drawable.repeat),
-    SHUFFLE("Shuffle", R.drawable.shuffle),
-    LYRICS("Lyrics", R.drawable.lyrics),
-    QUEUE("Queue", R.drawable.queue_music),
-    SPEED("Playback speed", R.drawable.speed),
+    LIKE("Like", R.drawable.ic_untitled_heart_unfill, R.string.like),
+    OTHER_MENU("Other menu", R.drawable.more_horiz, R.string.misc_menu_other_menu),
+    SLEEP_TIMER("Sleep timer", R.drawable.sleep_timer, R.string.sleep_timer),
+    SEE_VIDEO("See video", R.drawable.slow_motion_video, R.string.misc_menu_see_video),
+    REPEAT("Repeat", R.drawable.repeat, R.string.repeat),
+    SHUFFLE("Shuffle", R.drawable.shuffle, R.string.shuffle),
+    LYRICS("Lyrics", R.drawable.lyrics, R.string.lyrics),
+    QUEUE("Queue", R.drawable.queue_music, R.string.queue),
+    SPEED("Playback speed", R.drawable.speed, R.string.misc_menu_playback_speed),
     // the equalizer page, the player stepping down out of its way
-    EQUALIZER("Equalizer", R.drawable.equalizer),
-    OUTPUT("Device output", R.drawable.cast),
+    EQUALIZER("Equalizer", R.drawable.equalizer, R.string.equalizer),
+    OUTPUT("Device output", R.drawable.cast, R.string.misc_menu_device_output),
     // the player turned sideways around the song's youtube video
-    FULL_VIDEO("Full video", R.drawable.fullscreen),
+    FULL_VIDEO("Full video", R.drawable.fullscreen, R.string.misc_menu_full_video),
 
     // the ones below are worked by PlayerMenuExtras
-    KEEP_AWAKE("Keep screen on", R.drawable.lock_open),
-    TRANSLATE_LYRICS("Translate lyrics", R.drawable.translate),
-    DOWNLOAD("Download", R.drawable.download),
+    KEEP_AWAKE("Keep screen on", R.drawable.lock_open, R.string.misc_menu_keep_screen),
+    TRANSLATE_LYRICS("Translate lyrics", R.drawable.translate, R.string.misc_menu_translate_lyrics),
+    DOWNLOAD("Download", R.drawable.download, R.string.action_download),
     ADD_TO_PLAYLIST("Add to playlist", R.drawable.playlist_add, R.string.add_to_playlist);
 
     /** the label in the app language when one exists, otherwise the plain label */

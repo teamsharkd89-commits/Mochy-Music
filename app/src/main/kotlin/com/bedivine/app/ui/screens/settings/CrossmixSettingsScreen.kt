@@ -95,7 +95,7 @@ fun CrossmixSettingsScreen(navController: NavController) {
 
     SubSettingsScaffold(
         title = stringResource(R.string.transition_title),
-        backLabel = "Audio Lab",
+        backLabel = stringResource(R.string.settings_audio_lab_category),
         onBack = { navController.navigateUp() },
     ) {
         TransitionHeading(stringResource(R.string.transition_music_heading))
@@ -159,8 +159,8 @@ fun CrossmixSettingsScreen(navController: NavController) {
         LabCollapsible(selectedMode != CrossmixMode.OFF) {
             LabCard(padding = 10.dp) {
                 LabToggleRow(
-                    title = "Keep gapless albums intact",
-                    subtitle = "Album tracks that run straight into each other play through unmixed",
+                    title = stringResource(R.string.misc_xmix_gapless),
+                    subtitle = stringResource(R.string.misc_xmix_gapless_sub),
                     checked = disableForGapless,
                     onCheckedChange = onDisableForGaplessChange,
                 )
@@ -227,6 +227,40 @@ private fun ManualLength(seconds: Float, onSecondsChange: (Float) -> Unit) {
 private val PinnableStyles: List<CrossmixStyle> =
     listOf(StyleUse.Everyday, StyleUse.Lift, StyleUse.Fall, StyleUse.Flavour).flatMap { use -> CrossmixStyle.entries.filter { it.use == use } }
 
+/** the style's name, in the language the listener reads */
+@Composable
+private fun crossmixStyleLabel(style: CrossmixStyle): String = stringResource(
+    when (style) {
+        CrossmixStyle.SilkBlend -> R.string.misc_xmix_silk
+        CrossmixStyle.BassSwap -> R.string.misc_xmix_bass
+        CrossmixStyle.FilterSweep -> R.string.misc_xmix_filter
+        CrossmixStyle.HighPassLift -> R.string.misc_xmix_highpass
+        CrossmixStyle.EchoOut -> R.string.misc_xmix_echo
+        CrossmixStyle.DubThrow -> R.string.misc_xmix_dub
+        CrossmixStyle.ReverbWash -> R.string.misc_xmix_reverb
+        CrossmixStyle.Backspin -> R.string.misc_xmix_backspin
+        CrossmixStyle.RewindWash -> R.string.misc_xmix_rewind
+        CrossmixStyle.TapeStop -> R.string.misc_xmix_tapestop
+        CrossmixStyle.PowerDown -> R.string.misc_xmix_powerdown
+        CrossmixStyle.LoopRoll -> R.string.misc_xmix_looproll
+        CrossmixStyle.StutterGate -> R.string.misc_xmix_stutter
+        CrossmixStyle.RiserBuild -> R.string.misc_xmix_riser
+        CrossmixStyle.Downlifter -> R.string.misc_xmix_downlifter
+        CrossmixStyle.PhaserGlide -> R.string.misc_xmix_phaser
+        CrossmixStyle.LofiMelt -> R.string.misc_xmix_lofi
+        CrossmixStyle.SpatialOrbit -> R.string.misc_xmix_spatial
+        CrossmixStyle.DopplerPass -> R.string.misc_xmix_doppler
+        CrossmixStyle.VocalHandoff -> R.string.misc_xmix_vocal
+        CrossmixStyle.DropCut -> R.string.misc_xmix_dropcut
+        CrossmixStyle.GateFade -> R.string.misc_xmix_gatefade
+        CrossmixStyle.HarmonicGlide -> R.string.misc_xmix_harmonic
+        CrossmixStyle.BreakdownBridge -> R.string.misc_xmix_breakdown
+        CrossmixStyle.ThunderDrop -> R.string.misc_xmix_thunder
+        CrossmixStyle.FarAway -> R.string.misc_xmix_fadefar
+        CrossmixStyle.Dampen -> R.string.misc_xmix_dampen
+    }
+)
+
 /** the listener's say over a mix: which transition, how long, how far tempos bend to meet, and whether the stunts are in the pool */
 @Composable
 private fun CrossmixControls() {
@@ -241,7 +275,7 @@ private fun CrossmixControls() {
     ControlHeading(stringResource(R.string.crossmix_style_title), stringResource(R.string.crossmix_style_desc))
     Spacer(Modifier.height(12.dp))
     LabSelect(
-        options = listOf(stringResource(R.string.crossmix_style_auto)) + PinnableStyles.map { it.label },
+        options = listOf(stringResource(R.string.crossmix_style_auto)) + PinnableStyles.map { crossmixStyleLabel(it) },
         selectedIndex = pinned + 1,
         onSelect = { onStyleNameChange(if (it == 0) CrossmixStyleAuto else PinnableStyles[it - 1].name) },
         contentDescription = stringResource(R.string.crossmix_style_choose),

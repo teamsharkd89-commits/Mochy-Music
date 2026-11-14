@@ -22,9 +22,11 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bedivine.app.R
 import com.bedivine.app.eq.ReverbPresets
 import com.bedivine.app.eq.ReverbSettings
 import com.bedivine.app.eq.audio.AudioTap
@@ -75,7 +77,7 @@ internal fun ReverbCard(viewModel: AudioLabViewModel) {
 @Composable
 private fun FineTuneLabel() {
     Text(
-        "FINE TUNE",
+        stringResource(R.string.misc_reverb_fine_tune),
         fontFamily = InterFontFamily, fontWeight = FontWeight.SemiBold, fontSize = 11.sp, letterSpacing = 1.3.sp,
         color = LabColors.Secondary, modifier = Modifier.padding(top = 8.dp, bottom = 2.dp),
     )

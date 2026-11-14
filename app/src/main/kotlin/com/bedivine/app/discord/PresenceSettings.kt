@@ -3,6 +3,7 @@
 package com.bedivine.app.discord
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import com.bedivine.app.R
@@ -27,22 +28,22 @@ import com.bedivine.app.constants.DiscordStateKey
 import com.bedivine.app.constants.EnableDiscordRPCKey
 
 /** The line Discord writes above the status: "Listening to ..." or "Playing ...". */
-enum class PresenceKind(val prefValue: String, val label: String, val discordType: Int) {
-    LISTENING("listening", "Listening", 2),
-    PLAYING("playing", "Playing", 0),
+enum class PresenceKind(val prefValue: String, @StringRes val labelRes: Int, val discordType: Int) {
+    LISTENING("listening", R.string.presence_kind_listening, 2),
+    PLAYING("playing", R.string.presence_kind_playing, 0),
 }
 
 /** What a status picture shows. Discord shows the big one as a square and the small one as a circle. */
-enum class PresenceImage(val label: String, val forLargeImage: Boolean) {
-    OFF("Turn it off", false),
-    ARTWORK("Music artwork", true),
-    ARTIST("Artist artwork", true),
-    PLAYBACK_STATUS("Playback status", false),
-    APP_LOGO("BeDivine logo", true),
-    SPINNING_ARTIST("Rotating artist artwork", false),
-    SPINNING_ARTWORK("Rotating music artwork", false),
+enum class PresenceImage(@StringRes val labelRes: Int, val forLargeImage: Boolean) {
+    OFF(R.string.presence_image_off, false),
+    ARTWORK(R.string.presence_image_artwork, true),
+    ARTIST(R.string.presence_image_artist, true),
+    PLAYBACK_STATUS(R.string.presence_image_playback, false),
+    APP_LOGO(R.string.presence_image_app_logo, true),
+    SPINNING_ARTIST(R.string.presence_image_spinning_artist, false),
+    SPINNING_ARTWORK(R.string.presence_image_spinning_artwork, false),
     // a picture from the phone, put on a free host for discord like the rotating ones
-    CUSTOM("Your own picture", true),
+    CUSTOM(R.string.presence_image_custom, true),
     ;
 
     /** a looping GIF of the artwork turning, made and uploaded by SpinningArtwork */

@@ -817,7 +817,7 @@ private fun PlaylistNormalBarRow(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.more_horiz),
-                    contentDescription = "Options",
+                    contentDescription = stringResource(R.string.options),
                     tint = Color.White,
                     modifier = Modifier.size(18.dp),
                 )
@@ -887,7 +887,7 @@ private fun BackPill(
         ) {
             Icon(
                 painter = painterResource(R.drawable.arrow_back_ios),
-                contentDescription = "Back",
+                contentDescription = stringResource(R.string.cd_back),
                 tint = Color.White,
                 modifier = Modifier
                     .size(16.dp)
@@ -1037,7 +1037,7 @@ fun PlaylistHeader(
                 Spacer(Modifier.width(9.dp))
                 CircleAction(
                     icon = R.drawable.shuffle,
-                    contentDescription = "Shuffle",
+                    contentDescription = stringResource(R.string.shuffle),
                     onClick = onShuffleClick,
                     spinOnClick = true,
                 )
@@ -1053,7 +1053,7 @@ fun PlaylistHeader(
                     Spacer(Modifier.width(4.dp))
                     CircleAction(
                         icon = if (isSaved) R.drawable.library_add_check else R.drawable.library_add,
-                        contentDescription = if (isSaved) "In your library" else "Add to library",
+                        contentDescription = if (isSaved) stringResource(R.string.misc_playlist_in_library) else stringResource(R.string.add_to_library),
                         onClick = onSaveClick,
                     )
                 }
@@ -1177,7 +1177,7 @@ internal fun PlayPill(isPlaying: Boolean, onClick: () -> Unit) {
             label = "playPillLabel",
         ) { playing ->
             Text(
-                text = if (playing) "Pause" else "Play",
+                text = if (playing) stringResource(R.string.pause) else stringResource(R.string.play),
                 style = PillLabelStyle,
                 color = PillContent,
             )
@@ -1274,8 +1274,8 @@ private fun CreatorRow(creators: List<CreatorUi>, onClick: ((CreatorUi) -> Unit)
         Text(
             text = when (creators.size) {
                 1 -> creators[0].name
-                2 -> "${creators[0].name} & ${creators[1].name}"
-                else -> "${creators[0].name}, ${creators[1].name} & ${creators.size - 2} more"
+                2 -> stringResource(R.string.misc_playlist_creators_2, creators[0].name, creators[1].name)
+                else -> stringResource(R.string.misc_playlist_creators_more, creators[0].name, creators[1].name, creators.size - 2)
             },
             style = PlaylistCreatorStyle,
             color = Color.White.copy(alpha = 0.88f),
@@ -1370,7 +1370,7 @@ fun <T : Enum<T>> PlaylistSortControl(
                         {
                             Icon(
                                 painter = painterResource(R.drawable.expand_more),
-                                contentDescription = if (descending) "Descending" else "Ascending",
+                                contentDescription = if (descending) stringResource(R.string.misc_playlist_descending) else stringResource(R.string.misc_playlist_ascending),
                                 tint = Color.White,
                                 modifier = Modifier
                                     .size(18.dp)
@@ -1545,14 +1545,14 @@ fun PlaylistEndOfLine(
                 .height(25.dp)
         ) {
             Text(
-                text = "$songCount ${if (songCount == 1) "SONG" else "SONGS"}",
+                text = if (songCount == 1) stringResource(R.string.misc_playlist_1_song_caps, songCount) else stringResource(R.string.misc_playlist_n_songs_caps, songCount),
                 style = ReceiptSmallStyle,
                 color = Color.White.copy(alpha = 0.6f),
                 maxLines = 1,
                 modifier = Modifier.weight(1f),
             )
             Text(
-                text = "END OF LINE",
+                text = stringResource(R.string.misc_playlist_end),
                 style = ReceiptCenterStyle,
                 color = Color.White.copy(alpha = 0.78f),
                 maxLines = 1,
@@ -1560,7 +1560,7 @@ fun PlaylistEndOfLine(
             )
             val minutes = (totalSeconds + 30) / 60
             Text(
-                text = "$minutes ${if (minutes == 1) "MINUTE" else "MINUTES"}",
+                text = if (minutes == 1) stringResource(R.string.misc_playlist_1_minute_caps, minutes) else stringResource(R.string.misc_playlist_n_minutes_caps, minutes),
                 style = ReceiptSmallStyle,
                 color = Color.White.copy(alpha = 0.6f),
                 maxLines = 1,

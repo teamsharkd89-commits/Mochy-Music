@@ -101,7 +101,7 @@ internal fun LazyListScope.libraryShelfCards(
 
     item(key = "${key}_recently_added") {
         LibraryWideCard(
-            title = "Recently added",
+            title = stringResource(R.string.misc_recent_title),
             count = data.songs.size,
             covers = data.songs.take(4).map { it.song.thumbnailUrl },
             onClick = { navController.navigate("library/$key/added") },

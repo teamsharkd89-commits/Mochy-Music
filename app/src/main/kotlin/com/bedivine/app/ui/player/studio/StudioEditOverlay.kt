@@ -87,7 +87,8 @@ import com.bedivine.app.ui.component.SeekBarStyle
 import com.bedivine.app.ui.component.SeekBarTrack
 import com.bedivine.app.ui.player.customize.PlayerBackgroundPreview
 import com.bedivine.app.ui.player.customize.coverArtBox
-import com.bedivine.app.ui.player.customize.displayName
+import androidx.annotation.StringRes
+import com.bedivine.app.ui.player.customize.displayNameRes
 import com.bedivine.app.ui.player.customize.isDisc
 import com.bedivine.app.ui.player.styles.Responsive
 import com.bedivine.app.ui.player.styles.rememberResponsive
@@ -97,14 +98,16 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 import com.bedivine.app.ui.utils.stableStatusBars
 import com.bedivine.app.ui.utils.stableStatusBarsPadding
+import androidx.compose.ui.res.stringResource
 
-internal val PlayerBackgroundStyle.studioName: String
+@StringRes
+internal val PlayerBackgroundStyle.studioNameRes: Int
     get() = when (this) {
-        PlayerBackgroundStyle.COVER_GRADIENT -> "Cover gradient"
-        PlayerBackgroundStyle.SOLID -> "Solid"
-        PlayerBackgroundStyle.DARK_GRADIENT -> "Dark gradient"
-        PlayerBackgroundStyle.APPLE_MUSIC -> "Apple Music"
-        PlayerBackgroundStyle.AMBIENT -> "Ambient"
+        PlayerBackgroundStyle.COVER_GRADIENT -> R.string.misc_studio_bg_cover_gradient
+        PlayerBackgroundStyle.SOLID -> R.string.misc_studio_bg_solid
+        PlayerBackgroundStyle.DARK_GRADIENT -> R.string.misc_studio_bg_dark_gradient
+        PlayerBackgroundStyle.APPLE_MUSIC -> R.string.misc_studio_bg_apple_music
+        PlayerBackgroundStyle.AMBIENT -> R.string.misc_studio_bg_ambient
     }
 
 private fun inter(size: TextUnit, weight: FontWeight = FontWeight.Bold) = studioText(size, weight)
@@ -191,13 +194,13 @@ fun StudioEditOverlay(
 private fun StudioTopBar(studio: PlayerStudioState, glassState: GlassState) {
     val r = rememberResponsive()
     val statusTop = WindowInsets.stableStatusBars.asPaddingValues().calculateTopPadding()
-    val title by remember(studio) {
+    val titleRes by remember(studio) {
         derivedStateOf {
             when (studio.stage) {
-                StudioStage.COVER -> if (studio.backdrop.value > 0.5f) "Edit Background" else "Edit Cover"
-                StudioStage.MIDDLE -> "Edit Middle part"
-                StudioStage.MENU -> "Edit Menu"
-                else -> "Edit Player"
+                StudioStage.COVER -> if (studio.backdrop.value > 0.5f) R.string.misc_studio_edit_bg else R.string.misc_studio_edit_cover
+                StudioStage.MIDDLE -> R.string.misc_studio_edit_middle
+                StudioStage.MENU -> R.string.misc_studio_edit_menu
+                else -> R.string.misc_studio_edit_player
             }
         }
     }
@@ -256,7 +259,7 @@ private fun StudioTopBar(studio: PlayerStudioState, glassState: GlassState) {
             ) {
                 Icon(
                     painter = painterResource(R.drawable.arrow_back_ios),
-                    contentDescription = "Back",
+                    contentDescription = stringResource(R.string.cd_back),
                     tint = Color.White,
                     modifier = Modifier.size(16.dp).offset(x = 2.dp),
                 )
@@ -264,14 +267,14 @@ private fun StudioTopBar(studio: PlayerStudioState, glassState: GlassState) {
             Spacer(Modifier.width(14.dp))
             Column {
                 AnimatedContent(
-                    targetState = title,
+                    targetState = titleRes,
                     transitionSpec = {
                         (slideInVertically(tween(420)) { it } + fadeIn(tween(300))) togetherWith
                             (slideOutVertically(tween(360)) { -it } + fadeOut(tween(220)))
                     },
                     label = "studioTitle",
-                ) { text ->
-                    Text(text, color = Color.White, style = inter(StudioType.Title))
+                ) { res ->
+                    Text(stringResource(res), color = Color.White, style = inter(StudioType.Title))
                 }
                 // what the first page's tiles are for; it goes as a tile opens
                 val onTiles = studio.stage == StudioStage.EDIT
@@ -280,7 +283,7 @@ private fun StudioTopBar(studio: PlayerStudioState, glassState: GlassState) {
                     enter = fadeIn(tween(240)) + androidx.compose.animation.expandVertically(tween(300)),
                     exit = fadeOut(tween(160)) + androidx.compose.animation.shrinkVertically(tween(260)),
                 ) {
-                    Text("Hold to adjust position, tap to edit", color = Color.White.copy(alpha = 0.7f), style = inter(StudioType.Subtitle, FontWeight.Medium))
+                    Text(stringResource(R.string.misc_studio_hold_adjust), color = Color.White.copy(alpha = 0.7f), style = inter(StudioType.Subtitle, FontWeight.Medium))
                 }
             }
         }
@@ -520,7 +523,7 @@ private fun CoverEditor(
                 .graphicsLayer { translationY = (1f - studio.cover.value) * 320.dp.toPx() },
         ) {
             AnimatedContent(
-                targetState = (if (inBackdrop) "BACKGROUND - %03d" else "STYLE - %03d").format(shownIndex + 1),
+                targetState = if (inBackdrop) stringResource(R.string.misc_studio_background_num, shownIndex + 1) else stringResource(R.string.misc_studio_style_num, shownIndex + 1),
                 transitionSpec = { (slideInVertically { it } + fadeIn()) togetherWith (slideOutVertically { -it } + fadeOut()) },
                 label = "studioStyleNumber",
             ) { label ->
@@ -528,14 +531,14 @@ private fun CoverEditor(
             }
             AnimatedContent(
                 targetState = if (inBackdrop) {
-                    backgroundStyles.getOrNull(shownIndex)?.studioName.orEmpty()
+                    backgroundStyles.getOrNull(shownIndex)?.studioNameRes
                 } else {
-                    coverStyles.getOrNull(shownIndex)?.displayName.orEmpty()
+                    coverStyles.getOrNull(shownIndex)?.displayNameRes
                 },
                 transitionSpec = { (slideInVertically { it / 2 } + fadeIn()) togetherWith (slideOutVertically { -it / 2 } + fadeOut()) },
                 label = "studioStyleName",
-            ) { name ->
-                Text(name, color = Color.White, style = inter(StudioType.Name).copy(lineHeight = 24.sp))
+            ) { res ->
+                Text(if (res != null) stringResource(res) else "", color = Color.White, style = inter(StudioType.Name).copy(lineHeight = 24.sp))
             }
             Spacer(Modifier.height(12.dp))
             Row(
@@ -552,7 +555,7 @@ private fun CoverEditor(
                     Icon(painterResource(R.drawable.tune), null, tint = Color.Black, modifier = Modifier.size(14.dp))
                 }
                 Spacer(Modifier.width(14.dp))
-                Text("Show more option for this cover", color = Color.White, style = inter(StudioType.Body, FontWeight.SemiBold))
+                Text(stringResource(R.string.misc_studio_show_more), color = Color.White, style = inter(StudioType.Body, FontWeight.SemiBold))
             }
         }
 
@@ -561,7 +564,7 @@ private fun CoverEditor(
         val nudge by bounce.animateFloat(0f, 1f, infiniteRepeatable(tween(900), RepeatMode.Reverse), label = "studioChevronNudge")
         Icon(
             painter = painterResource(R.drawable.expand_more),
-            contentDescription = if (inBackdrop) "Back to covers" else "Backgrounds",
+            contentDescription = if (inBackdrop) stringResource(R.string.misc_studio_back_covers) else stringResource(R.string.misc_studio_backgrounds),
             tint = Color.White.copy(alpha = 0.7f),
             modifier = Modifier
                 .align(Alignment.BottomCenter)

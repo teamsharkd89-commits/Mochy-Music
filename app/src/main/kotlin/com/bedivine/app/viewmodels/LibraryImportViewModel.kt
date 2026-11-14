@@ -97,10 +97,10 @@ class LibraryImportViewModel @Inject constructor(
             LocalFolders.newAudioFiles(context, tree, knownLocalUris(withMediaStore = false))
         }
         if (files == null) {
-            TopToaster.show("Couldn't keep access to that folder. Try picking it again.", iconRes = R.drawable.library_music)
+            TopToaster.show(context.getString(R.string.misc_libvm_folder), iconRes = R.drawable.library_music)
             return false
         }
-        return startFolderImport(files, emptyMessage = "Every song in that folder is already in your library")
+        return startFolderImport(files, emptyMessage = context.getString(R.string.misc_libvm_all_in))
     }
 
     /**
@@ -114,7 +114,7 @@ class LibraryImportViewModel @Inject constructor(
             fixed to LocalFolders.read(context).flatMap { LocalFolders.newAudioFiles(context, it, known) }.distinct()
         }
         if (fixedCovers > 0) {
-            TopToaster.show(if (fixedCovers == 1) "Brought back 1 cover" else "Brought back $fixedCovers covers", iconRes = R.drawable.library_music)
+            TopToaster.show(if (fixedCovers == 1) context.getString(R.string.misc_libvm_cover_1) else context.getString(R.string.misc_libvm_cover_n, fixedCovers), iconRes = R.drawable.library_music)
         }
         if (files.isEmpty()) return false
         return startFolderImport(files, emptyMessage = null)
@@ -129,7 +129,7 @@ class LibraryImportViewModel @Inject constructor(
             return false
         }
         if (!localImport.importFolderFiles(files)) {
-            TopToaster.show("An import is still running. Try again once it's done.", iconRes = R.drawable.library_music)
+            TopToaster.show(context.getString(R.string.misc_lib_import_running), iconRes = R.drawable.library_music)
             return false
         }
         return true
@@ -148,33 +148,33 @@ class LibraryImportViewModel @Inject constructor(
             DownloadService.sendRemoveDownload(context, ExoDownloadService::class.java, item.key, false)
         }
         TopToaster.show(
-            if (running.size == 1) "Cancelled 1 download" else "Cancelled ${running.size} downloads",
+            if (running.size == 1) context.getString(R.string.misc_libvm_cancel_1) else context.getString(R.string.misc_libvm_cancel_n, running.size),
             iconRes = R.drawable.library_music,
         )
     }
 
     // ---- Manage imports ----
 
-    fun deleteAllImports() = report { "Removed ${songs(history.deleteAllImports())} you imported" }
+    fun deleteAllImports() = report { context.getString(R.string.misc_libvm_removed_imported, songs(history.deleteAllImports())) }
 
     fun undoLatestImport() = report {
-        history.undoLatestImport()?.let { "Undid your last import: ${songs(it)} removed" } ?: "There's no import to undo"
+        history.undoLatestImport()?.let { context.getString(R.string.misc_libvm_undid, songs(it)) } ?: context.getString(R.string.misc_libvm_no_undo)
     }
 
     fun deleteImportsFrom(source: ImportSource) = report {
-        "Removed ${songs(history.deleteImportsFrom(source))} imported from ${source.label}"
+        context.getString(R.string.misc_libvm_removed_from, songs(history.deleteImportsFrom(source)), context.getString(source.labelRes))
     }
 
     // ---- Manage local ----
 
     fun undoLatestLocalImport() = report {
-        history.undoLatestLocalImport()?.let { "Undid your last local import: ${songs(it)} removed" }
-            ?: "There's no local import to undo"
+        history.undoLatestLocalImport()?.let { context.getString(R.string.misc_libvm_undid_local, songs(it)) }
+            ?: context.getString(R.string.misc_libvm_no_local_undo)
     }
 
     fun removeLocalSongs(songIds: Collection<String>) = report {
         history.removeLocalSongs(songIds)
-        "Removed ${songs(songIds.size)}. The files are still on your phone."
+        context.getString(R.string.misc_libvm_removed_files, songs(songIds.size))
     }
 
     /**
@@ -196,5 +196,5 @@ class LibraryImportViewModel @Inject constructor(
         }
     }
 
-    private fun songs(count: Int) = if (count == 1) "1 song" else "$count songs"
+    private fun songs(count: Int) = if (count == 1) context.getString(R.string.misc_libvm_song_1) else context.getString(R.string.misc_libvm_song_n, count)
 }

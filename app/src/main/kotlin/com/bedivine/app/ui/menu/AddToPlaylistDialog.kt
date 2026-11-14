@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.music.innertube.YouTube
 import com.bedivine.app.LocalDatabase
+import android.content.Context
 import com.bedivine.app.R
 import com.bedivine.app.db.entities.Playlist
 import com.bedivine.app.ui.component.CreatePlaylistDialog
@@ -75,16 +76,16 @@ private const val RecentCount = 4
  *   them with its [topSongArtworkUrl]: the new playlist's cover takes its colours from it.
  */
 /** The top toast for songs just added to [playlist]: what went in, and Undo (not for a synced playlist, which YouTube has already been told about). */
-internal fun announceAddedToPlaylist(database: com.bedivine.app.db.MusicDatabase, playlist: Playlist, ids: List<String>) {
+internal fun announceAddedToPlaylist(context: Context, database: com.bedivine.app.db.MusicDatabase, playlist: Playlist, ids: List<String>) {
     if (ids.isEmpty()) return
     kotlinx.coroutines.CoroutineScope(Dispatchers.IO).launch {
         val first = database.song(ids.first()).firstOrNull()?.song
         val name = playlist.playlist.name
         com.bedivine.app.ui.component.TopToaster.show(
-            text = if (ids.size == 1) "Added ${first?.title ?: "song"} to $name" else "Added ${ids.size} songs to $name",
+            text = if (ids.size == 1) context.getString(R.string.misc_addto_added_1, first?.title ?: context.getString(R.string.misc_addto_added_song), name) else context.getString(R.string.misc_addto_added_n, ids.size, name),
             thumbnail = first?.thumbnailUrl,
             iconRes = R.drawable.playlist_add,
-            actionLabel = if (playlist.playlist.browseId == null) "Undo" else null,
+            actionLabel = if (playlist.playlist.browseId == null) context.getString(R.string.undo) else null,
             onAction = { database.query { removeAddedSongs(playlist.id, ids, playlist.songCount) } },
         )
     }
@@ -141,7 +142,7 @@ fun AddToPlaylistDialog(
                 } else {
                     database.addSongToPlaylist(playlist, ids)
                 }
-                announceAddedToPlaylist(database, playlist, ids)
+                announceAddedToPlaylist(context, database, playlist, ids)
 
                 browseId?.let { ids.forEach { id -> YouTube.addToPlaylist(it, id) } }
             }
@@ -156,7 +157,7 @@ fun AddToPlaylistDialog(
             sheet[0] = menuState.showWithHandle(
                 buttonBar = {
                     SheetPillButton(
-                        text = "Create playlist",
+                        text = stringResource(R.string.create_playlist),
                         onClick = { showCreate = true },
                     )
                 },
@@ -196,7 +197,7 @@ fun AddToPlaylistDialog(
                         database.transaction {
                             addSongToPlaylist(selectedPlaylist!!, keep)
                         }
-                        announceAddedToPlaylist(database, selectedPlaylist!!, keep)
+                        announceAddedToPlaylist(context, database, selectedPlaylist!!, keep)
                     }
                 ) {
                     Text(stringResource(R.string.skip_duplicates))
@@ -210,7 +211,7 @@ fun AddToPlaylistDialog(
                         database.transaction {
                             addSongToPlaylist(selectedPlaylist!!, songIds!!)
                         }
-                        announceAddedToPlaylist(database, selectedPlaylist!!, songIds!!)
+                        announceAddedToPlaylist(context, database, selectedPlaylist!!, songIds!!)
                     }
                 ) {
                     Text(stringResource(R.string.add_anyway))
@@ -273,7 +274,7 @@ private fun AddToPlaylistContent(
         SheetSearchField(
             value = query,
             onValueChange = { query = it },
-            placeholder = "Search your playlist",
+            placeholder = stringResource(R.string.misc_addto_search),
         )
         Spacer(Modifier.height(16.dp))
 
@@ -282,7 +283,7 @@ private fun AddToPlaylistContent(
             contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 12.dp),
         ) {
             if (sections.recents.isNotEmpty()) {
-                item(key = "recents-label") { SheetLabel("recents", Modifier.padding(bottom = 6.dp)) }
+                item(key = "recents-label") { SheetLabel(stringResource(R.string.misc_addto_recents), Modifier.padding(bottom = 6.dp)) }
                 items(sections.recents, key = { "recent-${it.id}" }) { playlist ->
                     PlaylistPickRow(playlist = playlist, onClick = { onPick(playlist) })
                 }
@@ -291,7 +292,7 @@ private fun AddToPlaylistContent(
 
             if (sections.rest.isNotEmpty()) {
                 item(key = "all-label") {
-                    SheetLabel(if (sections.searching) "results" else "all", Modifier.padding(bottom = 6.dp))
+                    SheetLabel(if (sections.searching) stringResource(R.string.misc_addto_results) else stringResource(R.string.misc_addto_all), Modifier.padding(bottom = 6.dp))
                 }
                 items(sections.rest, key = { "all-${it.id}" }) { playlist ->
                     PlaylistPickRow(playlist = playlist, onClick = { onPick(playlist) })
@@ -299,7 +300,7 @@ private fun AddToPlaylistContent(
             } else if (sections.recents.isEmpty()) {
                 item(key = "empty") {
                     Text(
-                        text = if (sections.searching) "No playlists found" else "No playlists yet",
+                        text = if (sections.searching) stringResource(R.string.misc_addto_none_found) else stringResource(R.string.misc_addto_none_yet),
                         color = Color.White.copy(alpha = 0.55f),
                         fontSize = 14.sp,
                         textAlign = TextAlign.Center,

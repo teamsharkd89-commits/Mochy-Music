@@ -1,5 +1,6 @@
 package com.bedivine.app.ui.component
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
@@ -51,12 +52,12 @@ import com.bedivine.app.R
  * take their colours from the caller so they can follow the artwork palette rather than the
  * device theme.
  */
-enum class ButtonStyle(val displayName: String) {
-    DEFAULT("Default"),
-    M3_EXPRESSIVE("Material 3 Expressive"),
-    M3_EXPRESSIVE_PLAIN("Material 3 Expressive - no label"),
-    M3_TONAL("Material 3 tonal"),
-    LEGACY("Android legacy"),
+enum class ButtonStyle(@StringRes val displayNameRes: Int) {
+    DEFAULT(R.string.studio_button_default),
+    M3_EXPRESSIVE(R.string.studio_button_m3_expressive),
+    M3_EXPRESSIVE_PLAIN(R.string.studio_button_m3_expressive_plain),
+    M3_TONAL(R.string.studio_button_m3_tonal),
+    LEGACY(R.string.studio_button_legacy),
 }
 
 /**

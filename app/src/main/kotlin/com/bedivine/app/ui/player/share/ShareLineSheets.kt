@@ -71,6 +71,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import com.bedivine.app.ui.component.RemoteFocus
+import androidx.compose.ui.res.stringResource
 
 /** When a tap picks or drops several rows, each one waits this long per row from where the tap started. */
 private const val SweepStepMs = 28L
@@ -83,7 +84,7 @@ internal fun PopupSheetState.showLinePicker(session: LyricsShareSession): PopupS
     return showWithHandle(
         buttonBar = {
             SheetPillButton(
-                text = "Select",
+                text = stringResource(R.string.misc_shareline_select),
                 enabled = session.lineCount > 0,
                 onClick = { session.onLinesPicked(popup) },
             )
@@ -97,7 +98,7 @@ internal fun PopupSheetState.showLinePicker(session: LyricsShareSession): PopupS
 private fun LinePickerContent(session: LyricsShareSession) {
     LaunchedEffect(Unit) { session.choreography.playForward() }
     Column(Modifier.fillMaxWidth().fillMaxHeight()) {
-        ShareTitle("Share")
+        ShareTitle(stringResource(R.string.share))
         PickedSummary(session)
         LazyColumn(
             state = session.choreography.listState,
@@ -143,9 +144,9 @@ private fun PickedSummary(session: LyricsShareSession) {
                 ) { count ->
                     Text(
                         when (count) {
-                            0 -> "Pick some lines"
-                            1 -> "1 line selected"
-                            else -> "$count lines selected"
+                            0 -> stringResource(R.string.misc_shareline_pick)
+                            1 -> stringResource(R.string.misc_shareline_1)
+                            else -> stringResource(R.string.misc_shareline_n, count)
                         },
                         fontFamily = InterFontFamily,
                         fontWeight = FontWeight.Bold,
@@ -168,14 +169,15 @@ private fun PickedSummary(session: LyricsShareSession) {
     }
 }
 
+@Composable
 private fun limitText(session: LyricsShareSession): String {
     val words = session.wordCount
     val card = ShareStyle.Card.maxWords
     return when {
-        words == 0 -> "Tap the lines you want to share"
-        session.atLimit -> "$words words · that's as much as fits"
-        words <= card -> "$words of $card words · fits every style"
-        else -> "$words of $ShareWordLimit words · Cinematic only"
+        words == 0 -> stringResource(R.string.misc_shareline_tap)
+        session.atLimit -> stringResource(R.string.misc_shareline_limit, words)
+        words <= card -> stringResource(R.string.misc_shareline_fits, words, card)
+        else -> stringResource(R.string.misc_shareline_cinematic, words, ShareWordLimit)
     }
 }
 

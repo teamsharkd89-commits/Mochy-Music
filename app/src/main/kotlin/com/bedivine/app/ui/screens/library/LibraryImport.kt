@@ -59,6 +59,7 @@ import com.bedivine.app.ui.component.damageBoundary
 import com.bedivine.app.ui.screens.setup.onboarding.ProviderSquircle
 import com.bedivine.app.ui.screens.setup.onboarding.SquircleShape
 import kotlin.math.ceil
+import androidx.compose.ui.res.stringResource
 
 /** The services the banner flows past - the ones an account can be imported from. */
 private val BannerServices = listOf(
@@ -110,7 +111,7 @@ internal fun ImportSourceIcon(source: ImportSource, size: Dp, modifier: Modifier
         ) {
             Icon(
                 painter = painterResource(R.drawable.library_music),
-                contentDescription = source.label,
+                contentDescription = stringResource(source.labelRes),
                 tint = SearchColors.Secondary,
                 modifier = Modifier.size(size * 0.5f),
             )
@@ -158,7 +159,7 @@ private fun ImportPromoBanner(onClick: () -> Unit) {
         ProviderMarquee()
         Spacer(Modifier.height(20.dp))
         Text(
-            text = "Import your music here!",
+            text = stringResource(R.string.misc_import_here),
             color = SearchColors.Primary,
             fontSize = 21.sp,
             lineHeight = 25.sp,
@@ -248,11 +249,11 @@ private fun ImportProgressBanner(progress: ImportProgress, onClick: () -> Unit) 
         Spacer(Modifier.height(24.dp))
         Text(
             text = when {
-                progress.resync != null && total <= 0 -> "Checking \"${progress.resync.playlistName}\" for new songs…"
-                progress.resync != null -> "Adding $done of $total new songs to \"${progress.resync.playlistName}\""
-                total <= 0 -> "Getting your tracks ready…"
-                progress.source != null -> "Adding $done of $total tracks from ${progress.source.label}"
-                else -> "Adding $done of $total tracks"
+                progress.resync != null && total <= 0 -> stringResource(R.string.misc_import_checking, progress.resync.playlistName)
+                progress.resync != null -> stringResource(R.string.misc_import_adding_new, done, total, progress.resync.playlistName)
+                total <= 0 -> stringResource(R.string.misc_import_ready)
+                progress.source != null -> stringResource(R.string.misc_import_adding_from, done, total, stringResource(progress.source.labelRes))
+                else -> stringResource(R.string.misc_import_adding, done, total)
             },
             color = SearchColors.Primary,
             fontSize = 21.sp,

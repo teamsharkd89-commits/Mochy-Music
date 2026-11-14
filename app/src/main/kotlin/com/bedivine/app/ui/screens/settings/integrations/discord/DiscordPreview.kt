@@ -65,6 +65,7 @@ import com.bedivine.app.discord.PresencePicture
 import com.bedivine.app.discord.PresenceSettings
 import com.bedivine.app.ui.component.AppSwitch
 import kotlinx.coroutines.delay
+import androidx.compose.ui.res.stringResource
 
 private val BannerHeight = 104.dp
 private val AvatarSize = 72.dp
@@ -97,7 +98,7 @@ internal fun DiscordToggleCard(
                 .weight(1f)
                 .padding(horizontal = 12.dp),
         ) {
-            Text("Enable rich presence", color = DiscordColors.Primary, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.misc_discord_enable), color = DiscordColors.Primary, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
             Text(status, color = DiscordColors.Secondary, fontSize = 12.sp, fontWeight = FontWeight.Medium)
         }
         AppSwitch(checked = checked, onCheckedChange = onCheckedChange, enabled = enabled)
@@ -133,7 +134,7 @@ internal fun DiscordProfileCard(
         }
         Column(Modifier.padding(start = 24.dp, end = 24.dp, top = 10.dp)) {
             Text(
-                text = profile?.displayName ?: "Not connected",
+                text = profile?.displayName ?: stringResource(R.string.audiopass_status_none),
                 color = DiscordColors.Primary,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
@@ -142,7 +143,7 @@ internal fun DiscordProfileCard(
             )
             Text(
                 text = profile?.let { listOfNotNull(it.username, it.pronouns).joinToString(" · ") }
-                    ?: "Log in to show your profile here",
+                    ?: stringResource(R.string.misc_discord_login_show),
                 color = DiscordColors.Secondary,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
@@ -197,7 +198,7 @@ private fun Avatar(url: String?, modifier: Modifier) {
             .background(Color(0xFFD9D9D9)),
     ) {
         if (url != null) {
-            AsyncImage(model = url, contentDescription = "Your Discord picture", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+            AsyncImage(model = url, contentDescription = stringResource(R.string.misc_discord_your_picture), contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
         }
     }
 }
@@ -226,7 +227,7 @@ internal fun DiscordActivityPreview(
             .padding(14.dp),
     ) {
         Text(
-            text = (if (activity.kind == PresenceKind.LISTENING) "Listening to " else "Playing ") + activity.name,
+            text = stringResource(if (activity.kind == PresenceKind.LISTENING) R.string.misc_discord_listening_to else R.string.misc_discord_playing) + activity.name,
             color = DiscordColors.Primary,
             fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold,
@@ -279,7 +280,7 @@ private fun Times(activity: PresenceActivity, now: Long) {
     val mono = Modifier.padding(top = 6.dp)
     val end = activity.endMs
     if (end == null) {
-        Text("${clock(now - start)} elapsed", color = DiscordColors.Secondary, fontSize = 10.sp, fontFamily = FontFamily.Monospace, modifier = mono)
+        Text(stringResource(R.string.misc_discord_elapsed, clock(now - start)), color = DiscordColors.Secondary, fontSize = 10.sp, fontFamily = FontFamily.Monospace, modifier = mono)
         return
     }
     val total = (end - start).coerceAtLeast(1)

@@ -36,9 +36,11 @@ import androidx.compose.ui.input.pointer.util.addPointerInputChange
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalViewConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import com.bedivine.app.R
 import com.bedivine.app.constants.PlayerBottomBarStyle
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -281,9 +283,9 @@ internal fun BarEditor(
                 }
             },
         ) {
-            Text("Card Style", color = Color.White, style = studioText(StudioType.Title, FontWeight.Bold))
+            Text(stringResource(R.string.pref_bar_editor_card_style), color = Color.White, style = studioText(StudioType.Title, FontWeight.Bold))
             AnimatedContent(
-                targetState = barStyles.getOrNull(focused)?.displayName.orEmpty(),
+                targetState = barStyles.getOrNull(focused)?.let { stringResource(it.displayNameRes) }.orEmpty(),
                 transitionSpec = {
                     (slideInVertically(tween(320)) { it } + fadeIn(tween(240))) togetherWith
                         (slideOutVertically(tween(280)) { -it } + fadeOut(tween(180)))

@@ -2,6 +2,7 @@
 
 package com.bedivine.app.ui.screens.playlist
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -183,7 +184,7 @@ private fun <T> interleave(lists: List<List<T>>): List<T> {
  * picks the playlist doesn't have yet, in the order they were ticked. A synced playlist is
  * told about them on YouTube too.
  */
-internal suspend fun addPicksToPlaylist(database: MusicDatabase, playlistId: String, chosen: List<MediaMetadata>) {
+internal suspend fun addPicksToPlaylist(context: Context, database: MusicDatabase, playlistId: String, chosen: List<MediaMetadata>) {
     val playlist = database.playlist(playlistId).first() ?: return
     val already = database.playlistDuplicates(playlistId, chosen.map { it.id }).toSet()
     val fresh = chosen.filter { it.id !in already }
@@ -195,7 +196,7 @@ internal suspend fun addPicksToPlaylist(database: MusicDatabase, playlistId: Str
         fresh.forEach { insert(it) }
         addSongToPlaylist(playlist, ids)
     }
-    announceAddedToPlaylist(database, playlist, ids)
+    announceAddedToPlaylist(context, database, playlist, ids)
 
     playlist.playlist.browseId?.let { browseId ->
         ids.forEach { YouTube.addToPlaylist(browseId, it) }

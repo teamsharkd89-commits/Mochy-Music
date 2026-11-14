@@ -894,7 +894,7 @@ fun LocalPlaylistScreen(
     if (showSortDialog) {
         AlertDialog(
             onDismissRequest = { showSortDialog = false },
-            title = { Text("Sort order") },
+            title = { Text(stringResource(R.string.misc_playlist_sort_order)) },
             text = {
                 Column {
                     PlaylistSongSortType.entries.forEach { type ->

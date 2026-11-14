@@ -20,6 +20,7 @@ import com.bedivine.app.BuildConfig
 import com.bedivine.app.R
 import com.bedivine.app.ui.component.SubSettingsScaffold
 import com.bedivine.app.ui.screens.settings.CategoryBubble
+import androidx.compose.ui.res.stringResource
 
 const val DevPlaygroundRoute = "developer_playground"
 
@@ -33,27 +34,27 @@ fun DevPlaygroundScreen(navController: NavController) {
     val settled = stats != null || !loading
 
     SubSettingsScaffold(
-        title = "Developer playground",
-        backLabel = "Dev Spaces",
+        title = stringResource(R.string.misc_dev_playground),
+        backLabel = stringResource(R.string.misc_dev_spaces),
         onBack = { navController.navigateUp() },
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             RepoFiguresCard(
-                title = "Since this build",
-                subtitle = "From when this build was made until today",
+                title = stringResource(R.string.misc_dev_since_build),
+                subtitle = stringResource(R.string.misc_dev_since_sub),
                 figures = listOf(
-                    stats?.newIssues to "new reported issues",
-                    stats?.newResolved to "new resolved issue",
-                    stats?.commits to "commits",
-                    stats?.releases to "releases",
+                    stats?.newIssues to R.string.misc_dev_new_issues,
+                    stats?.newResolved to R.string.misc_dev_new_resolved,
+                    stats?.commits to R.string.misc_dev_commits,
+                    stats?.releases to R.string.misc_dev_releases,
                 ),
                 settled = settled,
             )
             RepoFiguresCard(
-                title = "In total",
+                title = stringResource(R.string.misc_dev_in_total),
                 figures = listOf(
-                    stats?.reportedTotal to "reported issues",
-                    stats?.closedTotal to "resolved issue",
+                    stats?.reportedTotal to R.string.misc_dev_reported,
+                    stats?.closedTotal to R.string.misc_dev_resolved_1,
                 ),
                 settled = settled,
             )

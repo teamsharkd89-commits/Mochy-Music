@@ -16,6 +16,7 @@ import com.bedivine.app.ui.component.LocalMenuState
 import com.bedivine.app.ui.menu.PlaylistMenu
 import com.bedivine.app.viewmodels.LibraryHomeViewModel
 import com.bedivine.app.viewmodels.LibraryShelfKind
+import androidx.compose.ui.res.stringResource
 
 /**
  * The library's playlists, or with a [shelf] the Local or Cached tab's: only the playlists that
@@ -39,18 +40,18 @@ fun LibraryPlaylistsScreen(
     val coroutineScope = rememberCoroutineScope()
 
     LibraryEntityListScreen(
-        title = "Playlist",
+        title = stringResource(R.string.misc_libpl_title),
         subtitle = when {
-            source != null -> "Playlists imported from ${source.label}."
-            shelf == LibraryShelfKind.Local -> "Playlists with music on this device."
-            shelf == LibraryShelfKind.Cached -> "Playlists with songs in your cache."
-            else -> "All playlist on your library listed here."
+            source != null -> stringResource(R.string.misc_libpl_from, stringResource(source.labelRes))
+            shelf == LibraryShelfKind.Local -> stringResource(R.string.misc_libpl_device)
+            shelf == LibraryShelfKind.Cached -> stringResource(R.string.misc_libpl_cache)
+            else -> stringResource(R.string.misc_libpl_all)
         },
-        searchPlaceholder = "Find a playlist by its name",
+        searchPlaceholder = stringResource(R.string.misc_libpl_find),
         items = playlists,
         idOf = { it.id },
         nameOf = { it.playlist.name },
-        subtitleOf = { "${it.songCount} songs" },
+        subtitleOf = { stringResource(R.string.misc_lib_n_songs, it.songCount) },
         thumbnailOf = { it.thumbnails.firstOrNull() },
         // the same key Home's cards use, so the playlist opens growing out of its cover
         sharedElementKeyOf = { "playlist-${it.id}" },

@@ -123,7 +123,7 @@ fun LyricsEditorSheet(onDismiss: () -> Unit) {
         ) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "Edit lyrics",
+                    text = stringResource(R.string.edit_lyrics),
                     color = Color.White,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
@@ -131,7 +131,7 @@ fun LyricsEditorSheet(onDismiss: () -> Unit) {
                 )
                 if (parsed.isNotEmpty()) {
                     Text(
-                        text = "Save",
+                        text = stringResource(R.string.eq_save),
                         color = Color.White,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
@@ -157,7 +157,7 @@ fun LyricsEditorSheet(onDismiss: () -> Unit) {
 
             if (parsed.isEmpty()) {
                 Text(
-                    text = "No lyrics to edit for this song.",
+                    text = stringResource(R.string.lyrics_no_lyrics_to_edit),
                     color = Color(0xFF9A9A9A),
                     fontSize = 13.sp,
                     modifier = Modifier.padding(vertical = 24.dp),
@@ -278,7 +278,7 @@ fun LyricsProviderSheet(onDismiss: () -> Unit) {
                 .padding(top = 16.dp, bottom = 24.dp)
         ) {
             Text(
-                text = "Lyrics Provider",
+                text = stringResource(R.string.lyrics_provider_title),
                 color = Color.White,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
@@ -304,15 +304,18 @@ fun LyricsProviderSheet(onDismiss: () -> Unit) {
                 val available = state as? LyricsMenuViewModel.SourceState.Available
                 val isActive = name == active
                 val status = when {
-                    isActive -> "In use"
-                    available != null -> when (available.candidate.sync) {
-                        LyricsUtils.SyncKind.WORD -> "Word synced"
-                        LyricsUtils.SyncKind.LINE -> "Line synced"
-                        else -> "Plain"
-                    } + if (available.candidate.hasDuet) " · duet" else ""
-                    state == LyricsMenuViewModel.SourceState.Unavailable -> "Not found"
-                    state == LyricsMenuViewModel.SourceState.Off -> "Off"
-                    else -> "Checking…"
+                    isActive -> stringResource(R.string.lyrics_status_in_use)
+                    available != null -> {
+                        val base = when (available.candidate.sync) {
+                            LyricsUtils.SyncKind.WORD -> stringResource(R.string.lyrics_status_word_synced)
+                            LyricsUtils.SyncKind.LINE -> stringResource(R.string.lyrics_status_line_synced)
+                            else -> stringResource(R.string.lyrics_status_plain)
+                        }
+                        if (available.candidate.hasDuet) stringResource(R.string.lyrics_status_with_duet, base) else base
+                    }
+                    state == LyricsMenuViewModel.SourceState.Unavailable -> stringResource(R.string.lyrics_status_not_found)
+                    state == LyricsMenuViewModel.SourceState.Off -> stringResource(R.string.crossmix_tempo_off)
+                    else -> stringResource(R.string.modules_link_checking)
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -434,9 +437,9 @@ fun LyricsTranslationSheet(onDismiss: () -> Unit) {
                 .padding(horizontal = 20.dp)
                 .padding(top = 16.dp, bottom = 24.dp)
         ) {
-            Text(text = "Lyrics translation", color = Color(0xFF9A9A9A), fontSize = 12.sp)
+            Text(text = stringResource(R.string.video_mode_lyrics_translation), color = Color(0xFF9A9A9A), fontSize = 12.sp)
             Text(
-                text = "Translate from",
+                text = stringResource(R.string.lyrics_translate_from),
                 color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
@@ -447,7 +450,7 @@ fun LyricsTranslationSheet(onDismiss: () -> Unit) {
             // then nothing could be done about it, so the source can be set by hand too.
             PillButton(
                 label = if (source.isBlank() || source == "auto") {
-                    "Detect automatically"
+                    stringResource(R.string.lyrics_detect_automatically)
                 } else {
                     TranslationTargets.firstOrNull { it.first == source }?.second ?: source
                 },
@@ -455,17 +458,16 @@ fun LyricsTranslationSheet(onDismiss: () -> Unit) {
             )
 
             Spacer(modifier = Modifier.height(14.dp))
-            Text(text = "To", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            Text(text = stringResource(R.string.lyrics_translate_to_label), color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
             PillButton(
-                label = TranslationTargets.firstOrNull { it.first == target }?.second ?: "unselected",
+                label = TranslationTargets.firstOrNull { it.first == target }?.second ?: stringResource(R.string.lyrics_language_unselected),
                 onClick = { picking = true },
                 trailing = if (target in youtubeLanguages) ({ YouTubeTick() }) else null,
             )
             AnimatedVisibility(visible = youtubeLanguages.isNotEmpty(), enter = fadeIn() + expandVertically()) {
                 Text(
-                    text = "A green tick means the video has its own captions in that language, so they're used as " +
-                        "the translation. You can turn this off in Settings > General.",
+                    text = stringResource(R.string.lyrics_youtube_captions_note),
                     color = Color(0xFF9A9A9A),
                     fontSize = 12.sp,
                     lineHeight = 16.sp,
@@ -474,7 +476,7 @@ fun LyricsTranslationSheet(onDismiss: () -> Unit) {
             }
 
             Spacer(modifier = Modifier.height(14.dp))
-            Text(text = "And", color = Color(0xFF9A9A9A), fontSize = 12.sp)
+            Text(text = stringResource(R.string.lyrics_translate_and), color = Color(0xFF9A9A9A), fontSize = 12.sp)
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(
@@ -488,7 +490,7 @@ fun LyricsTranslationSheet(onDismiss: () -> Unit) {
                 SheetIcon(R.drawable.translate)
                 Spacer(modifier = Modifier.width(14.dp))
                 Text(
-                    text = "Translate this whole session",
+                    text = stringResource(R.string.lyrics_translate_session),
                     color = Color.White,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -534,10 +536,10 @@ fun LyricsTranslationSheet(onDismiss: () -> Unit) {
             ) {
                 Text(
                     text = when {
-                        isTranslating -> "Translating… (tap to stop)"
-                        translationOn -> "Show original"
-                        target.isBlank() -> "Pick a language first"
-                        else -> "Translate!"
+                        isTranslating -> stringResource(R.string.lyrics_translating_tap_to_stop)
+                        translationOn -> stringResource(R.string.lyrics_show_original)
+                        target.isBlank() -> stringResource(R.string.lyrics_pick_language_first)
+                        else -> stringResource(R.string.lyrics_translate_action)
                     },
                     color = Color.White.copy(alpha = if (target.isBlank() || isTranslating) 0.45f else 1f),
                     fontSize = 15.sp,
@@ -549,7 +551,7 @@ fun LyricsTranslationSheet(onDismiss: () -> Unit) {
             (status as? LyricsTranslationHelper.TranslationStatus.Error)?.let { error ->
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Couldn't translate: ${error.message}",
+                    text = stringResource(R.string.lyrics_translate_error, error.message),
                     color = Color(0xFFFF8A8A),
                     fontSize = 12.sp,
                 )
@@ -559,7 +561,7 @@ fun LyricsTranslationSheet(onDismiss: () -> Unit) {
 
     if (picking) {
         LanguagePickerSheet(
-            title = "Translate to",
+            title = stringResource(R.string.lyrics_translate_to),
             selected = target,
             marked = youtubeLanguages,
             // The picker closes itself (animated) after a pick; onDismiss then drops it. While a
@@ -570,9 +572,9 @@ fun LyricsTranslationSheet(onDismiss: () -> Unit) {
     }
     if (pickingSource) {
         LanguagePickerSheet(
-            title = "Translate from",
+            title = stringResource(R.string.lyrics_translate_from),
             selected = source.ifBlank { "auto" },
-            options = listOf("auto" to "Detect automatically") + TranslationTargets,
+            options = listOf("auto" to stringResource(R.string.lyrics_detect_automatically)) + TranslationTargets,
             onPick = { setSource(it) },
             onDismiss = { pickingSource = false },
         )
@@ -616,7 +618,7 @@ private fun YouTubeTick() {
     ) {
         Icon(
             painter = painterResource(R.drawable.check),
-            contentDescription = "Captions on YouTube",
+            contentDescription = stringResource(R.string.lyrics_captions_on_youtube),
             tint = Color.White,
             modifier = Modifier.size(18.dp),
         )
@@ -675,7 +677,7 @@ private fun LanguagePickerSheet(
                     .padding(horizontal = 16.dp)
             ) {
                 if (query.isEmpty()) {
-                    Text(text = "Search language", color = Color(0xFF8A8A8A), fontSize = 13.sp)
+                    Text(text = stringResource(R.string.lyrics_search_language), color = Color(0xFF8A8A8A), fontSize = 13.sp)
                 }
                 BasicTextField(
                     value = query,

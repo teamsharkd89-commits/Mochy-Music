@@ -3,6 +3,7 @@
 package com.bedivine.app.constants
 
 import android.os.Build
+import androidx.annotation.StringRes
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
@@ -12,6 +13,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
+import com.bedivine.app.R
 import com.music.innertube.models.IpVersion
 
 val IsFirstRunKey = booleanPreferencesKey("isFirstRun")
@@ -30,12 +32,12 @@ val MiniPlayerOutlineKey = booleanPreferencesKey("miniPlayerOutline")
 val DensityScaleKey = floatPreferencesKey("density_scale_factor")
 val CustomDensityScaleKey = floatPreferencesKey("custom_density_scale_value")
 
-enum class DensityScale(val value: Float, val label: String) {
-    NATIVE(1.0f, "Native (100%)"),
-    SLIGHTLY_COMPACT(0.85f, "Slightly Compact (85%)"),
-    COMPACT(0.75f, "Compact (75%)"),
-    VERY_COMPACT(0.65f, "Very Compact (65%)"),
-    ULTRA_COMPACT(0.55f, "Ultra Compact (55%)");
+enum class DensityScale(val value: Float, @StringRes val labelRes: Int) {
+    NATIVE(1.0f, R.string.pref_density_native),
+    SLIGHTLY_COMPACT(0.85f, R.string.pref_density_slightly_compact),
+    COMPACT(0.75f, R.string.pref_density_compact),
+    VERY_COMPACT(0.65f, R.string.pref_density_very_compact),
+    ULTRA_COMPACT(0.55f, R.string.pref_density_ultra_compact);
 
     companion object {
         fun fromValue(value: Float): DensityScale = entries.find { it.value == value } ?: NATIVE
@@ -54,10 +56,10 @@ val SwipeRightActionKey = stringPreferencesKey("swipeRightAction")
 val SwipeLeftActionKey = stringPreferencesKey("swipeLeftAction")
 
 // the top layout of the home tab, picked in customisation settings
-enum class HomeStyle(val displayName: String) {
-    MOCHYY("BeDivine"),
-    LISTEN_NOW("Listen now"),
-    HOP_IN("Hop in"),
+enum class HomeStyle(@StringRes val displayNameRes: Int) {
+    MOCHYY(R.string.pref_home_style_bedivine),
+    LISTEN_NOW(R.string.pref_home_style_listen_now),
+    HOP_IN(R.string.home_hop_in),
 }
 
 val HomeStyleKey = stringPreferencesKey("homeStyle")
@@ -71,10 +73,10 @@ val HomeGlowVividnessKey = floatPreferencesKey("homeGlowVividness")
 val HomeGlowAnimatedKey = booleanPreferencesKey("homeGlowAnimated")
 
 // how playlist and album headers are laid out at the top of the page
-enum class PlaylistStyle(val displayName: String) {
-    FLOW("Flow"),
-    CLASSIC("Classic"),
-    MINIMAL("Minimal"),
+enum class PlaylistStyle(@StringRes val displayNameRes: Int) {
+    FLOW(R.string.pref_playlist_style_flow),
+    CLASSIC(R.string.pref_playlist_style_classic),
+    MINIMAL(R.string.pref_playlist_style_minimal),
 }
 
 val PlaylistStyleKey = stringPreferencesKey("playlistStyle")
@@ -198,10 +200,10 @@ enum class AudioQuality {
 // what a download from youtube is saved as; which provider a download comes from is the download order
 val DownloadQualityKey = stringPreferencesKey("downloadQuality")
 
-enum class DownloadQuality(val title: String, val description: String) {
-    HIGH("High", "The best YouTube has: ~160 kbps Opus"),
-    MEDIUM("Medium", "Around 128 kbps, half the space"),
-    LOW("Low", "The smallest files, ~50–70 kbps"),
+enum class DownloadQuality(@StringRes val titleRes: Int, @StringRes val descriptionRes: Int) {
+    HIGH(R.string.pref_download_quality_high, R.string.pref_download_quality_high_desc),
+    MEDIUM(R.string.pref_download_quality_medium, R.string.pref_download_quality_medium_desc),
+    LOW(R.string.pref_download_quality_low, R.string.pref_download_quality_low_desc),
 }
 
 val AudioOffload = booleanPreferencesKey("enableOffload")
@@ -335,14 +337,14 @@ const val TransportFadeMinSeconds = 0.5f
 const val TransportFadeMaxSeconds = 10f
 
 // the crossmix effect layered over a pause, play or skip fade
-enum class TransportEffect(val label: String) {
-    OFF("None"),
-    ECHO("Echo"),
-    REWIND("Rewind"),
-    TAPE_STOP("Tape stop"),
-    FAR_AWAY("Fade to far"),
-    REVERB("Reverb wash"),
-    FILTER("Filter sweep"),
+enum class TransportEffect(@StringRes val labelRes: Int) {
+    OFF(R.string.pref_transport_effect_none),
+    ECHO(R.string.pref_transport_effect_echo),
+    REWIND(R.string.pref_transport_effect_rewind),
+    TAPE_STOP(R.string.pref_transport_effect_tape_stop),
+    FAR_AWAY(R.string.pref_transport_effect_far_away),
+    REVERB(R.string.pref_transport_effect_reverb),
+    FILTER(R.string.pref_transport_effect_filter),
 }
 
 val MaxImageCacheSizeKey = intPreferencesKey("maxImageCacheSize")
@@ -694,26 +696,26 @@ enum class PlayerCoverStyle {
  * its disc label and [POSTER] its visualizer; the others are complete designs of their own,
  * each of which can be turned sideways from its menu.
  */
-enum class PlayerStyle(val displayName: String, val selectorName: String) {
+enum class PlayerStyle(@StringRes val displayNameRes: Int, val selectorName: String) {
     // the flagship as it is now: frosted cover fade, moving cover colours, the new buttons and bottom bar
-    FLAGSHIP("Flagship", "Flagship"),
+    FLAGSHIP(R.string.pref_player_style_flagship, "Flagship"),
     // the flagship before its layout refresh, kept as a variant under it in the selector
-    CLASSIC("Classic", "Classic"),
+    CLASSIC(R.string.pref_player_style_classic, "Classic"),
     /** the flagship with a record player for its cover, whose arm is the seek bar */
-    TURNTABLE("Turntable", "Turntable"),
+    TURNTABLE(R.string.pref_player_style_turntable, "Turntable"),
     // the song's youtube video across the whole screen, turned sideways, with its lyrics in a pane
-    VIDEO("Full video", "Full video"),
+    VIDEO(R.string.pref_player_style_full_video, "Full video"),
     // the ipod classic, click wheel and all, browsing the library from inside the player
-    IPOD("iPod", "iPod"),
-    POSTER("Poster", "Poster"),
-    TIMELINE("Timeline", "Timeline"),
-    LYRICS("Lyrics", "Lyrics stage"),
+    IPOD(R.string.pref_player_style_ipod, "iPod"),
+    POSTER(R.string.pref_player_style_poster, "Poster"),
+    TIMELINE(R.string.pref_player_style_timeline, "Timeline"),
+    LYRICS(R.string.pref_player_style_lyrics, "Lyrics"),
     // a big quiet clock for the nightstand, with the song a swipe away, that can stay up over the lock screen
-    BEDSIDE("Bedside clock", "Big clock"),
+    BEDSIDE(R.string.pref_player_style_bedside_clock, "Big clock"),
     // the nightstand as two tiles side by side, the music on one and the lyrics or a clock on the other, each scrolled on its own
-    BEDSIDE_TILES("Bedside", "Bedside"),
+    BEDSIDE_TILES(R.string.pref_player_style_bedside, "Bedside"),
     // a look module's own player, drawn from its layout; kept last so the others keep their places, and only offered while such a module is on
-    MODULE("Module", "Module");
+    MODULE(R.string.pref_player_style_module, "Module");
 
     val editable: Boolean get() = this == FLAGSHIP || this == CLASSIC || this == TURNTABLE || this == POSTER || this == IPOD || isBedside
 
@@ -820,11 +822,11 @@ val PlayerMenuSlotsKey = stringPreferencesKey("playerMenuSlots")
 val PlayerSideButtonKey = stringPreferencesKey("playerSideButton")
 
 /** what sits at the bottom of the player, under the play buttons */
-enum class PlayerBottomBarStyle(val displayName: String) {
+enum class PlayerBottomBarStyle(@StringRes val displayNameRes: Int) {
     /** the lyrics and queue cards, one behind the other */
-    STACK("Stack"),
+    STACK(R.string.pref_player_bar_stack),
     /** the phone's volume, with the lyrics and queue buttons under it */
-    VOLUME("Volume"),
+    VOLUME(R.string.pref_player_bar_volume),
 }
 
 val PlayerBottomBarStyleKey = stringPreferencesKey("playerBottomBarStyle")
@@ -955,22 +957,22 @@ val LyricsMotionStyleKey = stringPreferencesKey("lyricsMotionStyle")
 
 // risesWords: words rise and lines cascade (style 1's motion), shaded: the agsl glow and wave run on top
 enum class LyricsMotionStyle(
-    val displayName: String,
-    val description: String,
+    @StringRes val displayNameRes: Int,
+    @StringRes val descriptionRes: Int,
     val risesWords: Boolean,
     val shaded: Boolean,
 ) {
     /** Style 1: words rise into place as they're sung, held notes swell and glow, lines cascade. */
-    MOTION("Style 1", "Words rise as they're sung, long notes swell, lines cascade", risesWords = true, shaded = true),
+    MOTION(R.string.appearance_style_1, R.string.appearance_lyrics_motion_desc, risesWords = true, shaded = true),
 
     /** Style 2: the original - a wave across the sung letters, the list scrolls as one piece. */
-    LEGACY("Style 2", "The original wave across the sung letters", risesWords = false, shaded = true),
+    LEGACY(R.string.appearance_style_2, R.string.appearance_lyrics_legacy_desc, risesWords = false, shaded = true),
 
     // style 1 without the shader, for phones that struggle with it
-    BORING("Boring", "Style 1's rise, without the glow", risesWords = true, shaded = false),
+    BORING(R.string.customise_style_boring, R.string.pref_lyrics_motion_boring_desc, risesWords = true, shaded = false),
 
     // style 2 without the shader, just the colour sweeping along
-    PLAIN("Plain", "Style 2's sweep, without the glow or the wave", risesWords = false, shaded = false);
+    PLAIN(R.string.customise_style_plain, R.string.pref_lyrics_motion_plain_desc, risesWords = false, shaded = false);
 
     // the same motion with the shader switched off, used when moving people off the old shader switch
     val withoutShader: LyricsMotionStyle get() = if (risesWords) BORING else PLAIN
@@ -1221,48 +1223,48 @@ val CountryCodeToName =
         "ZW" to "Zimbabwe",
     )
 
-val SuggestionRegionSlugToName =
+val SuggestionRegionSlugToName: Map<String, Int> =
     mapOf(
-        "system" to "System Default",
-        "us" to "Global (USA)",
-        "in" to "India",
-        "gb" to "United Kingdom",
-        "ca" to "Canada",
-        "au" to "Australia",
-        "jp" to "Japan",
-        "kr" to "South Korea",
-        "de" to "Germany",
-        "fr" to "France",
-        "br" to "Brazil",
-        "mx" to "Mexico",
-        "ru" to "Russia",
-        "it" to "Italy",
-        "es" to "Spain",
-        "nl" to "Netherlands",
-        "se" to "Sweden",
-        "no" to "Norway",
-        "dk" to "Denmark",
-        "fi" to "Finland",
-        "pl" to "Poland",
-        "tr" to "Turkey",
-        "za" to "South Africa",
-        "ng" to "Nigeria",
-        "id" to "Indonesia",
-        "my" to "Malaysia",
-        "ph" to "Philippines",
-        "th" to "Thailand",
-        "vn" to "Vietnam",
-        "tw" to "Taiwan",
-        "hk" to "Hong Kong",
-        "sg" to "Singapore",
-        "ar" to "Argentina",
-        "co" to "Colombia",
-        "cl" to "Chile",
-        "pe" to "Peru",
-        "eg" to "Egypt",
-        "sa" to "Saudi Arabia",
-        "ae" to "United Arab Emirates",
-        "il" to "Israel"
+        "system" to R.string.pref_region_system_default,
+        "us" to R.string.pref_region_global_usa,
+        "in" to R.string.pref_region_india,
+        "gb" to R.string.pref_region_united_kingdom,
+        "ca" to R.string.pref_region_canada,
+        "au" to R.string.pref_region_australia,
+        "jp" to R.string.pref_region_japan,
+        "kr" to R.string.pref_region_south_korea,
+        "de" to R.string.pref_region_germany,
+        "fr" to R.string.pref_region_france,
+        "br" to R.string.pref_region_brazil,
+        "mx" to R.string.pref_region_mexico,
+        "ru" to R.string.pref_region_russia,
+        "it" to R.string.pref_region_italy,
+        "es" to R.string.pref_region_spain,
+        "nl" to R.string.pref_region_netherlands,
+        "se" to R.string.pref_region_sweden,
+        "no" to R.string.pref_region_norway,
+        "dk" to R.string.pref_region_denmark,
+        "fi" to R.string.pref_region_finland,
+        "pl" to R.string.pref_region_poland,
+        "tr" to R.string.pref_region_turkey,
+        "za" to R.string.pref_region_south_africa,
+        "ng" to R.string.pref_region_nigeria,
+        "id" to R.string.pref_region_indonesia,
+        "my" to R.string.pref_region_malaysia,
+        "ph" to R.string.pref_region_philippines,
+        "th" to R.string.pref_region_thailand,
+        "vn" to R.string.pref_region_vietnam,
+        "tw" to R.string.pref_region_taiwan,
+        "hk" to R.string.pref_region_hong_kong,
+        "sg" to R.string.pref_region_singapore,
+        "ar" to R.string.pref_region_argentina,
+        "co" to R.string.pref_region_colombia,
+        "cl" to R.string.pref_region_chile,
+        "pe" to R.string.pref_region_peru,
+        "eg" to R.string.pref_region_egypt,
+        "sa" to R.string.pref_region_saudi_arabia,
+        "ae" to R.string.pref_region_uae,
+        "il" to R.string.pref_region_israel
     )
 
 val EnableCustomApiKey = booleanPreferencesKey("enableCustomApi")

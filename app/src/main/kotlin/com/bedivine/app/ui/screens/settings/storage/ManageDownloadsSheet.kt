@@ -32,7 +32,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -64,6 +66,7 @@ import com.bedivine.app.ui.utils.resize
 import com.bedivine.app.viewmodels.DownloadedSong
 import com.bedivine.app.viewmodels.StorageViewModel
 import com.bedivine.app.ui.component.RemoteFocus
+import androidx.compose.ui.res.stringResource
 
 /** how many songs each suggestion shelf shows */
 private const val ShelfSize = 4
@@ -74,12 +77,12 @@ private const val ShelvesFrom = 8
 /** a download younger than this hasn't had a fair chance to be played yet */
 private const val SettleMillis = 14L * 24 * 60 * 60 * 1000
 
-private enum class DownloadSort(val label: String) {
-    Size("size"),
-    Name("name"),
-    Recent("recently downloaded"),
-    MostPlayed("most played"),
-    LeastPlayed("least played");
+private enum class DownloadSort(@StringRes val labelRes: Int) {
+    Size(R.string.misc_dl_sort_size),
+    Name(R.string.misc_dl_sort_name),
+    Recent(R.string.misc_dl_sort_recent),
+    MostPlayed(R.string.misc_dl_sort_most),
+    LeastPlayed(R.string.misc_dl_sort_least);
 
     fun sort(songs: List<DownloadedSong>): List<DownloadedSong> = when (this) {
         Size -> songs.sortedByDescending { it.bytes }
@@ -106,6 +109,7 @@ fun PopupSheetState.showManageDownloadsSheet(viewModel: StorageViewModel) {
     var sheet: PopupSheetHandle? = null
     sheet = showWithHandle(
         buttonBar = {
+            val context = LocalContext.current
             val downloads by viewModel.downloads.collectAsState()
             val chosen = downloads.orEmpty().filter { it.song.id in picks.ids }
             AnimatedContent(
@@ -115,10 +119,11 @@ fun PopupSheetState.showManageDownloadsSheet(viewModel: StorageViewModel) {
             ) { nothingPicked ->
                 SheetPillButton(
                     text = if (nothingPicked) {
-                        "Done"
+                        stringResource(R.string.done)
                     } else {
                         val n = chosen.size
-                        "Remove ${if (n == 1) "1 song" else "$n songs"} · ${formatSize(chosen.sumOf { it.bytes })}"
+                        if (n == 1) stringResource(R.string.misc_dl_remove_1, formatSize(chosen.sumOf { it.bytes }))
+                        else stringResource(R.string.misc_dl_remove_n, n, formatSize(chosen.sumOf { it.bytes }))
                     },
                     onClick = {
                         if (chosen.isEmpty()) {
@@ -127,10 +132,9 @@ fun PopupSheetState.showManageDownloadsSheet(viewModel: StorageViewModel) {
                         }
                         val ids = chosen.map { it.song.id }
                         popup.showConfirm(
-                            title = if (ids.size == 1) "Remove this download?" else "Remove ${ids.size} downloads?",
-                            message = "They're deleted from this phone but stay in your library, and stream again " +
-                                "when you play them.",
-                            action = "Remove",
+                            title = if (ids.size == 1) context.getString(R.string.misc_dl_remove_one) else context.getString(R.string.misc_dl_remove_n_dl, ids.size),
+                            message = context.getString(R.string.misc_dl_remove_msg),
+                            action = context.getString(R.string.module_remove_short),
                         ) {
                             viewModel.removeDownloads(ids)
                             picks.ids.clear()
@@ -164,9 +168,9 @@ private fun ManageDownloadsContent(viewModel: StorageViewModel, picks: DownloadP
     val totalBytes = remember(all) { all.orEmpty().sumOf { it.bytes } }
 
     Column(Modifier.fillMaxWidth().fillMaxHeight()) {
-        SheetSearchField(value = query, onValueChange = { query = it }, placeholder = "Search your downloads")
+        SheetSearchField(value = query, onValueChange = { query = it }, placeholder = stringResource(R.string.misc_dl_search))
         Text(
-            all?.let { "${it.size} ${if (it.size == 1) "song" else "songs"} · ${formatSize(totalBytes)}" } ?: " ",
+            all?.let { if (it.size == 1) stringResource(R.string.misc_dl_count_1, it.size, formatSize(totalBytes)) else stringResource(R.string.misc_dl_count_n, it.size, formatSize(totalBytes)) } ?: " ",
             style = storageText(12f, FontWeight.Medium, StorageMuted, 0f),
             modifier = Modifier.padding(start = 4.dp, top = 8.dp, bottom = 10.dp),
         )
@@ -178,24 +182,24 @@ private fun ManageDownloadsContent(viewModel: StorageViewModel, picks: DownloadP
         ) {
             when {
                 all == null -> Unit
-                all.isEmpty() -> item(key = "empty") { SheetNote("Nothing downloaded yet. Songs you download show up here.") }
+                all.isEmpty() -> item(key = "empty") { SheetNote(stringResource(R.string.misc_dl_empty)) }
                 needle.isNotEmpty() -> {
                     if (matches.isEmpty()) {
-                        item(key = "no-match") { SheetNote("No downloads match \"$needle\".") }
+                        item(key = "no-match") { SheetNote(stringResource(R.string.misc_dl_no_match, needle)) }
                     } else {
                         downloadRows("search", matches, picks)
                     }
                 }
                 else -> {
                     if (all.size >= ShelvesFrom) {
-                        shelf("biggest", "Biggest", null, biggest, picks)
+                        shelf("biggest", stringResource(R.string.misc_dl_biggest), null, biggest, picks)
                         if (lessListened.isNotEmpty()) {
-                            shelf("less", "Less listened", "Downloaded a while ago and hardly played", lessListened, picks)
+                            shelf("less", stringResource(R.string.misc_dl_less), stringResource(R.string.misc_dl_less_sub), lessListened, picks)
                         }
                     }
                     item(key = "all-label") {
                         Column(Modifier.padding(bottom = 8.dp)) {
-                            SheetLabel("All")
+                            SheetLabel(stringResource(R.string.misc_dl_all))
                             SortSwitch(sort) { sort = DownloadSort.entries[(sort.ordinal + 1) % DownloadSort.entries.size] }
                         }
                     }
@@ -231,7 +235,7 @@ private fun LazyListScope.shelf(
             }
             // a whole shelf in one go: it's what the suggestion is for
             Text(
-                if (allPicked) "Unpick" else "Pick all",
+                if (allPicked) stringResource(R.string.misc_dl_unpick) else stringResource(R.string.misc_dl_pick_all),
                 style = storageText(12f, FontWeight.SemiBold, Color.White, -0.2f),
                 modifier = Modifier
                     .clip(CircleShape)
@@ -266,13 +270,13 @@ private fun SortSwitch(sort: DownloadSort, onNext: () -> Unit) {
             .clickable(onClick = onNext)
             .padding(vertical = 2.dp),
     ) {
-        Text("Sort by - ", style = storageText(12f, FontWeight.Medium, StorageMuted, 0f))
+        Text(stringResource(R.string.misc_dl_sort_by), style = storageText(12f, FontWeight.Medium, StorageMuted, 0f))
         AnimatedContent(
             targetState = sort,
             transitionSpec = { (slideInVertically { it } + fadeIn()).togetherWith(slideOutVertically { -it } + fadeOut()) },
             label = "downloadSort",
         ) { shown ->
-            Text("${shown.label} ›", style = storageText(12f, FontWeight.SemiBold, Color.White.copy(alpha = 0.8f), 0f))
+            Text("${stringResource(shown.labelRes)} ›", style = storageText(12f, FontWeight.SemiBold, Color.White.copy(alpha = 0.8f), 0f))
         }
     }
 }

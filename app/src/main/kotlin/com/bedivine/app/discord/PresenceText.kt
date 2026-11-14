@@ -2,18 +2,20 @@
 
 package com.bedivine.app.discord
 
+import com.bedivine.app.R
+
 /** The words the user can drop into any status line or button, and Discord's length rules. */
 object PresenceText {
     const val AppName = "BeDivine"
 
     /** the placeholder, and what it means, in the order the Discord page lists them */
     val Placeholders = listOf(
-        "{name}" to "Song name",
-        "{artist}" to "Artist name",
-        "{album}" to "Album",
-        "{app}" to AppName,
-        "{quality}" to "Format and bitrate, like OPUS · 160 kbps",
-        "{apple}" to "The Apple logo (only Apple devices can show it)",
+        "{name}" to R.string.misc_discord_ph_name,
+        "{artist}" to R.string.misc_discord_ph_artist,
+        "{album}" to R.string.misc_discord_ph_album,
+        "{app}" to R.string.misc_discord_ph_app,
+        "{quality}" to R.string.misc_discord_ph_quality,
+        "{apple}" to R.string.misc_discord_ph_apple,
     )
 
     fun fill(template: String, track: NowPlaying): String = template

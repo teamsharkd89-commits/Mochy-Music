@@ -115,6 +115,7 @@ import com.bedivine.app.viewmodels.ArtistRelease
 import com.bedivine.app.ui.utils.stableStatusBars
 import com.bedivine.app.ui.utils.stableStatusBarsPadding
 import com.bedivine.app.ui.component.RemoteFocus
+import androidx.compose.ui.res.stringResource
 
 // the round photo sits this far down the banner, and the page's header starts there
 internal const val ArtistAvatarAt = 0.45f
@@ -387,13 +388,14 @@ internal fun ArtistName(
 }
 
 /** "12.3M subscribers · 21.4M monthly audience" */
+@Composable
 internal fun artistStats(subscribers: String?, monthly: String?): String =
     listOfNotNull(
         subscribers?.trim()?.takeIf { it.isNotEmpty() }?.let { text ->
-            if (text.any { it.isLetter() && it !in "KMBkmb" }) text else "$text subscribers"
+            if (text.any { it.isLetter() && it !in "KMBkmb" }) text else stringResource(R.string.misc_artist_subscribers, text)
         },
         monthly?.trim()?.takeIf { it.isNotEmpty() }?.let { text ->
-            if (text.count { it.isLetter() } > 2) text else "$text monthly listeners"
+            if (text.count { it.isLetter() } > 2) text else stringResource(R.string.misc_artist_monthly, text)
         },
     ).joinToString(" · ")
 
@@ -416,7 +418,7 @@ internal fun ArtistActions(
         if (showSubscribe) {
             CircleAction(
                 icon = if (isPlaying) R.drawable.ic_untitled_pause else R.drawable.ic_untitled_play,
-                contentDescription = if (isPlaying) "Pause" else "Play",
+                contentDescription = if (isPlaying) stringResource(R.string.pause) else stringResource(R.string.play),
                 onClick = onPlay,
             )
         } else {
@@ -425,7 +427,7 @@ internal fun ArtistActions(
         Spacer(Modifier.width(if (showSubscribe) 4.dp else 9.dp))
         CircleAction(
             icon = if (liked) R.drawable.ic_untitled_heart else R.drawable.ic_untitled_heart_unfill,
-            contentDescription = if (liked) "Liked" else "Like",
+            contentDescription = if (liked) stringResource(R.string.misc_artist_liked) else stringResource(R.string.like),
             onClick = onLike,
         )
         AnimatedVisibility(
@@ -470,7 +472,7 @@ private fun SubscribePill(subscribed: Boolean, onClick: () -> Unit) {
         )
         Spacer(Modifier.width(7.dp))
         Text(
-            text = if (subscribed) "Subscribed" else "Subscribe",
+            text = if (subscribed) stringResource(R.string.misc_artist_subscribed) else stringResource(R.string.misc_artist_subscribe),
             style = TrackTitleStyle.copy(fontSize = 15.sp, fontWeight = FontWeight.Bold),
             color = content,
         )
@@ -607,14 +609,14 @@ private fun ReleaseCard(
                 }
                 CircleAction(
                     icon = if (isPlaying) R.drawable.ic_untitled_pause else R.drawable.ic_untitled_play,
-                    contentDescription = "Play",
+                    contentDescription = stringResource(R.string.play),
                     onClick = onPlay,
                 )
                 if (release.album != null) {
                     Spacer(Modifier.width(4.dp))
                     CircleAction(
                         icon = if (saved) R.drawable.library_add_check else R.drawable.add,
-                        contentDescription = if (saved) "In your library" else "Add to library",
+                        contentDescription = if (saved) stringResource(R.string.misc_playlist_in_library) else stringResource(R.string.add_to_library),
                         onClick = onSave,
                     )
                 }
@@ -628,7 +630,7 @@ private fun BioCard(name: String, bio: String, onClick: () -> Unit) {
     ArtistCard(onClick = onClick) {
         Column(modifier = Modifier.fillMaxSize()) {
             Text(
-                text = "About $name",
+                text = stringResource(R.string.misc_artist_about, name),
                 style = CardLabelStyle,
                 color = Color.White,
                 maxLines = 1,
@@ -692,7 +694,7 @@ internal fun ArtistShelfTitle(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.more_horiz),
-                        contentDescription = "More",
+                        contentDescription = stringResource(R.string.show_more),
                         tint = Color.White.copy(alpha = 0.78f),
                         modifier = Modifier.size(18.dp),
                     )
@@ -716,7 +718,7 @@ internal fun ArtistShelfTitle(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_chevron_right),
-                        contentDescription = "See all",
+                        contentDescription = stringResource(R.string.misc_artist_see_all),
                         tint = Color.White.copy(alpha = 0.6f),
                         modifier = Modifier.size(18.dp),
                     )
@@ -799,7 +801,7 @@ internal fun ArtistTopBar(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.arrow_back_ios),
-                    contentDescription = "Back",
+                    contentDescription = stringResource(R.string.cd_back),
                     tint = Color.White,
                     modifier = Modifier
                         .size(16.dp)

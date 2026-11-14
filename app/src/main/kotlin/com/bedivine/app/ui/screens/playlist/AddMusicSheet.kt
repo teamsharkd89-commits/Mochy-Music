@@ -63,6 +63,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import androidx.compose.ui.res.stringResource
 
 private enum class AddMusicTab { Suggested, Library }
 
@@ -79,15 +80,17 @@ fun PopupSheetState.showAddMusicSheet(playlistId: String, startInLibrary: Boolea
 
     sheet = showWithHandle(
         buttonBar = {
+            val context = LocalContext.current
             val database = LocalDatabase.current
             val scope = rememberCoroutineScope()
             val count = picks.songs.size
+            val couldntAddText = stringResource(R.string.misc_addmusic_couldnt_add)
             SheetPillButton(
                 text = when {
-                    picks.saving -> "Adding…"
-                    count == 0 -> "Done"
-                    count == 1 -> "Add 1 song"
-                    else -> "Add $count songs"
+                    picks.saving -> stringResource(R.string.misc_addmusic_adding)
+                    count == 0 -> stringResource(R.string.done)
+                    count == 1 -> stringResource(R.string.misc_addmusic_add_1)
+                    else -> stringResource(R.string.misc_addmusic_add_n, count)
                 },
                 enabled = !picks.saving,
                 onClick = {
@@ -101,13 +104,13 @@ fun PopupSheetState.showAddMusicSheet(playlistId: String, startInLibrary: Boolea
                     val chosen = picks.songs.toList()
                     scope.launch(Dispatchers.IO) {
                         try {
-                            addPicksToPlaylist(database, playlistId, chosen)
+                            addPicksToPlaylist(context, database, playlistId, chosen)
                             withContext(Dispatchers.Main) { sheet?.dismiss() }
                         } catch (e: CancellationException) {
                             throw e
                         } catch (e: Exception) {
                             Timber.tag("AddMusicSheet").e(e, "Adding songs to the playlist failed")
-                            TopToaster.error("Couldn't add those songs. Try again.")
+                            TopToaster.error(couldntAddText)
                             picks.saving = false
                             sheet?.setLocked(false)
                         }
@@ -186,7 +189,7 @@ private fun AddMusicContent(playlistId: String, startInLibrary: Boolean, picks: 
             .fillMaxHeight(),
     ) {
         Text(
-            text = "Add music",
+            text = stringResource(R.string.misc_lib_add_music),
             color = Color.White,
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
@@ -199,7 +202,7 @@ private fun AddMusicContent(playlistId: String, startInLibrary: Boolean, picks: 
         SheetSearchField(
             value = query,
             onValueChange = { query = it },
-            placeholder = "Search all songs",
+            placeholder = stringResource(R.string.misc_addmusic_search_all),
         )
 
         Spacer(Modifier.height(12.dp))
@@ -212,7 +215,7 @@ private fun AddMusicContent(playlistId: String, startInLibrary: Boolean, picks: 
                 .horizontalScroll(rememberScrollState()),
         ) {
             AddMusicChip(
-                text = "Recommended for this playlist",
+                text = stringResource(R.string.misc_addmusic_recommended),
                 selected = needle.isEmpty() && tab == AddMusicTab.Suggested,
                 onClick = {
                     query = ""
@@ -220,7 +223,7 @@ private fun AddMusicContent(playlistId: String, startInLibrary: Boolean, picks: 
                 },
             )
             AddMusicChip(
-                text = "In library",
+                text = stringResource(R.string.misc_addmusic_in_library),
                 selected = needle.isEmpty() && tab == AddMusicTab.Library,
                 onClick = {
                     query = ""
@@ -257,7 +260,7 @@ private fun LazyListScope.searchResults(
     }
 
     if (results.library.isNotEmpty()) {
-        item(key = "library-label") { SheetLabel("in your library", Modifier.padding(bottom = 6.dp)) }
+        item(key = "library-label") { SheetLabel(stringResource(R.string.misc_addmusic_in_library_label), Modifier.padding(bottom = 6.dp)) }
         librarySongRows("library-hit", results.library, added, picks)
         item(key = "library-gap") { Spacer(Modifier.height(14.dp)) }
     }
@@ -265,18 +268,18 @@ private fun LazyListScope.searchResults(
     val online = results.online
     when {
         online == null -> {
-            item(key = "online-label") { SheetLabel("all songs", Modifier.padding(bottom = 6.dp)) }
+            item(key = "online-label") { SheetLabel(stringResource(R.string.misc_addmusic_all_songs_label), Modifier.padding(bottom = 6.dp)) }
             item(key = "online-bones") { PickRowBones(rows = 4) }
         }
         online.isNotEmpty() -> {
-            item(key = "online-label") { SheetLabel("all songs", Modifier.padding(bottom = 6.dp)) }
+            item(key = "online-label") { SheetLabel(stringResource(R.string.misc_addmusic_all_songs_label), Modifier.padding(bottom = 6.dp)) }
             onlineSongRows("online", online, added, picks)
         }
         results.onlineFailed -> item(key = "online-failed") {
-            SheetNote("Couldn't search online. Check your connection and try again.")
+            SheetNote(stringResource(R.string.misc_addmusic_no_search))
         }
         results.library.isEmpty() -> item(key = "nothing") {
-            SheetNote("Nothing found for “${results.query}”.")
+            SheetNote(stringResource(R.string.misc_addmusic_nothing_found, results.query))
         }
     }
 }
@@ -290,10 +293,10 @@ private fun LazyListScope.suggestedSongs(
         suggestions == null -> item(key = "suggested-bones") { PickRowBones() }
         suggestions.isNotEmpty() -> onlineSongRows("suggested", suggestions, inPlaylist.orEmpty(), picks)
         inPlaylist?.isEmpty() == true -> item(key = "suggested-empty") {
-            SheetNote("Add a few songs first and we'll suggest more that fit.")
+            SheetNote(stringResource(R.string.misc_addmusic_suggest_hint))
         }
         else -> item(key = "suggested-failed") {
-            SheetNote("No suggestions right now. Check your connection, or search for a song above.")
+            SheetNote(stringResource(R.string.misc_addmusic_no_suggestions))
         }
     }
 }
@@ -302,7 +305,7 @@ private fun LazyListScope.librarySongs(library: List<Song>?, added: Set<String>,
     when {
         library == null -> item(key = "library-bones") { PickRowBones() }
         library.isEmpty() -> item(key = "library-empty") {
-            SheetNote("Your library is empty. Search above to find any song.")
+            SheetNote(stringResource(R.string.misc_addmusic_library_empty))
         }
         else -> librarySongRows("library", library, added, picks)
     }

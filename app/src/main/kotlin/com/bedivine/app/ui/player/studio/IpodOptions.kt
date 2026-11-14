@@ -17,6 +17,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import androidx.annotation.StringRes
 import com.bedivine.app.R
 import com.bedivine.app.constants.IpodShadowKey
 import com.bedivine.app.constants.IpodTallScreenKey
@@ -29,6 +30,7 @@ import com.bedivine.app.ui.player.ipod.IpodLook
 import com.bedivine.app.ui.player.ipod.lookOf
 import com.bedivine.app.utils.rememberEnumPreference
 import com.bedivine.app.utils.rememberPreference
+import androidx.compose.ui.res.stringResource
 
 // the ipod's sheet: its body, its wheel, how tall its screen is and the shading round it
 @Composable
@@ -36,32 +38,32 @@ internal fun ColumnScope.IpodOptions() {
     var theme by rememberEnumPreference(IpodThemeKey, IpodTheme.SILVER)
     var wheel by rememberEnumPreference(IpodWheelColorKey, IpodWheelColor.THEME)
     var tall by rememberPreference(IpodTallScreenKey, defaultValue = false)
-    OptionSheet(title = "The iPod") {
+    OptionSheet(title = stringResource(R.string.misc_ipod_the_ipod)) {
         IpodTheme.entries.forEachIndexed { index, option ->
             OptionRow(
                 selected = theme == option,
                 onClick = { theme = option },
-                caption = if (index == 0) "Body" else null,
+                caption = if (index == 0) stringResource(R.string.misc_ipod_body) else null,
                 compact = true,
             ) {
-                Swatch(lookOf(option, wheel, shadow = true, tall = false), option.title, option.description)
+                Swatch(lookOf(option, wheel, shadow = true, tall = false), stringResource(option.titleRes), stringResource(option.descriptionRes))
             }
         }
         IpodWheelColor.entries.forEachIndexed { index, option ->
             OptionRow(
                 selected = wheel == option,
                 onClick = { wheel = option },
-                caption = if (index == 0) "Click wheel" else null,
+                caption = if (index == 0) stringResource(R.string.misc_ipod_click_wheel) else null,
                 compact = true,
             ) {
-                Swatch(lookOf(theme, option, shadow = true, tall = false), option.title, option.description)
+                Swatch(lookOf(theme, option, shadow = true, tall = false), stringResource(option.titleRes), stringResource(option.descriptionRes))
             }
         }
-        OptionRow(selected = !tall, onClick = { tall = false }, caption = "Screen", compact = true) {
-            TwoLines("Classic", "the original shape, wheel in the middle")
+        OptionRow(selected = !tall, onClick = { tall = false }, caption = stringResource(R.string.misc_ipod_screen), compact = true) {
+            TwoLines(stringResource(R.string.misc_ipod_classic), stringResource(R.string.misc_ipod_classic_desc))
         }
         OptionRow(selected = tall, onClick = { tall = true }, compact = true) {
-            TwoLines("Tall", "the screen stretches down to the wheel")
+            TwoLines(stringResource(R.string.misc_ipod_tall), stringResource(R.string.misc_ipod_tall_desc))
         }
         SwitchRow(IpodShadowOption)
     }
@@ -86,41 +88,45 @@ private fun Swatch(look: IpodLook, title: String, description: String) {
     }
 }
 
-private val IpodTheme.title: String
+@StringRes
+private val IpodTheme.titleRes: Int
     get() = when (this) {
-        IpodTheme.SILVER -> "Silver"
-        IpodTheme.BLACK -> "Black"
-        IpodTheme.U2 -> "U2 edition"
-        IpodTheme.TRUE_DARK -> "True dark"
+        IpodTheme.SILVER -> R.string.misc_ipod_silver
+        IpodTheme.BLACK -> R.string.misc_ipod_black
+        IpodTheme.U2 -> R.string.misc_ipod_u2
+        IpodTheme.TRUE_DARK -> R.string.misc_ipod_true_dark
     }
 
-private val IpodTheme.description: String
+@StringRes
+private val IpodTheme.descriptionRes: Int
     get() = when (this) {
-        IpodTheme.SILVER -> "the classic white and grey"
-        IpodTheme.BLACK -> "grey fading down to black"
-        IpodTheme.U2 -> "black with a red wheel"
-        IpodTheme.TRUE_DARK -> "pitch black, the screen too"
+        IpodTheme.SILVER -> R.string.misc_ipod_silver_desc
+        IpodTheme.BLACK -> R.string.misc_ipod_black_desc
+        IpodTheme.U2 -> R.string.misc_ipod_u2_desc
+        IpodTheme.TRUE_DARK -> R.string.misc_ipod_truedark_desc
     }
 
-private val IpodWheelColor.title: String
+@StringRes
+private val IpodWheelColor.titleRes: Int
     get() = when (this) {
-        IpodWheelColor.THEME -> "Match the body"
-        IpodWheelColor.WHITE -> "White"
-        IpodWheelColor.BLACK -> "Black"
-        IpodWheelColor.RED -> "Red"
+        IpodWheelColor.THEME -> R.string.misc_ipod_match_body
+        IpodWheelColor.WHITE -> R.string.misc_ipod_white
+        IpodWheelColor.BLACK -> R.string.misc_ipod_black
+        IpodWheelColor.RED -> R.string.misc_ipod_red
     }
 
-private val IpodWheelColor.description: String
+@StringRes
+private val IpodWheelColor.descriptionRes: Int
     get() = when (this) {
-        IpodWheelColor.THEME -> "whichever wheel the body comes with"
-        IpodWheelColor.WHITE -> "white with grey buttons"
-        IpodWheelColor.BLACK -> "dark grey with white buttons"
-        IpodWheelColor.RED -> "red with white buttons"
+        IpodWheelColor.THEME -> R.string.misc_ipod_theme_desc
+        IpodWheelColor.WHITE -> R.string.misc_ipod_white_desc
+        IpodWheelColor.BLACK -> R.string.misc_ipod_wheel_black_desc
+        IpodWheelColor.RED -> R.string.misc_ipod_red_desc
     }
 
 private val IpodShadowOption = CoverOption.Switch(
-    title = "Shadow",
-    description = "soft shading round the edges of the body",
+    titleRes = R.string.misc_cover_shadow,
+    descriptionRes = R.string.misc_cover_shadow_desc,
     icon = R.drawable.contrast,
     key = IpodShadowKey,
     default = true,

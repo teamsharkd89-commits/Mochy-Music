@@ -3,6 +3,7 @@
 package com.bedivine.app.ui.player.customize
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.datastore.preferences.core.Preferences
 import com.bedivine.app.R
 import com.bedivine.app.constants.CanvasThumbnailAnimationKey
@@ -35,26 +36,27 @@ val PlayerCoverStyle.isBigDisc: Boolean
 val PlayerCoverStyle.hasTonearm: Boolean
     get() = this == PlayerCoverStyle.DISC_BIG_LABEL
 
-val PlayerCoverStyle.displayName: String
+@StringRes
+val PlayerCoverStyle.displayNameRes: Int
     get() = when (this) {
-        PlayerCoverStyle.EDGE_TO_EDGE -> "Full edge to edge"
-        PlayerCoverStyle.SQUARED -> "Squared"
-        PlayerCoverStyle.DISC_SMALL_FULL -> "Disc Music - inside - small"
-        PlayerCoverStyle.DISC_SMALL_LABEL -> "Disc Music - label - small"
-        PlayerCoverStyle.DISC_BIG_FULL -> "Disc Music - inside - big"
-        PlayerCoverStyle.DISC_BIG_LABEL -> "Disc Music - label - big"
-        PlayerCoverStyle.DISC_ALBUM -> "Disc + album Music"
-        PlayerCoverStyle.TURNTABLE -> "Turntable"
+        PlayerCoverStyle.EDGE_TO_EDGE -> R.string.misc_cover_edge_to_edge
+        PlayerCoverStyle.SQUARED -> R.string.misc_cover_squared
+        PlayerCoverStyle.DISC_SMALL_FULL -> R.string.misc_cover_disc_small_full
+        PlayerCoverStyle.DISC_SMALL_LABEL -> R.string.misc_cover_disc_small_label
+        PlayerCoverStyle.DISC_BIG_FULL -> R.string.misc_cover_disc_big_full
+        PlayerCoverStyle.DISC_BIG_LABEL -> R.string.misc_cover_disc_big_label
+        PlayerCoverStyle.DISC_ALBUM -> R.string.misc_cover_disc_album
+        PlayerCoverStyle.TURNTABLE -> R.string.misc_cover_turntable
     }
 
 sealed interface CoverOption {
-    val title: String
-    val description: String
+    @get:StringRes val titleRes: Int
+    @get:StringRes val descriptionRes: Int
     @get:DrawableRes val icon: Int
 
     data class Switch(
-        override val title: String,
-        override val description: String,
+        @get:StringRes override val titleRes: Int,
+        @get:StringRes override val descriptionRes: Int,
         @param:DrawableRes override val icon: Int,
         val key: Preferences.Key<Boolean>,
         val default: Boolean,
@@ -63,33 +65,33 @@ sealed interface CoverOption {
     ) : CoverOption
 
     data class Text(
-        override val title: String,
-        override val description: String,
+        @get:StringRes override val titleRes: Int,
+        @get:StringRes override val descriptionRes: Int,
         @param:DrawableRes override val icon: Int,
         val key: Preferences.Key<String>,
-        val placeholder: String,
+        @get:StringRes val placeholderRes: Int,
     ) : CoverOption
 }
 
 private val AnimatedCanvasOption = CoverOption.Switch(
-    title = "Animated canvas",
-    description = "Animated canvas ( not from youtube )",
+    titleRes = R.string.misc_cover_animated,
+    descriptionRes = R.string.misc_cover_animated_desc,
     icon = R.drawable.sparks,
     key = CanvasThumbnailAnimationKey,
     default = true,
 )
 
 private val YtVideoOption = CoverOption.Switch(
-    title = "Yt video background",
-    description = "Plays yt videos on canvas",
+    titleRes = R.string.misc_cover_yt,
+    descriptionRes = R.string.misc_cover_yt_desc,
     icon = R.drawable.slow_motion_video,
     key = PlayVideoBackgroundKey,
     default = false,
 )
 
 private val TimestampMatchingOption = CoverOption.Switch(
-    title = "Timestamp matching",
-    description = "Based on subtitle",
+    titleRes = R.string.misc_cover_ts,
+    descriptionRes = R.string.misc_cover_ts_desc,
     icon = R.drawable.lyrics,
     key = YtVideoBackgroundLyricsSyncKey,
     default = true,
@@ -97,27 +99,27 @@ private val TimestampMatchingOption = CoverOption.Switch(
 )
 
 private val RotatingAnimationOption = CoverOption.Switch(
-    title = "Rotating animation",
-    description = "For the disc",
+    titleRes = R.string.misc_cover_rotating,
+    descriptionRes = R.string.misc_cover_for_disc,
     icon = R.drawable.refresh,
     key = DiscRotatingAnimationKey,
     default = true,
 )
 
 private val RealisticModeOption = CoverOption.Switch(
-    title = "Realistic mode",
-    description = "For the disc",
+    titleRes = R.string.misc_cover_realistic,
+    descriptionRes = R.string.misc_cover_for_disc,
     icon = R.drawable.palette,
     key = DiscRealisticModeKey,
     default = true,
 )
 
 private val DiscNameOption = CoverOption.Text(
-    title = "Disc name",
-    description = "Printed on the platter",
+    titleRes = R.string.misc_cover_discname,
+    descriptionRes = R.string.misc_cover_discname_desc,
     icon = R.drawable.edit,
     key = DiscNameKey,
-    placeholder = "Leave empty to hide",
+    placeholderRes = R.string.misc_cover_ph_hide,
 )
 
 private val DiscOptions = listOf(RotatingAnimationOption, RealisticModeOption, DiscNameOption)

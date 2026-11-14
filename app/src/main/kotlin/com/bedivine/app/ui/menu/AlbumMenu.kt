@@ -455,7 +455,7 @@ fun AlbumMenu(
                     Material3MenuItemData(
                         title = {
                             Text(
-                                text = if (isPinned) "Unpin from library" else "Pin to library"
+                                text = if (isPinned) stringResource(R.string.misc_menu_unpin_lib) else stringResource(R.string.misc_menu_pin_lib)
                             )
                         },
                         icon = {

@@ -85,9 +85,9 @@ class PlaylistResync @Inject constructor(
     suspend fun startFromLink(playlistId: String, link: String): ResyncStart = withContext(Dispatchers.IO) {
         val found = lookUp(playlistId) ?: return@withContext ResyncStart.Failed(NOT_IMPORTED)
         val linkSource = LinkImporter.detect(link)?.importSource()
-            ?: return@withContext ResyncStart.Failed("Paste a link to the playlist on ${found.source.label}.")
+            ?: return@withContext ResyncStart.Failed(context.getString(R.string.misc_resync_paste_link_on, context.getString(found.source.labelRes)))
         if (linkSource != found.source) {
-            return@withContext ResyncStart.Failed("That's a ${linkSource.label} link, but this playlist came from ${found.source.label}.")
+            return@withContext ResyncStart.Failed(context.getString(R.string.misc_resync_wrong_link_source, context.getString(linkSource.labelRes), context.getString(found.source.labelRes)))
         }
         launch(listOf(request(found) { readLink(link, found.source) }))
     }

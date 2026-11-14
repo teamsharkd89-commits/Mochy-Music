@@ -596,7 +596,7 @@ fun removeImportSwipeAction(song: SongEntity, source: ImportSource): SwipeAction
             if (song.inLibrary != null) update(song.toggleLibrary())
         }
         TopToaster.show(
-            text = context.getString(R.string.removed_from_import_and_library, source.label),
+            text = context.getString(R.string.removed_from_import_and_library, context.getString(source.labelRes)),
             thumbnail = song.thumbnailUrl,
             iconRes = R.drawable.delete,
         )

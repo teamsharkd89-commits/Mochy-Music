@@ -61,6 +61,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import timber.log.Timber
 import com.bedivine.app.ui.utils.stableStatusBarsPadding
+import androidx.compose.ui.res.stringResource
 
 private const val LOGIN_URL = "https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fmusic.youtube.com"
 
@@ -98,13 +99,13 @@ fun YouTubeLoginScreen(navController: NavController) {
                 .padding(horizontal = 8.dp, vertical = 4.dp),
         ) {
             IconButton(onClick = { navController.navigateUp() }) {
-                Icon(painterResource(R.drawable.arrow_back), contentDescription = "Back", tint = Color.White)
+                Icon(painterResource(R.drawable.arrow_back), contentDescription = stringResource(R.string.cd_back), tint = Color.White)
             }
             Spacer(Modifier.width(4.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text("Sign in to YouTube", style = MaterialTheme.typography.titleLarge, color = Color.White)
+                Text(stringResource(R.string.misc_import_sign_in_yt), style = MaterialTheme.typography.titleLarge, color = Color.White)
                 Text(
-                    "Google's own sign-in page. BeDivine never sees your password.",
+                    stringResource(R.string.misc_import_google_signin),
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.White.copy(alpha = 0.6f),
                 )
@@ -115,7 +116,7 @@ fun YouTubeLoginScreen(navController: NavController) {
         }
         YouTubeLoginWebContent(
             onSignedIn = { info ->
-                Toast.makeText(context, info?.name?.let { "Signed in as $it" } ?: "Signed in to YouTube", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, info?.name?.let { context.getString(R.string.misc_import_signed_in_as, it) } ?: context.getString(R.string.misc_import_sign_in_yt), Toast.LENGTH_SHORT).show()
                 navController.navigateUp()
             },
             onExit = { navController.navigateUp() },
@@ -180,7 +181,7 @@ fun YouTubeLoginWebContent(
                     Timber.e(e, "Saving YouTube login failed")
                     withContext(Dispatchers.Main) {
                         saving = false
-                        Toast.makeText(context, "Couldn't finish signing in. Try again.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, context.getString(R.string.misc_import_couldnt_finish_signin), Toast.LENGTH_LONG).show()
                     }
                 }
             }

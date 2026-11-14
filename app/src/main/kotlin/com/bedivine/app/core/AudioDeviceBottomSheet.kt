@@ -890,7 +890,7 @@ private fun loadDevices(
                         } else null
 
                         AudioDevice(
-                            name = deviceInfo.productName?.toString() ?: "Bluetooth Device",
+                            name = deviceInfo.productName?.toString() ?: context.getString(R.string.misc_audio_bt),
                             type = AudioDeviceType.BLUETOOTH,
                             isConnected = true,
                             isActive = false,
@@ -910,7 +910,7 @@ private fun loadDevices(
                     }
                     AudioDeviceInfo.TYPE_USB_HEADSET, AudioDeviceInfo.TYPE_USB_DEVICE -> {
                         AudioDevice(
-                            name = deviceInfo.productName?.toString() ?: "USB Audio",
+                            name = deviceInfo.productName?.toString() ?: context.getString(R.string.misc_audio_usb),
                             type = AudioDeviceType.USB_HEADSET,
                             isConnected = true,
                             isActive = false,
@@ -960,7 +960,7 @@ private fun loadDevices(
             loadDevicesLegacy(context, onSuccess, onError)
         }
     } catch (e: Exception) {
-        onError("Failed to load devices: ${e.message}")
+        onError(context.getString(R.string.misc_audio_load_failed, e.message))
     }
 }
 
@@ -995,16 +995,16 @@ private fun loadDevicesLegacy(context: Context, onSuccess: (List<AudioDevice>) -
     val devices = mutableListOf<AudioDevice>()
 
     if (audioManager.isBluetoothA2dpOn) {
-        devices.add(AudioDevice("Bluetooth Device", AudioDeviceType.BLUETOOTH, true, true))
+        devices.add(AudioDevice(context.getString(R.string.misc_audio_bt), AudioDeviceType.BLUETOOTH, true, true))
     }
     if (audioManager.isWiredHeadsetOn) {
-        devices.add(AudioDevice("Wired Headphones", AudioDeviceType.WIRED_HEADPHONES, true, true))
+        devices.add(AudioDevice(context.getString(R.string.wired_headphones), AudioDeviceType.WIRED_HEADPHONES, true, true))
     }
     if (audioManager.isSpeakerphoneOn) {
-        devices.add(AudioDevice("External Speaker", AudioDeviceType.EXTERNAL_SPEAKER, true, true))
+        devices.add(AudioDevice(context.getString(R.string.misc_audio_ext_speaker), AudioDeviceType.EXTERNAL_SPEAKER, true, true))
     }
     if (devices.isEmpty() || !devices.any { it.isActive }) {
-        devices.add(AudioDevice("Phone Speaker", AudioDeviceType.PHONE_SPEAKER, true, true))
+        devices.add(AudioDevice(context.getString(R.string.misc_audio_phone_speaker), AudioDeviceType.PHONE_SPEAKER, true, true))
     }
     onSuccess(devices.filter { it.isActive }.take(1))
 }
@@ -1100,7 +1100,7 @@ private fun AudioDeviceRow(
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                val statusText = if (isActiveDevice) "Connected" else "Available"
+                val statusText = if (isActiveDevice) stringResource(R.string.audiopass_status_connected) else stringResource(R.string.misc_audio_available)
 
                 Row(
                     modifier = Modifier
@@ -1130,7 +1130,7 @@ private fun AudioDeviceRow(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.VolumeUp,
-                        contentDescription = "Volume level",
+                        contentDescription = stringResource(R.string.misc_audio_volume),
                         tint = onContainer,
                         modifier = Modifier.size(14.dp)
                     )

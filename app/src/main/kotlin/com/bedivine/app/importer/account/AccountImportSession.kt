@@ -3,6 +3,7 @@
 package com.bedivine.app.importer.account
 
 import android.content.Context
+import com.bedivine.app.R
 import com.bedivine.app.constants.AccountNameKey
 import com.bedivine.app.extensions.isUserLoggedIn
 import com.bedivine.app.importer.ImportSource
@@ -68,7 +69,7 @@ class AccountImportSession(
         AccountService.YOUTUBE_MUSIC -> null
     }
 
-    private val _state = MutableStateFlow<AccountImportState>(AccountImportState.Loading("Getting ready…"))
+    private val _state = MutableStateFlow<AccountImportState>(AccountImportState.Loading(context.getString(R.string.misc_import_getting_ready)))
     val state: StateFlow<AccountImportState> = _state.asStateFlow()
 
     /** What the user picked, read and ready to import. */
@@ -206,7 +207,7 @@ class AccountImportSession(
 
     private suspend fun loadPlaylists() {
         val lib = library ?: return
-        _state.value = AccountImportState.Loading("Reading your ${service.label} library…")
+        _state.value = AccountImportState.Loading(context.getString(R.string.misc_import_reading_library, service.label))
         try {
             val playlists = lib.playlists()
             val choosing = AccountImportState.Choosing(lib.accountName, playlists, emptySet())
@@ -215,13 +216,13 @@ class AccountImportSession(
         } catch (e: CancellationException) {
             currentCoroutineContext().ensureActive()
             Timber.w(e, "${service.label} library read was cut short")
-            _state.value = AccountImportState.Failed("Couldn't read your ${service.label} library.", signedOut = false)
+            _state.value = AccountImportState.Failed(context.getString(R.string.misc_import_couldnt_read_library, service.label), signedOut = false)
         } catch (e: AccountImportException) {
             if (e.signedOut) library = null
-            _state.value = AccountImportState.Failed(e.message ?: "Couldn't read your library.", e.signedOut)
+            _state.value = AccountImportState.Failed(e.message ?: context.getString(R.string.misc_import_couldnt_read_library_generic), e.signedOut)
         } catch (e: Exception) {
             Timber.e(e, "${service.label} library read failed")
-            _state.value = AccountImportState.Failed("Couldn't read your ${service.label} library.", signedOut = false)
+            _state.value = AccountImportState.Failed(context.getString(R.string.misc_import_couldnt_read_library, service.label), signedOut = false)
         }
     }
 
@@ -256,7 +257,7 @@ class AccountImportSession(
             var signedOut = false
 
             for ((index, playlist) in chosen.withIndex()) {
-                _state.value = AccountImportState.Reading("Reading \"${playlist.name}\"", index, chosen.size)
+                _state.value = AccountImportState.Reading(context.getString(R.string.misc_import_reading_playlist, playlist.name), index, chosen.size)
                 try {
                     val tracks = lib.tracks(playlist)
                     when {
@@ -285,19 +286,19 @@ class AccountImportSession(
 
             if (signedOut) {
                 library = null
-                _state.value = AccountImportState.Failed("${service.label} signed you out while reading. Sign in again.", signedOut = true)
+                _state.value = AccountImportState.Failed(context.getString(R.string.misc_import_signed_out_reading, service.label), signedOut = true)
                 return@launch
             }
             _state.value = lastChoosing ?: choosing
             if (liked.isEmpty() && librarySongs.isEmpty() && playlists.isEmpty()) {
-                _notice.value = "Couldn't read ${failed.joinToString(", ").ifEmpty { "those playlists" }}."
+                _notice.value = context.getString(R.string.misc_import_couldnt_read_failed, failed.joinToString(", ").ifEmpty { context.getString(R.string.misc_import_those_playlists) })
                 return@launch
             }
             _ready.value = ParsedImport(
                 likedSongs = liked,
                 librarySongs = librarySongs,
                 playlists = playlists,
-                warnings = if (failed.isEmpty()) emptyList() else listOf("Couldn't read: ${failed.joinToString(", ")}. The rest imports fine."),
+                warnings = if (failed.isEmpty()) emptyList() else listOf(context.getString(R.string.misc_import_couldnt_read_rest, failed.joinToString(", "))),
                 provider = ImportSource.fromKey(service.route),
                 playlistCovers = covers,
                 playlistOrigins = origins,
@@ -315,7 +316,7 @@ class AccountImportSession(
             val missing = mutableListOf<ResyncTarget>()
             var listed: List<RemotePlaylist>? = null
             for ((index, target) in targets.withIndex()) {
-                _state.value = AccountImportState.Reading("Reading \"${target.name}\"", index, targets.size)
+                _state.value = AccountImportState.Reading(context.getString(R.string.misc_import_reading_playlist, target.name), index, targets.size)
                 // straight to it when the import saved its id: no need to list the whole library
                 val byId = target.remoteId?.let { readById(lib, it, target.name) }
                 if (!byId.isNullOrEmpty()) {
@@ -341,13 +342,13 @@ class AccountImportSession(
         } catch (e: CancellationException) {
             currentCoroutineContext().ensureActive()
             Timber.w(e, "${service.label} re-sync read was cut short")
-            _state.value = AccountImportState.Failed("Couldn't read your playlists on ${service.label}.", signedOut = false)
+            _state.value = AccountImportState.Failed(context.getString(R.string.misc_import_couldnt_read_playlists, service.label), signedOut = false)
         } catch (e: AccountImportException) {
             if (e.signedOut) library = null
-            _state.value = AccountImportState.Failed(e.message ?: "Couldn't read your playlists.", e.signedOut)
+            _state.value = AccountImportState.Failed(e.message ?: context.getString(R.string.misc_import_couldnt_read_playlists_generic), e.signedOut)
         } catch (e: Exception) {
             Timber.e(e, "${service.label} re-sync read failed")
-            _state.value = AccountImportState.Failed("Couldn't read your playlists on ${service.label}.", signedOut = false)
+            _state.value = AccountImportState.Failed(context.getString(R.string.misc_import_couldnt_read_playlists, service.label), signedOut = false)
         }
     }
 
@@ -369,17 +370,17 @@ class AccountImportSession(
         workJob?.cancel()
         workJob = scope.launch(Dispatchers.IO) {
             try {
-                _state.value = AccountImportState.Reading("Reading \"${picked.name}\"", 0, 1)
+                _state.value = AccountImportState.Reading(context.getString(R.string.misc_import_reading_playlist, picked.name), 0, 1)
                 val read = ResyncRead(lib.tracks(picked), PlaylistOrigin(remoteId = picked.id))
                 _resyncReads.value = ResyncReads(mapOf(target.playlistId to read), missing = emptyList())
             } catch (e: CancellationException) {
                 throw e
             } catch (e: AccountImportException) {
                 if (e.signedOut) library = null
-                _state.value = AccountImportState.Failed(e.message ?: "Couldn't read \"${picked.name}\".", e.signedOut)
+                _state.value = AccountImportState.Failed(e.message ?: context.getString(R.string.misc_import_couldnt_read_named, picked.name), e.signedOut)
             } catch (e: Exception) {
                 Timber.e(e, "Reading ${picked.name} failed")
-                _state.value = AccountImportState.Failed("Couldn't read \"${picked.name}\" on ${service.label}.", signedOut = false)
+                _state.value = AccountImportState.Failed(context.getString(R.string.misc_import_couldnt_read_named_on, picked.name, service.label), signedOut = false)
             }
         }
     }

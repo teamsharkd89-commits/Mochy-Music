@@ -253,6 +253,7 @@ fun LibraryHomeScreen(
 }
 
 /** The download and local import cards; each only shows while its job runs. */
+@Composable
 private fun LazyListScope.libraryProgressCards(
     downloads: TransferBatch,
     localImports: TransferBatch,
@@ -260,8 +261,8 @@ private fun LazyListScope.libraryProgressCards(
 ) {
     item(key = "progress_cards") {
         Column(modifier = Modifier.padding(horizontal = SearchHorizontalPadding)) {
-            LibraryProgressCard(TransferKind.Downloads.title, downloads, onClick = { onOpen(TransferKind.Downloads) })
-            LibraryProgressCard(TransferKind.LocalImport.title, localImports, onClick = { onOpen(TransferKind.LocalImport) })
+            LibraryProgressCard(stringResource(TransferKind.Downloads.titleRes), downloads, onClick = { onOpen(TransferKind.Downloads) })
+            LibraryProgressCard(stringResource(TransferKind.LocalImport.titleRes), localImports, onClick = { onOpen(TransferKind.LocalImport) })
         }
     }
 }

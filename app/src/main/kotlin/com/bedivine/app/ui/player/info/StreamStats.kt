@@ -2,7 +2,9 @@
 
 package com.bedivine.app.ui.player.info
 
+import android.content.res.Resources
 import androidx.media3.common.C
+import com.bedivine.app.R
 import com.bedivine.app.db.entities.FormatEntity
 import com.bedivine.app.playback.PlayingFrom
 import com.bedivine.app.playback.StreamDetails
@@ -56,15 +58,15 @@ data class StatsInput(
 )
 
 /** format, decoder, resampler, dsp, output: the song's road to the speaker, nothing guessed */
-fun buildStatCards(input: StatsInput): List<StatCard> = listOf(
-    formatCard(input),
-    decoderCard(input),
-    resamplerCard(input),
-    dspCard(input),
-    outputCard(input),
+fun buildStatCards(input: StatsInput, resources: Resources): List<StatCard> = listOf(
+    formatCard(input, resources),
+    decoderCard(input, resources),
+    resamplerCard(input, resources),
+    dspCard(input, resources),
+    outputCard(input, resources),
 ).filter { it.lines.isNotEmpty() }
 
-private fun formatCard(input: StatsInput): StatCard {
+private fun formatCard(input: StatsInput, resources: Resources): StatCard {
     val d = input.details
     val codec = input.facts?.codec ?: StreamFacts.codecOf(d.sampleMime, d.codecs)
     val lossless = codec in LosslessCodecs
@@ -76,143 +78,145 @@ private fun formatCard(input: StatsInput): StatCard {
         (fileSize * 8_000 / input.durationMs).toInt()
     } else null
     return StatCard(
-        title = codec?.let(::formatTitle) ?: "Format",
+        title = codec?.let(::formatTitle) ?: resources.getString(R.string.stream_format),
         lines = listOfNotNull(
-            d.sourceBitDepth?.takeIf { lossless }?.let { "Bit depth" to "$it-bit" },
-            sampleRate?.let { "Sample rate" to kHz(it) },
-            statedBitrate?.let { "Bitrate" to kbps(it) } ?: averageBitrate?.let { "Bitrate" to "~${kbps(it)} average" },
-            d.channels?.let { "Channel type" to channelName(it) },
-            containerName(d.containerMime)?.let { "Container" to it },
-            "Media id" to input.mediaId,
-            input.from?.matchedId?.let { "Matched as" to "${input.from.name} #$it" },
-            "Volume" to "${(input.playerVolume * 100).roundToInt()}%",
-            input.youtubeFormat?.loudnessDb?.let { "Loudness" to String.format(Locale.US, "%+.1f dB", it) },
-            fileSize?.let { "File size" to megabytes(it) },
+            d.sourceBitDepth?.takeIf { lossless }?.let { resources.getString(R.string.stream_bit_depth) to "$it-bit" },
+            sampleRate?.let { resources.getString(R.string.stream_sample_rate) to kHz(it) },
+            statedBitrate?.let { resources.getString(R.string.stream_bitrate) to kbps(it) } ?: averageBitrate?.let { resources.getString(R.string.stream_bitrate) to resources.getString(R.string.stream_bitrate_average, kbps(it)) },
+            d.channels?.let { resources.getString(R.string.stream_channel_type) to channelName(it, resources) },
+            containerName(d.containerMime)?.let { resources.getString(R.string.stream_container) to it },
+            resources.getString(R.string.stream_media_id) to input.mediaId,
+            input.from?.matchedId?.let { resources.getString(R.string.stream_matched_as) to "${input.from.name} #$it" },
+            resources.getString(R.string.stream_volume) to "${(input.playerVolume * 100).roundToInt()}%",
+            input.youtubeFormat?.loudnessDb?.let { resources.getString(R.string.stream_loudness) to String.format(Locale.US, "%+.1f dB", it) },
+            fileSize?.let { resources.getString(R.string.stream_file_size) to megabytes(it) },
         ),
     )
 }
 
-private fun decoderCard(input: StatsInput): StatCard {
+private fun decoderCard(input: StatsInput, resources: Resources): StatCard {
     val d = input.details
     return StatCard(
-        title = "Decoder",
+        title = resources.getString(R.string.stream_title_decoder),
         lines = listOfNotNull(
-            d.decoderName?.let { "Decoder name" to it },
-            input.decoderHardware?.let { "Runs on" to if (it) "Hardware" else "Software" },
-            d.sampleMime?.let { "Format" to it },
-            d.codecs?.takeIf { it.isNotBlank() }?.let { "Codec" to it },
-            d.decodedEncoding?.let { "Output" to pcmName(it) },
-            d.decodedSampleRate?.let { "Output rate" to kHz(it) },
-            d.decodedChannels?.let { "Channels" to channelName(it) },
-            d.decoderInitMs?.takeIf { it > 0 }?.let { "Started in" to "$it ms" },
+            d.decoderName?.let { resources.getString(R.string.stream_decoder_name) to it },
+            input.decoderHardware?.let { resources.getString(R.string.stream_runs_on) to if (it) resources.getString(R.string.stream_runs_on_hardware) else resources.getString(R.string.stream_runs_on_software) },
+            d.sampleMime?.let { resources.getString(R.string.stream_format) to it },
+            d.codecs?.takeIf { it.isNotBlank() }?.let { resources.getString(R.string.stream_codec) to it },
+            d.decodedEncoding?.let { resources.getString(R.string.stream_output) to pcmName(it, resources) },
+            d.decodedSampleRate?.let { resources.getString(R.string.stream_output_rate) to kHz(it) },
+            d.decodedChannels?.let { resources.getString(R.string.stream_channels) to channelName(it, resources) },
+            d.decoderInitMs?.takeIf { it > 0 }?.let { resources.getString(R.string.stream_started_in) to "$it ms" },
         ),
     )
 }
 
-private fun resamplerCard(input: StatsInput): StatCard {
+private fun resamplerCard(input: StatsInput, resources: Resources): StatCard {
     val d = input.details
     val effects = input.effects
-    if (d.resampledFrom != null && d.resampledTo != null) return bedivineResamplerCard(d, effects)
-    val inRate = d.decodedSampleRate ?: d.sampleRate ?: return StatCard("Resampler", emptyList())
+    if (d.resampledFrom != null && d.resampledTo != null) return bedivineResamplerCard(d, effects, resources)
+    val inRate = d.decodedSampleRate ?: d.sampleRate ?: return StatCard(resources.getString(R.string.stream_title_resampler), emptyList())
     val outRate = input.mixer?.sampleRate ?: input.systemMixerRate?.takeIf { input.device?.kind in FixedRateKinds && input.castingTo == null }
     val timeStretch = effects.speed != 1f || effects.pitch != 1f
     val resampling = outRate != null && outRate != inRate
     val type = when {
-        input.castingTo != null -> "The cast device's own"
-        timeStretch -> "Sonic time-stretch, then Android's mixer"
-        outRate == null -> "Android's mixer, as needed"
-        resampling -> "Android's mixer"
-        else -> "None, it plays at its own rate"
+        input.castingTo != null -> resources.getString(R.string.stream_resample_cast_device)
+        timeStretch -> resources.getString(R.string.stream_resample_timestretch)
+        outRate == null -> resources.getString(R.string.stream_resample_mixer_as_needed)
+        resampling -> resources.getString(R.string.stream_resample_mixer)
+        else -> resources.getString(R.string.stream_resample_none)
     }
     return StatCard(
-        title = "Resampler",
+        title = resources.getString(R.string.stream_title_resampler),
         lines = listOfNotNull(
-            "Type" to type,
-            outRate?.let { "I/O rate" to if (resampling) "${kHz(inRate)} → ${kHz(it)}" else "${kHz(inRate)} in and out" },
+            resources.getString(R.string.stream_type) to type,
+            outRate?.let { resources.getString(R.string.stream_io_rate) to if (resampling) "${kHz(inRate)} → ${kHz(it)}" else resources.getString(R.string.stream_io_rate_same, kHz(inRate)) },
             // the filter has to stop at the lower rate's nyquist, half of it
-            outRate?.takeIf { resampling }?.let { "Cutoff" to "~${kHz(minOf(inRate, it) / 2)}" },
-            line("Quality", "Untouched".takeIf { !resampling && outRate != null && !timeStretch }),
-            effects.speed.takeIf { it != 1f }?.let { "Speed" to String.format(Locale.US, "%.2f×", it) },
-            effects.pitch.takeIf { it != 1f }?.let { "Pitch" to String.format(Locale.US, "%+.1f semitones", 12 * log2(it)) },
+            outRate?.takeIf { resampling }?.let { resources.getString(R.string.stream_cutoff) to "~${kHz(minOf(inRate, it) / 2)}" },
+            line(resources.getString(R.string.stream_quality), resources.getString(R.string.stream_quality_untouched).takeIf { !resampling && outRate != null && !timeStretch }),
+            effects.speed.takeIf { it != 1f }?.let { resources.getString(R.string.stream_speed) to String.format(Locale.US, "%.2f×", it) },
+            effects.pitch.takeIf { it != 1f }?.let { resources.getString(R.string.stream_pitch) to String.format(Locale.US, resources.getString(R.string.stream_pitch_value), 12 * log2(it)) },
         ),
     )
 }
 
 // mochy's own filter did the work, so android's mixer is handed the rate it already runs at
-private fun bedivineResamplerCard(d: StreamDetails, effects: EffectsSnapshot): StatCard = StatCard(
-    title = "Resampler",
+private fun bedivineResamplerCard(d: StreamDetails, effects: EffectsSnapshot, resources: Resources): StatCard = StatCard(
+    title = resources.getString(R.string.stream_title_resampler),
     lines = listOfNotNull(
-        "Type" to "BeDivine hi-fi, windowed sinc (Kaiser)",
-        "I/O rate" to "${kHz(d.resampledFrom!!)} → ${kHz(d.resampledTo!!)}",
-        d.resamplerPassbandHz?.let { "Passband" to "flat to ${kHz(it.toInt())}" },
-        "Cutoff" to kHz(minOf(d.resampledFrom, d.resampledTo) / 2),
-        "Quality" to "−${SincResampler.StopbandDb.toInt()} dB stopband, 32-bit float",
-        d.resamplerTaps?.let { "Taps" to "$it per sample" },
-        "Android's mixer" to "Not resampling, the rates match",
-        effects.speed.takeIf { it != 1f }?.let { "Speed" to String.format(Locale.US, "%.2f×", it) },
+        resources.getString(R.string.stream_type) to resources.getString(R.string.stream_resample_bedivine_type),
+        resources.getString(R.string.stream_io_rate) to "${kHz(d.resampledFrom!!)} → ${kHz(d.resampledTo!!)}",
+        d.resamplerPassbandHz?.let { resources.getString(R.string.stream_passband) to resources.getString(R.string.stream_passband_value, kHz(it.toInt())) },
+        resources.getString(R.string.stream_cutoff) to kHz(minOf(d.resampledFrom, d.resampledTo) / 2),
+        resources.getString(R.string.stream_quality) to resources.getString(R.string.stream_quality_stopband, SincResampler.StopbandDb.toInt()),
+        d.resamplerTaps?.let { resources.getString(R.string.stream_taps) to resources.getString(R.string.stream_taps_value, it) },
+        resources.getString(R.string.stream_android_mixer) to resources.getString(R.string.stream_android_mixer_match),
+        effects.speed.takeIf { it != 1f }?.let { resources.getString(R.string.stream_speed) to String.format(Locale.US, "%.2f×", it) },
     ),
 )
 
-private fun dspCard(input: StatsInput): StatCard {
+private fun dspCard(input: StatsInput, resources: Resources): StatCard {
     val d = input.details
     val e = input.effects
     val chain = listOfNotNull(
-        e.equalizerBands?.let { "Equalizer ($it bands)" },
-        "Spatial".takeIf { e.spatial },
-        "Mono".takeIf { e.mono },
-        "Reverb".takeIf { e.reverb },
-        "Loudness".takeIf { e.loudness },
-        "Volume curve".takeIf { e.volumeCurve },
+        e.equalizerBands?.let { resources.getString(R.string.stream_effect_equalizer, it) },
+        resources.getString(R.string.stream_effect_spatial).takeIf { e.spatial },
+        resources.getString(R.string.stream_effect_mono).takeIf { e.mono },
+        resources.getString(R.string.stream_effect_reverb).takeIf { e.reverb },
+        resources.getString(R.string.stream_effect_loudness).takeIf { e.loudness },
+        resources.getString(R.string.stream_effect_volume_curve).takeIf { e.volumeCurve },
         e.transitions,
-        "Skip silence".takeIf { e.skipSilence },
-        "Haptics".takeIf { e.haptics },
+        resources.getString(R.string.stream_effect_skip_silence).takeIf { e.skipSilence },
+        resources.getString(R.string.stream_effect_haptics).takeIf { e.haptics },
     )
     val floatPath = d.outputEncoding == C.ENCODING_PCM_FLOAT
     return StatCard(
-        title = "DSP",
+        title = resources.getString(R.string.stream_title_dsp),
         lines = listOfNotNull(
-            d.outputEncoding?.let { "PCM format" to pcmName(it) },
-            d.outputSampleRate?.let { "Sample rate" to kHz(it) },
-            "Effects" to chain.joinToString(", ").ifEmpty { "None, the sound is untouched" },
-            line("Dither", "TPDF, to 16-bit".takeIf { d.dithered }),
-            line("Normalization", "On".takeIf { e.normalize }),
+            d.outputEncoding?.let { resources.getString(R.string.stream_pcm_format) to pcmName(it, resources) },
+            d.outputSampleRate?.let { resources.getString(R.string.stream_sample_rate) to kHz(it) },
+            resources.getString(R.string.stream_effects) to chain.joinToString(", ").ifEmpty { resources.getString(R.string.stream_effects_none) },
+            line(resources.getString(R.string.stream_dither), resources.getString(R.string.stream_dither_value).takeIf { d.dithered }),
+            line(resources.getString(R.string.stream_normalization), resources.getString(R.string.pref_audio_quality_status_on).takeIf { e.normalize }),
             when {
-                floatPath -> "Hi-res path" to "32-bit float, straight through"
-                e.hiResWanted && !e.floatAllowed -> "Hi-res path" to "Paused while an effect is on"
+                floatPath -> resources.getString(R.string.stream_hires_path) to resources.getString(R.string.stream_hires_path_float)
+                e.hiResWanted && !e.floatAllowed -> resources.getString(R.string.stream_hires_path) to resources.getString(R.string.stream_hires_path_paused)
                 else -> null
             },
         ),
     )
 }
 
-private fun outputCard(input: StatsInput): StatCard {
+private fun outputCard(input: StatsInput, resources: Resources): StatCard {
     val d = input.details
     val device = input.device
     val frameBytes = (channelCountOf(d.outputChannelConfig) ?: 2) * (bytesPerSample(d.outputEncoding) ?: 2)
     val bufferMs = d.outputBufferBytes?.let { bytes -> d.outputSampleRate?.takeIf { it > 0 }?.let { rate -> bytes * 1000L / (rate.toLong() * frameBytes) } }
     val mixer = input.mixer
     return StatCard(
-        title = "Output",
+        title = resources.getString(R.string.stream_output),
         lines = listOfNotNull(
-            input.castingTo?.let { "Casting to" to it },
-            device?.let { "Device" to deviceName(it) },
-            device?.let { "Route" to routeName(it.kind) },
+            input.castingTo?.let { resources.getString(R.string.stream_casting_to) to it },
+            device?.let { resources.getString(R.string.stream_device) to deviceName(it, resources) },
+            device?.let { resources.getString(R.string.stream_route) to routeName(it.kind, resources) },
             device?.takeIf { it.kind == AudioOutputs.Kind.USB || it.kind == AudioOutputs.Kind.HDMI }?.let { dev ->
                 listOfNotNull(dev.maxSampleRate?.let(::kHz), dev.bitDepths.maxOrNull()?.let { "$it-bit" })
-                    .takeIf { it.isNotEmpty() }?.let { "Takes up to" to it.joinToString(" · ") }
+                    .takeIf { it.isNotEmpty() }?.let { resources.getString(R.string.stream_takes_up_to) to it.joinToString(" · ") }
             },
             mixer?.let {
-                "DAC mixer" to (if (it.bitPerfect) "Bit-perfect, " else "Locked to the song, ") +
-                    listOfNotNull(kHz(it.sampleRate), StreamInspector.bitDepthOf(it.encoding)?.let { b -> "$b-bit" }).joinToString(" ")
+                resources.getString(R.string.stream_dac_mixer) to resources.getString(
+                    if (it.bitPerfect) R.string.stream_dac_mixer_bitperfect else R.string.stream_dac_mixer_locked,
+                    listOfNotNull(kHz(it.sampleRate), StreamInspector.bitDepthOf(it.encoding)?.let { b -> "$b-bit" }).joinToString(" "),
+                )
             },
             input.passthrough,
             d.outputEncoding?.let { enc ->
-                "Audio track" to listOfNotNull(pcmShort(enc), d.outputSampleRate?.let(::kHz), channelCountOf(d.outputChannelConfig)?.let(::channelName)).joinToString(" · ")
+                resources.getString(R.string.stream_audio_track) to listOfNotNull(pcmShort(enc, resources), d.outputSampleRate?.let(::kHz), channelCountOf(d.outputChannelConfig)?.let { channelName(it, resources) }).joinToString(" · ")
             },
-            bufferMs?.takeIf { it > 0 }?.let { "Buffer" to "~$it ms" },
-            line("Offload", "On".takeIf { d.offload }),
-            line("Tunneling", "On".takeIf { d.tunneling }),
-            d.underruns.takeIf { it > 0 }?.let { "Underruns" to "$it" },
+            bufferMs?.takeIf { it > 0 }?.let { resources.getString(R.string.stream_buffer) to "~$it ms" },
+            line(resources.getString(R.string.stream_offload), resources.getString(R.string.pref_audio_quality_status_on).takeIf { d.offload }),
+            line(resources.getString(R.string.stream_tunneling), resources.getString(R.string.pref_audio_quality_status_on).takeIf { d.tunneling }),
+            d.underruns.takeIf { it > 0 }?.let { resources.getString(R.string.stream_underruns) to "$it" },
         ),
     )
 }
@@ -236,12 +240,12 @@ private fun kbps(bitsPerSecond: Int): String = String.format(Locale.getDefault()
 
 private fun megabytes(bytes: Long): String = String.format(Locale.getDefault(), "%.1f MB", bytes / 1_048_576.0)
 
-private fun channelName(count: Int): String = when (count) {
-    1 -> "Mono"
-    2 -> "Stereo"
-    6 -> "5.1 surround"
-    8 -> "7.1 surround"
-    else -> "$count channels"
+private fun channelName(count: Int, resources: Resources): String = when (count) {
+    1 -> resources.getString(R.string.stream_channel_mono)
+    2 -> resources.getString(R.string.stream_channel_stereo)
+    6 -> resources.getString(R.string.stream_channel_surround_51)
+    8 -> resources.getString(R.string.stream_channel_surround_71)
+    else -> resources.getString(R.string.stream_channel_count, count)
 }
 
 private fun containerName(mime: String?): String? = when (mime?.lowercase()) {
@@ -257,18 +261,18 @@ private fun containerName(mime: String?): String? = when (mime?.lowercase()) {
     else -> mime
 }
 
-private fun pcmName(encoding: Int): String = when (encoding) {
-    C.ENCODING_PCM_16BIT -> "16-bit integer PCM"
-    C.ENCODING_PCM_24BIT -> "24-bit integer PCM"
-    C.ENCODING_PCM_32BIT -> "32-bit integer PCM"
-    C.ENCODING_PCM_FLOAT -> "32-bit float PCM"
-    C.ENCODING_PCM_8BIT -> "8-bit PCM"
-    else -> "Encoded, passed through"
+private fun pcmName(encoding: Int, resources: Resources): String = when (encoding) {
+    C.ENCODING_PCM_16BIT -> resources.getString(R.string.stream_pcm_16bit)
+    C.ENCODING_PCM_24BIT -> resources.getString(R.string.stream_pcm_24bit)
+    C.ENCODING_PCM_32BIT -> resources.getString(R.string.stream_pcm_32bit)
+    C.ENCODING_PCM_FLOAT -> resources.getString(R.string.stream_pcm_float)
+    C.ENCODING_PCM_8BIT -> resources.getString(R.string.stream_pcm_8bit)
+    else -> resources.getString(R.string.stream_pcm_passthrough)
 }
 
-private fun pcmShort(encoding: Int): String = when (encoding) {
-    C.ENCODING_PCM_FLOAT -> "32-bit float"
-    else -> StreamInspector.bitDepthOf(encoding)?.let { "$it-bit" } ?: "Encoded"
+private fun pcmShort(encoding: Int, resources: Resources): String = when (encoding) {
+    C.ENCODING_PCM_FLOAT -> resources.getString(R.string.stream_pcm_float_short)
+    else -> StreamInspector.bitDepthOf(encoding)?.let { "$it-bit" } ?: resources.getString(R.string.stream_pcm_encoded)
 }
 
 private fun bytesPerSample(encoding: Int?): Int? = when (encoding) {
@@ -280,20 +284,20 @@ private fun bytesPerSample(encoding: Int?): Int? = when (encoding) {
 
 private fun channelCountOf(channelConfig: Int?): Int? = channelConfig?.let { Integer.bitCount(it).takeIf { n -> n > 0 } }
 
-private fun routeName(kind: AudioOutputs.Kind): String = when (kind) {
-    AudioOutputs.Kind.PHONE -> "Built-in speaker"
-    AudioOutputs.Kind.WIRED -> "Wired"
-    AudioOutputs.Kind.USB -> "USB audio"
-    AudioOutputs.Kind.BLUETOOTH -> "Bluetooth"
-    AudioOutputs.Kind.HDMI -> "HDMI"
+private fun routeName(kind: AudioOutputs.Kind, resources: Resources): String = when (kind) {
+    AudioOutputs.Kind.PHONE -> resources.getString(R.string.stream_route_speaker)
+    AudioOutputs.Kind.WIRED -> resources.getString(R.string.stream_route_wired)
+    AudioOutputs.Kind.USB -> resources.getString(R.string.stream_route_usb)
+    AudioOutputs.Kind.BLUETOOTH -> resources.getString(R.string.stream_route_bluetooth)
+    AudioOutputs.Kind.HDMI -> resources.getString(R.string.stream_route_hdmi)
 }
 
-internal fun deviceName(device: AudioOutputs.Device): String = device.name.ifBlank {
+internal fun deviceName(device: AudioOutputs.Device, resources: Resources): String = device.name.ifBlank {
     when (device.kind) {
-        AudioOutputs.Kind.PHONE -> "This phone"
-        AudioOutputs.Kind.WIRED -> "Wired headphones"
-        AudioOutputs.Kind.USB -> "USB DAC"
-        AudioOutputs.Kind.BLUETOOTH -> "Bluetooth device"
-        AudioOutputs.Kind.HDMI -> "HDMI"
+        AudioOutputs.Kind.PHONE -> resources.getString(R.string.stream_device_this_phone)
+        AudioOutputs.Kind.WIRED -> resources.getString(R.string.stream_device_wired_headphones)
+        AudioOutputs.Kind.USB -> resources.getString(R.string.stream_device_usb_dac)
+        AudioOutputs.Kind.BLUETOOTH -> resources.getString(R.string.stream_device_bluetooth)
+        AudioOutputs.Kind.HDMI -> resources.getString(R.string.stream_device_hdmi)
     }
 }

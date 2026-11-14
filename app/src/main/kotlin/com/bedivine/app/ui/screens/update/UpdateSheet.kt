@@ -1,5 +1,6 @@
 package com.bedivine.app.ui.screens.update
 
+import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SizeTransform
@@ -63,6 +64,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.annotation.StringRes
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -102,12 +104,12 @@ import com.bedivine.app.ui.component.RemoteFocus
 fun rememberUpdateState(): androidx.compose.runtime.State<UpdateState> {
     val context = LocalContext.current
     val state = remember { mutableStateOf<UpdateState>(UpdateState.Checking) }
-    LaunchedEffect(Unit) { state.value = checkUpdate(updateChannel(context), force = false) }
+    LaunchedEffect(Unit) { state.value = checkUpdate(context, updateChannel(context), force = false) }
     return state
 }
 
 /** asks github (or the shared copy, unless force is set) whether a newer release is out on the channel */
-private suspend fun checkUpdate(channel: UpdateChannel, force: Boolean): UpdateState =
+private suspend fun checkUpdate(context: Context, channel: UpdateChannel, force: Boolean): UpdateState =
     getLatestRelease(channel, force).fold(
         onSuccess = { release ->
             when {
@@ -116,13 +118,13 @@ private suspend fun checkUpdate(channel: UpdateChannel, force: Boolean): UpdateS
                 else -> UpdateState.UpToDate
             }
         },
-        onFailure = { UpdateState.Failed(it.message ?: "Couldn't reach GitHub") },
+        onFailure = { UpdateState.Failed(it.message ?: context.getString(R.string.misc_update_couldnt_reach_github)) },
     )
 
 /** shows the app version sheet as a PopupSheet, see docs/popup-sheet.skill.md */
 fun PopupSheetState.showUpdateSheet(updateState: UpdateState, onOpenDevSpace: (Int) -> Unit = {}) {
     val popup = this
-    show(buttonBar = { SheetPrimaryButton(text = "Done", onClick = popup::dismiss) }) {
+    show(buttonBar = { SheetPrimaryButton(text = stringResource(R.string.done), onClick = popup::dismiss) }) {
         UpdateSheetContent(initialState = updateState, popup = popup, onOpenDevSpace = onOpenDevSpace)
     }
 }
@@ -184,7 +186,7 @@ private fun ColumnScope.UpdateSheetContent(
     var previous by remember { mutableStateOf<GithubRelease?>(null) }
 
     suspend fun refresh(force: Boolean) {
-        state = checkUpdate(channel, force)
+        state = checkUpdate(context, channel, force)
         // a failed check keeps what it knew, so the rows don't vanish when offline
         getLatestRelease(UpdateChannel.Release).onSuccess { latestRelease = it }
         getPreviousRelease(channel).onSuccess { previous = it }
@@ -257,12 +259,12 @@ private fun ColumnScope.UpdateSheetContent(
             )
 
             Spacer(Modifier.height(22.dp))
-            Text("Actions", fontSize = 17.sp, fontWeight = FontWeight.Bold, letterSpacing = (-0.5).sp)
+            Text(stringResource(R.string.misc_update_actions), fontSize = 17.sp, fontWeight = FontWeight.Bold, letterSpacing = (-0.5).sp)
             Spacer(Modifier.height(10.dp))
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 ActionRow(
                     icon = R.drawable.refresh,
-                    label = if (state is UpdateState.Checking) "Checking…" else "Check for update",
+                    label = if (state is UpdateState.Checking) stringResource(R.string.misc_update_checking) else stringResource(R.string.check_for_update),
                     spinning = state is UpdateState.Checking,
                     onClick = checkAgain,
                 )
@@ -274,7 +276,7 @@ private fun ColumnScope.UpdateSheetContent(
                     previous?.let { older ->
                         ActionRow(
                             icon = R.drawable.history,
-                            label = "Downgrade to ${shortVersion(older.version)}",
+                            label = stringResource(R.string.misc_update_downgrade, shortVersion(older.version)),
                             onClick = { popup.showUpdateDetailSheet(older) },
                         )
                     }
@@ -304,12 +306,12 @@ private fun ColumnScope.UpdateSheetContent(
                 }
                 ActionRow(
                     icon = R.drawable.info,
-                    label = "About app",
+                    label = stringResource(R.string.misc_update_about_app),
                     onClick = { popup.showAboutSheet(onOpenDevSpace = onOpenDevSpace) },
                 )
                 ActionRow(
                     icon = R.drawable.favorite,
-                    label = "Help us!",
+                    label = stringResource(R.string.misc_update_help_us),
                     onClick = { popup.showSupportSheet() },
                 )
             }
@@ -367,17 +369,17 @@ private fun UpdateStatusCard(
         ) { shown ->
             when (shown) {
                 is UpdateState.Available -> StatusRow(
-                    title = "New update!",
+                    title = stringResource(R.string.misc_update_new),
                     big = shortVersion(shown.release.version),
-                    action = "UPDATE NOW",
+                    action = stringResource(R.string.misc_update_now),
                     onAction = { onUpdate(shown.release) },
                 )
-                UpdateState.Checking -> StatusRow(title = "Looking for updates", big = "…", pulsing = true)
-                UpdateState.UpToDate -> StatusRow(title = "You're on the latest", big = "All good")
+                UpdateState.Checking -> StatusRow(title = stringResource(R.string.misc_update_looking), big = "…", pulsing = true)
+                UpdateState.UpToDate -> StatusRow(title = stringResource(R.string.misc_update_latest), big = stringResource(R.string.misc_update_all_good))
                 is UpdateState.Failed -> StatusRow(
-                    title = "Couldn't check for updates",
-                    big = "Offline?",
-                    action = "TRY AGAIN",
+                    title = stringResource(R.string.misc_update_couldnt_check),
+                    big = stringResource(R.string.misc_update_offline),
+                    action = stringResource(R.string.misc_update_try_again),
                     onAction = onRetry,
                 )
             }
@@ -504,7 +506,8 @@ private fun ActionRow(
     }
 }
 
-const val UpdateHeadline = "Theres an update~!"
+@StringRes
+const val UpdateHeadlineRes: Int = R.string.update_headline
 
 @Composable
 private fun ColumnScope.UpdateDetailContent(
@@ -519,9 +522,10 @@ private fun ColumnScope.UpdateDetailContent(
     var error by remember { mutableStateOf<String?>(null) }
     val progress = remember { mutableFloatStateOf(0f) }
 
+    val allowUnknownText = stringResource(R.string.misc_update_allow_unknown)
     val startInstall: (java.io.File) -> Unit = { file ->
         if (!installApk(context, file)) {
-            error = "Allow \"Install unknown apps\" for BeDivine, then tap Install here again."
+            error = allowUnknownText
         }
     }
 
@@ -541,7 +545,7 @@ private fun ColumnScope.UpdateDetailContent(
     ) {
         Icon(
             painter = painterResource(R.drawable.arrow_back),
-            contentDescription = "Back",
+            contentDescription = stringResource(R.string.cd_back),
             modifier = Modifier.size(18.dp),
         )
         Spacer(modifier = Modifier.width(8.dp))
@@ -570,7 +574,7 @@ private fun ColumnScope.UpdateDetailContent(
             .padding(16.dp)
             .animateContentSize()
     ) {
-        Text(text = "Changelog", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        Text(text = stringResource(R.string.changelog), fontSize = 20.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(4.dp))
         ChangelogMarkdown(
             markdown = release.body,
@@ -582,7 +586,7 @@ private fun ColumnScope.UpdateDetailContent(
     Spacer(modifier = Modifier.height(18.dp))
 
     Text(
-        text = "To Be Installed -",
+        text = stringResource(R.string.misc_update_to_be_installed),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         fontSize = 11.sp,
         fontWeight = FontWeight.SemiBold,
@@ -654,7 +658,7 @@ private fun ColumnScope.UpdateDetailContent(
                             onLocked(false)
                             result.fold(
                                 onSuccess = { startInstall(it) },
-                                onFailure = { error = it.message ?: "Download failed" },
+                                onFailure = { error = it.message ?: context.getString(R.string.misc_update_download_failed) },
                             )
                         }
                     }
@@ -670,9 +674,9 @@ private fun ColumnScope.UpdateDetailContent(
         )
         Text(
             text = when {
-                downloading -> "Downloading… ${(animatedProgress * 100).toInt()}%"
-                release.apkUrl == null -> "No APK in this release"
-                else -> "Install here"
+                downloading -> stringResource(R.string.misc_update_downloading, (animatedProgress * 100).toInt())
+                release.apkUrl == null -> stringResource(R.string.misc_update_no_apk)
+                else -> stringResource(R.string.misc_update_install_here)
             },
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
@@ -695,7 +699,7 @@ private fun ColumnScope.UpdateDetailContent(
                 onClick = { context.openUrl(release.htmlUrl) },
             )
     ) {
-        Text(text = "Open the web", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+        Text(text = stringResource(R.string.misc_update_open_web), fontSize = 14.sp, fontWeight = FontWeight.Bold)
     }
     }
 }

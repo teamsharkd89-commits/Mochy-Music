@@ -101,26 +101,26 @@ fun AboutSongSheet(
             ) {
                 // a tablet or a phone on its side keeps the column readable instead of stretching it
                 InfoColumn(modifier = Modifier.widthIn(max = 600.dp)) {
-                    InfoSheetTitle("About song")
+                    InfoSheetTitle(stringResource(R.string.misc_about_song))
                     Spacer(Modifier.height(16.dp))
                     SongHeader(song)
                     InfoDivider()
                     GeneralInformation(about)
                     InfoDivider()
-                    InfoSectionTitle("About") {
+                    InfoSectionTitle(stringResource(R.string.about)) {
                         SourceChip(source) { showSources = true }
                     }
                     Spacer(Modifier.height(12.dp))
                     AboutCard(about, source, onSwitch = { setSourceId(it.id) })
                     if (about.artists.isNotEmpty()) {
                         InfoDivider()
-                        InfoSectionTitle("By")
+                        InfoSectionTitle(stringResource(R.string.by_text))
                         Spacer(Modifier.height(14.dp))
                         ArtistRow(about.artists, onOpenArtist)
                     }
                     if (about.links.isNotEmpty()) {
                         InfoDivider()
-                        InfoSectionTitle("Also available on")
+                        InfoSectionTitle(stringResource(R.string.misc_about_also_on))
                         Spacer(Modifier.height(14.dp))
                         StoreRow(about.links)
                     }
@@ -141,20 +141,20 @@ fun AboutSongSheet(
 
 @Composable
 private fun GeneralInformation(about: SongAbout) {
-    InfoSectionTitle("General Information")
+    InfoSectionTitle(stringResource(R.string.misc_about_general))
     Spacer(Modifier.height(8.dp))
     // a fact still on its way gets a placeholder; one nobody had is left out rather than shown as "-"
     val waiting = !about.factsDone
     val genre = about.genre
-    if (genre != null) InfoBullet("Genre", genre) else if (waiting) LoadingBullet("Genre")
+    if (genre != null) InfoBullet(stringResource(R.string.misc_about_genre), genre) else if (waiting) LoadingBullet(stringResource(R.string.misc_about_genre))
     val released = about.released
-    if (released != null) InfoBullet("Date released", released) else if (waiting) LoadingBullet("Date released")
-    about.album?.let { InfoBullet("Album", it) }
-    about.artist?.let { InfoBullet("Artist", it) }
-    about.writtenBy?.let { InfoBullet("Written by", it) }
-    about.producedBy?.let { InfoBullet("Produced by", it) }
-    about.label?.let { InfoBullet("Label", it) }
-    about.lengthSeconds?.let { InfoBullet("Length", makeTimeString(it * 1000L)) }
+    if (released != null) InfoBullet(stringResource(R.string.misc_about_released), released) else if (waiting) LoadingBullet(stringResource(R.string.misc_about_released))
+    about.album?.let { InfoBullet(stringResource(R.string.album_text), it) }
+    about.artist?.let { InfoBullet(stringResource(R.string.artist), it) }
+    about.writtenBy?.let { InfoBullet(stringResource(R.string.misc_about_written), it) }
+    about.producedBy?.let { InfoBullet(stringResource(R.string.misc_about_produced), it) }
+    about.label?.let { InfoBullet(stringResource(R.string.misc_about_label), it) }
+    about.lengthSeconds?.let { InfoBullet(stringResource(R.string.sort_by_length), makeTimeString(it * 1000L)) }
 }
 
 @Composable
@@ -186,7 +186,7 @@ private fun SourceChip(source: AboutSource, onClick: () -> Unit) {
     ) {
         Text(text = source.label, color = Color.White.copy(alpha = 0.7f), fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
         Spacer(Modifier.width(6.dp))
-        Icon(Icons.Rounded.SwapVert, contentDescription = "Change source", tint = Color.White.copy(alpha = 0.7f), modifier = Modifier.size(14.dp))
+        Icon(Icons.Rounded.SwapVert, contentDescription = stringResource(R.string.misc_about_change_source), tint = Color.White.copy(alpha = 0.7f), modifier = Modifier.size(14.dp))
     }
 }
 
@@ -231,7 +231,7 @@ private fun AboutCard(about: SongAbout, source: AboutSource, onSwitch: (AboutSou
                             val other = AboutSource.entries.firstOrNull { it != shownSource && textFor(about, it) != null }
                             if (other != null) {
                                 Spacer(Modifier.height(12.dp))
-                                InfoPill(text = "Read it on ${other.label}", filled = true, onClick = { onSwitch(other) })
+                                InfoPill(text = stringResource(R.string.misc_about_read_on, other.label), filled = true, onClick = { onSwitch(other) })
                             }
                         }
                     }

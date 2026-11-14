@@ -34,7 +34,7 @@
     <string name="settings_youtube_plays_detail">Cuando una canción se ha reproducido el tiempo suficiente para aparecer en tu historial, BeDivine se lo comunica a YouTube, igual que la app de YouTube Music. Si iniciaste sesión, también aparece en tu historial de YouTube. Las canciones saltadas, los archivos locales y todo lo reproducido sin conexión nunca se envían</string>
     <string name="settings_playback_category">Reproducción</string>
     <string name="settings_customisation_category">Personalización</string>
-    <string name="settings_audio_lab_category">Audio Lab</string>
+    <string name="settings_audio_lab_category">Laboratorio de audio</string>
     <string name="settings_modules_category">Módulos</string>
     <string name="settings_recommended_item">Elemento recomendado</string>
     <string name="settings_nothing_matches">Nada coincide con “%1$s”.</string>

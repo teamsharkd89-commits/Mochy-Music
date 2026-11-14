@@ -97,7 +97,7 @@
     <string name="link_setting_eq">Ecualizador</string>
     <string name="link_setting_eq_preset">Curva del ecualizador</string>
     <string name="link_setting_loudness">Refuerzo de volumen</string>
-    <string name="link_setting_reverb">Reverb</string>
+    <string name="link_setting_reverb">Reverberación</string>
     <string name="link_setting_spatial">Audio espacial</string>
     <string name="link_setting_speed">Velocidad</string>
     <string name="link_speed_times">%1$s×</string>

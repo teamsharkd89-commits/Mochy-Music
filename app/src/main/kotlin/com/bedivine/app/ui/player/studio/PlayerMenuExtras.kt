@@ -20,6 +20,7 @@ import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
 import com.bedivine.app.LocalDatabase
+import com.bedivine.app.R
 import com.bedivine.app.LocalDownloadUtil
 import com.bedivine.app.constants.KeepScreenOn
 import com.bedivine.app.db.MusicDatabase
@@ -56,7 +57,7 @@ class PlayerMenuExtras internal constructor(
         when (action) {
             PlayerMenuAction.KEEP_AWAKE -> {
                 setKeepScreenOn(!keepScreenOn)
-                toast(if (keepScreenOn) "The screen can sleep again" else "The screen stays on while BeDivine is open")
+                toast(if (keepScreenOn) context.getString(R.string.misc_menu_screen_sleep) else context.getString(R.string.misc_menu_screen_stays))
             }
             PlayerMenuAction.TRANSLATE_LYRICS -> {
                 if (translating) {
@@ -78,7 +79,7 @@ class PlayerMenuExtras internal constructor(
         val song = song ?: return
         if (isActive(PlayerMenuAction.DOWNLOAD)) {
             DownloadService.sendRemoveDownload(context, ExoDownloadService::class.java, song.id, false)
-            toast(if (downloadState == Download.STATE_COMPLETED) "Removed the download" else "Download stopped")
+            toast(if (downloadState == Download.STATE_COMPLETED) context.getString(R.string.misc_menu_removed_download) else context.getString(R.string.misc_menu_download_stopped))
             return
         }
         // the song has to be in the database for its download to be listed and played from there
@@ -88,7 +89,7 @@ class PlayerMenuExtras internal constructor(
             .setData(song.title.toByteArray())
             .build()
         DownloadService.sendAddDownload(context, ExoDownloadService::class.java, request, false)
-        toast("Downloading \"${song.title}\"")
+        toast(context.getString(R.string.misc_menu_downloading, song.title))
     }
 
     private fun toast(text: String) = Toast.makeText(context, text, Toast.LENGTH_SHORT).show()

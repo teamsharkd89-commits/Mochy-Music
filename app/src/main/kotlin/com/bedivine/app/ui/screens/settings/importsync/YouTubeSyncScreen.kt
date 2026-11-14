@@ -60,27 +60,27 @@ fun YouTubeSyncScreen(
     var confirmUndo by remember { mutableStateOf(false) }
 
     SubSettingsScaffold(
-        title = "Sync",
+        title = stringResource(R.string.action_sync),
         onBack = { navController.navigateUp() },
     ) {
         SettingsGroup(
-            title = "YouTube account",
+            title = stringResource(R.string.ytsync_account_group),
             style = SettingsGroupStyle.Grouped,
             items = listOf(
                 if (signedIn) {
                     SettingsItem(
-                        title = { Text(accountName.ifBlank { "Signed in" }) },
+                        title = { Text(accountName.ifBlank { stringResource(R.string.ytsync_signed_in) }) },
                         descriptionText = accountEmail.ifBlank { "YouTube Music" },
                         icon = painterResource(R.drawable.account),
                         iconShape = CircleShape,
                         trailingContent = {
-                            TextButton(onClick = { confirmSignOut = true }) { Text("Sign out") }
+                            TextButton(onClick = { confirmSignOut = true }) { Text(stringResource(R.string.module_sign_out)) }
                         },
                     )
                 } else {
                     SettingsItem(
-                        title = { Text("Sign in to YouTube") },
-                        descriptionText = "Needed for sync. Your login stays on this phone",
+                        title = { Text(stringResource(R.string.module_sign_in_to, "YouTube")) },
+                        descriptionText = stringResource(R.string.ytsync_signin_desc),
                         icon = painterResource(R.drawable.login),
                         iconShape = CircleShape,
                         onClick = { navController.navigate(YouTubeLoginRoute) },
@@ -92,36 +92,36 @@ fun YouTubeSyncScreen(
         Spacer(Modifier.height(16.dp))
 
         SettingsGroup(
-            title = "Keep in sync",
+            title = stringResource(R.string.ytsync_keep_in_sync),
             style = SettingsGroupStyle.Grouped,
             items = listOf(
                 toggleItem(
-                    title = "Sync library on launch",
-                    description = "Likes, library, artists and saved playlists from YouTube",
+                    title = stringResource(R.string.ytsync_sync_library_title),
+                    description = stringResource(R.string.ytsync_sync_library_desc),
                     icon = R.drawable.sync,
                     checked = autoSync,
                     enabled = signedIn,
                     onChange = onAutoSyncChange,
                 ),
                 toggleItem(
-                    title = "New playlists go to YouTube",
-                    description = "Playlists you create here are created on YouTube too",
+                    title = stringResource(R.string.ytsync_new_playlists_title),
+                    description = stringResource(R.string.ytsync_new_playlists_desc),
                     icon = R.drawable.playlist_add,
                     checked = syncNewPlaylists,
                     enabled = signedIn,
                     onChange = onSyncNewPlaylistsChange,
                 ),
                 toggleItem(
-                    title = "Send plays to YouTube history",
-                    description = "Songs you play here show up in your YouTube history",
+                    title = stringResource(R.string.ytsync_report_plays_title),
+                    description = stringResource(R.string.ytsync_report_plays_desc),
                     icon = R.drawable.history,
                     checked = reportPlays,
                     enabled = signedIn,
                     onChange = onReportPlaysChange,
                 ),
                 toggleItem(
-                    title = "Copy YouTube history here",
-                    description = "Plays from your other devices join BeDivine's history on each sync",
+                    title = stringResource(R.string.ytsync_pull_history_title),
+                    description = stringResource(R.string.ytsync_pull_history_desc),
                     icon = R.drawable.history,
                     checked = pullHistory,
                     enabled = signedIn,
@@ -133,7 +133,7 @@ fun YouTubeSyncScreen(
         Spacer(Modifier.height(16.dp))
 
         SettingsGroup(
-            title = "Other apps",
+            title = stringResource(R.string.ytsync_other_apps),
             style = SettingsGroupStyle.Grouped,
             items = listOf(
                 toggleItem(
@@ -150,20 +150,20 @@ fun YouTubeSyncScreen(
         Spacer(Modifier.height(16.dp))
 
         SettingsGroup(
-            title = "Now",
+            title = stringResource(R.string.ytsync_now_group),
             style = SettingsGroupStyle.Grouped,
             items = listOf(
                 SettingsItem(
-                    title = { Text("Sync now") },
-                    descriptionText = if (pullHistory) "Library, playlists and history" else "Library and playlists",
+                    title = { Text(stringResource(R.string.devices_sync_now)) },
+                    descriptionText = if (pullHistory) stringResource(R.string.ytsync_sync_now_desc_full) else stringResource(R.string.ytsync_sync_now_desc_basic),
                     icon = painterResource(R.drawable.refresh),
                     iconShape = CircleShape,
                     enabled = signedIn && !state.running,
                     onClick = viewModel::syncNow,
                 ),
                 SettingsItem(
-                    title = { Text("Copy YouTube history now") },
-                    descriptionText = "Only adds plays BeDivine doesn't have yet",
+                    title = { Text(stringResource(R.string.ytsync_pull_history_now_title)) },
+                    descriptionText = stringResource(R.string.ytsync_pull_history_now_desc),
                     icon = painterResource(R.drawable.history),
                     iconShape = CircleShape,
                     enabled = signedIn && !state.running,
@@ -178,9 +178,9 @@ fun YouTubeSyncScreen(
                     onClick = { confirmUndo = true },
                 ),
                 SettingsItem(
-                    title = { Text("Put local playlists on YouTube") },
-                    descriptionText = "Copy local playlists to YouTube",
-                    detail = "Creates a YouTube copy of every playlist that only exists here",
+                    title = { Text(stringResource(R.string.ytsync_upload_title)) },
+                    descriptionText = stringResource(R.string.ytsync_upload_desc),
+                    detail = stringResource(R.string.ytsync_upload_detail),
                     icon = painterResource(R.drawable.cloud),
                     iconShape = CircleShape,
                     enabled = signedIn && !state.running,
@@ -200,7 +200,7 @@ fun YouTubeSyncScreen(
                     }
                 } else {
                     Text(state.message.orEmpty(), style = MaterialTheme.typography.bodyLarge)
-                    TextButton(onClick = viewModel::clearYouTubeMessage) { Text("OK") }
+                    TextButton(onClick = viewModel::clearYouTubeMessage) { Text(stringResource(R.string.devices_ok)) }
                 }
             }
         }
@@ -208,7 +208,7 @@ fun YouTubeSyncScreen(
         if (!signedIn) {
             Spacer(Modifier.height(16.dp))
             Text(
-                "Import from a YouTube playlist link doesn't need an account. Use Import → YouTube Music.",
+                stringResource(R.string.ytsync_import_no_account_note),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -219,17 +219,17 @@ fun YouTubeSyncScreen(
         DefaultDialog(
             onDismiss = { confirmSignOut = false },
             horizontalAlignment = Alignment.Start,
-            title = { Text("Sign out of YouTube?") },
+            title = { Text(stringResource(R.string.ytsync_sign_out_title)) },
             buttons = {
-                TextButton(onClick = { confirmSignOut = false }) { Text("Cancel") }
+                TextButton(onClick = { confirmSignOut = false }) { Text(stringResource(R.string.cancel)) }
                 TextButton(onClick = {
                     confirmSignOut = false
                     viewModel.signOut()
-                }) { Text("Sign out") }
+                }) { Text(stringResource(R.string.module_sign_out)) }
             },
         ) {
             Text(
-                "Everything already in your library stays. Sync stops until you sign in again.",
+                stringResource(R.string.ytsync_sign_out_body),
                 style = MaterialTheme.typography.bodyMedium,
             )
         }
@@ -241,7 +241,7 @@ fun YouTubeSyncScreen(
             horizontalAlignment = Alignment.Start,
             title = { Text(stringResource(R.string.yt_sync_undo_dialog_title)) },
             buttons = {
-                TextButton(onClick = { confirmUndo = false }) { Text("Cancel") }
+                TextButton(onClick = { confirmUndo = false }) { Text(stringResource(R.string.cancel)) }
                 TextButton(onClick = {
                     confirmUndo = false
                     viewModel.undoLastSync(withYouTube = false)
@@ -272,17 +272,17 @@ fun YouTubeSyncScreen(
         DefaultDialog(
             onDismiss = { confirmUpload = false },
             horizontalAlignment = Alignment.Start,
-            title = { Text("Put local playlists on YouTube?") },
+            title = { Text(stringResource(R.string.ytsync_upload_dialog_title)) },
             buttons = {
-                TextButton(onClick = { confirmUpload = false }) { Text("Cancel") }
+                TextButton(onClick = { confirmUpload = false }) { Text(stringResource(R.string.cancel)) }
                 TextButton(onClick = {
                     confirmUpload = false
                     viewModel.uploadLocalPlaylists()
-                }) { Text("Create") }
+                }) { Text(stringResource(R.string.create)) }
             },
         ) {
             Text(
-                "Each playlist that only exists in BeDivine gets a private copy on your YouTube account. After that, changes go to both.",
+                stringResource(R.string.ytsync_upload_dialog_body),
                 style = MaterialTheme.typography.bodyMedium,
             )
         }

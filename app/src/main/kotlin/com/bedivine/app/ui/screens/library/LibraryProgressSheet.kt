@@ -43,12 +43,14 @@ import com.bedivine.app.ui.component.PopupSheetState
 import com.bedivine.app.ui.component.SheetPillButton
 import com.bedivine.app.ui.screens.search.SearchColors
 import com.bedivine.app.viewmodels.LibraryImportViewModel
+import androidx.annotation.StringRes
 import kotlinx.coroutines.flow.StateFlow
+import androidx.compose.ui.res.stringResource
 
 /** Which job a progress card or sheet follows. */
-enum class TransferKind(val title: String, val idleText: String) {
-    Downloads("Download progress", "Nothing is downloading right now."),
-    LocalImport("Import progress", "Nothing is being imported right now."),
+enum class TransferKind(@StringRes val titleRes: Int, @StringRes val idleTextRes: Int) {
+    Downloads(R.string.misc_transfer_dl_title, R.string.misc_transfer_dl_idle),
+    LocalImport(R.string.misc_transfer_import_title, R.string.misc_transfer_import_idle),
 }
 
 internal fun LibraryImportViewModel.batchOf(kind: TransferKind): StateFlow<TransferBatch> = when (kind) {
@@ -90,7 +92,7 @@ fun PopupSheetState.showTransferSheet(kind: TransferKind, viewModel: LibraryImpo
 @Composable
 private fun ColumnScope.TransferSheetContent(kind: TransferKind, batch: TransferBatch) {
     Text(
-        text = kind.title,
+        text = stringResource(kind.titleRes),
         color = SearchColors.Primary,
         fontSize = 26.sp,
         fontWeight = FontWeight.Bold,
@@ -120,7 +122,7 @@ private fun ColumnScope.TransferSheetContent(kind: TransferKind, batch: Transfer
 
     if (batch.isEmpty) {
         Text(
-            text = kind.idleText,
+            text = stringResource(kind.idleTextRes),
             color = SearchColors.Secondary,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
@@ -150,7 +152,7 @@ private fun TransferRow(item: TransferItem) {
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            val subtitle = if (item.state == TransferState.Failed) "Couldn't add this one" else item.subtitle
+            val subtitle = if (item.state == TransferState.Failed) stringResource(R.string.misc_transfer_failed) else item.subtitle
             if (subtitle != null) {
                 Text(
                     text = subtitle,
@@ -171,7 +173,7 @@ private fun TransferRow(item: TransferItem) {
 private fun CancelDownloadsButton(batchFlow: StateFlow<TransferBatch>, onCancel: () -> Unit) {
     val batch by batchFlow.collectAsState()
     SheetPillButton(
-        text = "Cancel all downloads",
+        text = stringResource(R.string.misc_transfer_cancel),
         enabled = batch.isRunning,
         onClick = onCancel,
     )
@@ -191,7 +193,7 @@ private fun CreatePlaylistButton(
     val songIds = batch.finishedSongIds
 
     SheetPillButton(
-        text = "Create playlist",
+        text = stringResource(R.string.create_playlist),
         enabled = !batch.isRunning && songIds.isNotEmpty(),
         onClick = { creating = true },
     )

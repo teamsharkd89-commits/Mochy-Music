@@ -42,6 +42,8 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
+import com.bedivine.app.R
 import com.bedivine.app.ui.component.backdropClick
 
 private val IMAGE_INSET = 20.dp
@@ -255,7 +257,7 @@ fun PhotoCropperContainer(
         }
 
         Text(
-            text = "Adjust your photo profile",
+            text = stringResource(R.string.crop_adjust_photo),
             color = Color.White,
             fontWeight = FontWeight.Bold,
             fontSize = 18.sp,
@@ -281,7 +283,7 @@ fun PhotoCropperContainer(
                 .fillMaxWidth()
                 .height(48.dp)
         ) {
-            Text("Select new image", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text(stringResource(R.string.crop_select_new_image), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
         }
 
         Button(
@@ -329,7 +331,7 @@ fun PhotoCropperContainer(
                 .fillMaxWidth()
                 .height(48.dp)
         ) {
-            Text("Done", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text(stringResource(R.string.done), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
         }
         }
     }

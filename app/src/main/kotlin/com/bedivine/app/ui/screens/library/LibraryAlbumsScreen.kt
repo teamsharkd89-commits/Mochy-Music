@@ -76,7 +76,7 @@ private fun ImportedAlbumsScreen(
 
     LibraryGridScreen(
         title = stringResource(R.string.albums),
-        subtitle = stringResource(R.string.library_imported_albums_subtitle, source.label),
+        subtitle = stringResource(R.string.library_imported_albums_subtitle, stringResource(source.labelRes)),
         searchPlaceholder = stringResource(R.string.library_albums_search),
         entries = entries,
         onOpen = { navController.navigate("album/${it.id}") },

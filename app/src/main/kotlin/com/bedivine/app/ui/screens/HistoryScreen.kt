@@ -112,7 +112,7 @@ fun HistoryScreen(
         onShuffleClick = { playFrom(null, shuffled = true) },
         query = query,
         onQueryChange = { query = it },
-        searchPlaceholder = "Find something you played",
+        searchPlaceholder = stringResource(R.string.misc_history_find),
         onBackClick = { navController.navigateUp() },
         onBackLongClick = { navController.backToMain() },
     ) {

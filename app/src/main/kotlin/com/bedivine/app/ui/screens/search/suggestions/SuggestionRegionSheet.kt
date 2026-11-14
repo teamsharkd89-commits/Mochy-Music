@@ -21,8 +21,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.bedivine.app.R
 import com.bedivine.app.constants.SuggestionRegionSlugToName
 import kotlinx.coroutines.launch
 import com.bedivine.app.ui.component.RemoteFocus
@@ -36,9 +38,13 @@ fun SuggestionRegionSheet(
 ) {
     var searchQuery by remember { mutableStateOf("") }
 
-    val filteredRegions = remember(searchQuery) {
-        SuggestionRegionSlugToName.toList()
-            .filter { it.first != "system" }
+    // the region names in the app's language, so the search matches what the list shows
+    val regionNames = SuggestionRegionSlugToName.entries
+        .filter { it.key != "system" }
+        .map { (slug, nameRes) -> slug to stringResource(nameRes) }
+
+    val filteredRegions = remember(searchQuery, regionNames) {
+        regionNames
             .filter { it.second.contains(searchQuery, ignoreCase = true) }
     }
 
@@ -52,7 +58,7 @@ fun SuggestionRegionSheet(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "Choose Suggestions Region",
+                text = stringResource(R.string.pref_region_sheet_title),
                 style = MaterialTheme.typography.labelLarge
             )
 
@@ -64,11 +70,11 @@ fun SuggestionRegionSheet(
                         onSearch = {},
                         expanded = false,
                         onExpandedChange = {},
-                        placeholder = { Text("Search regions...") },
+                        placeholder = { Text(stringResource(R.string.pref_region_search_hint)) },
                         leadingIcon = {
                             Icon(
                                 Icons.Default.Search,
-                                contentDescription = "Search"
+                                contentDescription = stringResource(R.string.search)
                             )
                         },
                     )
@@ -90,7 +96,7 @@ fun SuggestionRegionSheet(
 
                 item {
                     Text(
-                        text = "System",
+                        text = stringResource(R.string.pref_region_system_section),
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                     )
@@ -98,7 +104,7 @@ fun SuggestionRegionSheet(
                 item {
                     val isSelected = currentRegionSlug == "system"
                     RegionListItem(
-                        headlineContent = { Text("System Default") },
+                        headlineContent = { Text(stringResource(R.string.pref_region_system_default)) },
                         selected = isSelected,
                         items = 1,
                         index = 0,
@@ -119,7 +125,7 @@ fun SuggestionRegionSheet(
 
                 item {
                     Text(
-                        text = "Countries & Regions",
+                        text = stringResource(R.string.pref_region_countries_section),
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.padding(
                             top = 14.dp,
@@ -198,7 +204,7 @@ fun RegionListItem(
             {
                 Icon(
                     Icons.Default.Check,
-                    contentDescription = "Selected"
+                    contentDescription = stringResource(R.string.pref_region_selected_desc)
                 )
             }
         } else null,

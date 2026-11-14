@@ -106,12 +106,12 @@ fun AudioLabScreen(
     val effects = activeEffects(reverb, loudness, spatial, playback, volume)
 
     AudioLabPage(
-        title = LabTitle("Audio", "Lab"),
+        title = LabTitle(stringResource(R.string.audiolab_title_audio), stringResource(R.string.audiolab_title_lab)),
         onBack = { navController.navigateUp() },
     ) {
         val equalizer: @Composable (Modifier) -> Unit = { modifier ->
             BigHubCard(
-                title = "Equalizer",
+                title = stringResource(R.string.equalizer_header),
                 status = equalizerStatus(eq, presets.associate { it.id to it.name }),
                 on = eq.enabled,
                 onClick = { navController.navigate("equalizer") },
@@ -120,7 +120,7 @@ fun AudioLabScreen(
         }
         val effect: @Composable (Modifier) -> Unit = { modifier ->
             BigHubCard(
-                title = "Audio Effect",
+                title = stringResource(R.string.audiolab_audio_effect),
                 status = effectsStatus(effects),
                 on = effects.isNotEmpty(),
                 onClick = { navController.navigate("audio_fx") },
@@ -129,7 +129,7 @@ fun AudioLabScreen(
         }
         val qualityCard: @Composable (Modifier) -> Unit = { modifier ->
             SmallHubCard(
-                title = "Audio Quality",
+                title = stringResource(R.string.audio_quality_title),
                 status = qualityName(quality, firstProvider),
                 onClick = { navController.navigate("audio_quality") },
                 modifier = modifier,
@@ -137,12 +137,12 @@ fun AudioLabScreen(
         }
         val transition: @Composable (Modifier) -> Unit = { modifier ->
             SmallHubCard(
-                title = "Transition",
+                title = stringResource(R.string.crossmix_style_title),
                 status = when (mode) {
-                    CrossmixMode.OFF -> "Off"
-                    CrossmixMode.AUTO_CROSSFADE -> "Auto"
-                    CrossmixMode.MANUAL_CROSSFADE -> "Manual"
-                    CrossmixMode.CROSSMIX -> "CrossMix"
+                    CrossmixMode.OFF -> stringResource(R.string.link_transition_off)
+                    CrossmixMode.AUTO_CROSSFADE -> stringResource(R.string.audio_quality_auto)
+                    CrossmixMode.MANUAL_CROSSFADE -> stringResource(R.string.audiolab_transition_manual)
+                    CrossmixMode.CROSSMIX -> stringResource(R.string.transition_crossmix)
                 },
                 onClick = { navController.navigate("crossmix_settings") },
                 modifier = modifier,
@@ -193,31 +193,39 @@ fun AudioLabScreen(
 }
 
 /** the effects status line, first names then "and 2 more" as in the mock */
+@Composable
 private fun effectsStatus(effects: List<ActiveEffect>): String {
     val names = effects.map { it.label.uppercase() }
     return when {
-        names.isEmpty() -> "ALL OFF"
+        names.isEmpty() -> stringResource(R.string.audiolab_effects_all_off)
         names.size <= 2 -> names.joinToString(", ")
-        else -> names.take(2).joinToString(", ") + " and ${names.size - 2} more"
+        else -> names.take(2).joinToString(", ") + " " + stringResource(R.string.audiolab_effects_and_more, names.size - 2)
     }
 }
 
+@Composable
 private fun equalizerStatus(eq: EqSettings, userPresets: Map<String, String>): String {
-    if (!eq.enabled) return "OFF"
-    val curve = eq.presetId?.let { id -> EqPresets.BuiltIn.firstOrNull { it.id == id }?.name ?: userPresets[id] } ?: "Custom"
+    if (!eq.enabled) return stringResource(R.string.link_transition_off).uppercase()
+    val curve = eq.presetId?.let { id -> EqPresets.BuiltIn.firstOrNull { it.id == id }?.name ?: userPresets[id] } ?: stringResource(R.string.eq_label_custom)
     val correction = eq.correction?.takeIf { eq.correctionEnabled }?.model
     return (if (correction != null) "$curve · $correction" else curve).uppercase()
 }
 
+@Composable
 private fun qualityName(q: AudioQuality, firstProvider: String?): String = when (firstProvider) {
     com.bedivine.app.module.monochrome.MonochromeModule.Id -> "Monochrome · Lossless"
     com.bedivine.app.module.applemusic.AppleMusicModule.Id -> "Apple Music · AAC"
-    else -> "YouTube · " + when (q) {
-        AudioQuality.LOW -> "Low"
-        AudioQuality.MEDIUM -> "Medium"
-        AudioQuality.HIGH -> "High"
-        else -> "Auto"
-    }
+    else -> stringResource(
+        R.string.audiolab_quality_youtube,
+        stringResource(
+            when (q) {
+                AudioQuality.LOW -> R.string.audio_quality_low
+                AudioQuality.MEDIUM -> R.string.audio_quality_medium
+                AudioQuality.HIGH -> R.string.audio_quality_high
+                else -> R.string.audio_quality_auto
+            },
+        ),
+    )
 }
 
 /** the equalizer's and effects' card, a green dot and the state in small type with the name under it */

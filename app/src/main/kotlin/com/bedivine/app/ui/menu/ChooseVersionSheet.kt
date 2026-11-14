@@ -54,6 +54,7 @@ import com.music.innertube.models.WatchEndpoint.WatchEndpointMusicSupportedConfi
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import androidx.compose.ui.res.stringResource
 
 /** Opens over the song menu; [onChosen] closes that menu too once a version is picked. */
 fun PopupSheetState.showChooseVersionSheet(match: TrackMatch, onChosen: () -> Unit) {
@@ -76,7 +77,7 @@ private fun ColumnScope.ChooseVersionContent(match: TrackMatch, onDone: () -> Un
     val sourceSeconds = match.durationMs?.takeIf { it > 0 }?.div(1000.0)
 
     Text(
-        text = "Choose a version",
+        text = stringResource(R.string.misc_choose_title),
         color = SearchColors.Primary,
         fontSize = 26.sp,
         fontWeight = FontWeight.Bold,
@@ -85,7 +86,7 @@ private fun ColumnScope.ChooseVersionContent(match: TrackMatch, onDone: () -> Un
     Text(
         text = buildString {
             append("${match.title} · ${match.artist}")
-            val label = ImportSource.fromKey(match.source)?.takeIf { it.isListed }?.label
+            val label = ImportSource.fromKey(match.source)?.takeIf { it.isListed }?.let { stringResource(it.labelRes) }
             if (sourceSeconds != null && label != null) {
                 append(" · ${makeTimeString(match.durationMs)} on $label")
             }
@@ -99,8 +100,8 @@ private fun ColumnScope.ChooseVersionContent(match: TrackMatch, onDone: () -> Un
 
     val list = candidates
     val message = when {
-        list == null -> "Looking for other versions…"
-        list.isEmpty() -> "Couldn't find any versions. Check your connection and try again."
+        list == null -> stringResource(R.string.misc_choose_looking)
+        list.isEmpty() -> stringResource(R.string.misc_choose_none)
         else -> null
     }
     if (message != null || list == null) {
@@ -125,7 +126,7 @@ private fun ColumnScope.ChooseVersionContent(match: TrackMatch, onDone: () -> Un
                 ImportedVersions.scope.launch {
                     ImportedVersions.choose(context.applicationContext, database, match, song)
                     TopToaster.show(
-                        text = "Switched to ${song.title}. Future imports will use this version too.",
+                        text = context.getString(R.string.misc_choose_switched, song.title),
                         thumbnail = song.thumbnail,
                         iconRes = R.drawable.sync,
                     )
@@ -179,7 +180,7 @@ private fun VersionRow(song: SongItem, sourceSeconds: Double?, isCurrent: Boolea
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                text = if (isCurrent) "In your library" else lengthHint(song.duration, sourceSeconds).orEmpty(),
+                text = if (isCurrent) stringResource(R.string.misc_playlist_in_library) else lengthHint(song.duration, sourceSeconds).orEmpty(),
                 color = SearchColors.Secondary,
                 fontSize = 12.sp,
             )
@@ -188,19 +189,21 @@ private fun VersionRow(song: SongItem, sourceSeconds: Double?, isCurrent: Boolea
 }
 
 /** Where a result comes from, in the words people know: the artist's own audio, a video, someone's upload. */
+@Composable
 private fun uploadKind(song: SongItem): String = when (song.musicVideoType) {
-    MUSIC_VIDEO_TYPE_ATV, null -> "Song"
-    MUSIC_VIDEO_TYPE_OMV -> "Music video"
-    else -> "Upload"
+    MUSIC_VIDEO_TYPE_ATV, null -> stringResource(R.string.misc_choose_song)
+    MUSIC_VIDEO_TYPE_OMV -> stringResource(R.string.misc_choose_mv)
+    else -> stringResource(R.string.misc_choose_upload)
 }
 
 /** How far a result's length is from the track's: a live or sped-up take shows up here at a glance. */
+@Composable
 private fun lengthHint(seconds: Int?, sourceSeconds: Double?): String? {
     if (seconds == null || sourceSeconds == null) return null
     val diff = (seconds - sourceSeconds).roundToInt()
     return when {
-        abs(diff) <= TrackMatcher.CLOSE_SECONDS -> "Same length"
-        diff > 0 -> "${diff}s longer"
-        else -> "${-diff}s shorter"
+        abs(diff) <= TrackMatcher.CLOSE_SECONDS -> stringResource(R.string.misc_choose_same)
+        diff > 0 -> stringResource(R.string.misc_choose_longer, diff)
+        else -> stringResource(R.string.misc_choose_shorter, -diff)
     }
 }

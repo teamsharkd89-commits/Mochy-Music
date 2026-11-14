@@ -180,7 +180,7 @@ import com.bedivine.app.ui.screens.setup.onboarding.CardFinish
 import com.bedivine.app.ui.screens.setup.onboarding.IdCardAspect
 import com.bedivine.app.ui.screens.setup.onboarding.ProfileIdCard
 import com.bedivine.app.ui.screens.setup.onboarding.TiltIntensity
-import com.bedivine.app.ui.screens.update.UpdateHeadline
+import com.bedivine.app.ui.screens.update.UpdateHeadlineRes
 import com.bedivine.app.ui.screens.update.rememberUpdateState
 import com.bedivine.app.ui.screens.update.showAboutSheet
 import com.bedivine.app.ui.screens.update.showUpdateSheet
@@ -202,12 +202,17 @@ import com.bedivine.app.ui.component.RemoteFocus
 import com.bedivine.app.ui.component.rememberResourcePainter
 
 private object BeDivineGreeting {
-    private fun pick() = listOf("Hello again", "Hey", "Welcome back", "Good to see you").random()
+    private fun pick() = listOf(
+        R.string.profile_greeting_hello_again,
+        R.string.profile_greeting_hey,
+        R.string.profile_greeting_welcome_back,
+        R.string.profile_greeting_good_to_see_you,
+    ).random()
 
-    private val greetingState = mutableStateOf("Hello again")
+    private val greetingState = mutableStateOf(R.string.profile_greeting_hello_again)
     private var wasBackgrounded = false
 
-    val current: String get() = greetingState.value
+    val current: Int get() = greetingState.value
 
     init {
         ProcessLifecycleOwner.get().lifecycle.addObserver(
@@ -284,7 +289,7 @@ fun ProfileScreen(navController: NavController) {
     }
     val cardNumber = cardNumberPref.ifBlank { "00000000000" }
     val joinedDate = if (joinedEpochDay >= 0L) LocalDate.ofEpochDay(joinedEpochDay) else LocalDate.now()
-    val joinedText = "joined at " + joinedDate.format(DateLong)
+    val joinedText = stringResource(R.string.profile_joined_at, joinedDate.format(DateLong))
     val photo: Any? = profilePicUri.takeIf { it.isNotBlank() }?.let { if (it.contains("://")) it else "file://$it" }
 
     // ---- header state -------------------------------------------------------------------------
@@ -586,7 +591,7 @@ fun ProfileScreen(navController: NavController) {
                     ) {
                         // greeting (in the header; its scrolled-away twin lives in the top bar); on its side it heads the cards at the right
                         if (!landscape) Text(
-                            text = "${BeDivineGreeting.current}, ${accountName.ifBlank { "there" }}!",
+                            text = stringResource(R.string.profile_greeting, stringResource(BeDivineGreeting.current), accountName.ifBlank { stringResource(R.string.profile_greeting_no_name) }),
                             style = PageTitle,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -711,7 +716,7 @@ fun ProfileScreen(navController: NavController) {
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.expand_more),
-                                contentDescription = "Pull down",
+                                contentDescription = stringResource(R.string.profile_pull_down),
                                 tint = Color.White.copy(alpha = 0.35f),
                                 modifier = Modifier
                                     .size(30.dp)
@@ -725,7 +730,7 @@ fun ProfileScreen(navController: NavController) {
                             )
                             if (recapWaiting) {
                                 Text(
-                                    text = if (landscape) stringResource(R.string.recap_tap_hint) else "swipe down here!!",
+                                    text = if (landscape) stringResource(R.string.recap_tap_hint) else stringResource(R.string.profile_swipe_down_hint),
                                     style = MonoSmall.copy(color = Color.White.copy(alpha = 0.6f)),
                                     maxLines = 1,
                                     modifier = Modifier.graphicsLayer {
@@ -753,7 +758,7 @@ fun ProfileScreen(navController: NavController) {
                         ) {
                             val invalid = stage == HeaderStage.Invalid
                             Text(
-                                text = if (invalid) "come back later" else "scratch!",
+                                text = if (invalid) stringResource(R.string.profile_come_back_later) else stringResource(R.string.profile_scratch_hint),
                                 style = PageTitle.copy(fontSize = 20.sp, textAlign = TextAlign.Center),
                                 modifier = Modifier.graphicsLayer { alpha = if (invalid) 1f else 1f - scratch.dissolve.value },
                             )
@@ -764,7 +769,7 @@ fun ProfileScreen(navController: NavController) {
                                     modifier = Modifier.padding(top = 6.dp),
                                 )
                                 Text(
-                                    text = "swipe up to close",
+                                    text = stringResource(R.string.profile_swipe_up_close),
                                     style = MonoSmall.copy(color = Color.White.copy(alpha = 0.35f)),
                                     modifier = Modifier.padding(top = 26.dp),
                                 )
@@ -786,7 +791,7 @@ fun ProfileScreen(navController: NavController) {
                         if (landscape) {
                             Spacer(Modifier.height(statusBarTop + 30.dp))
                             Text(
-                                text = "${BeDivineGreeting.current}, ${accountName.ifBlank { "there" }}!",
+                                text = stringResource(R.string.profile_greeting, stringResource(BeDivineGreeting.current), accountName.ifBlank { stringResource(R.string.profile_greeting_no_name) }),
                                 style = PageTitle,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -829,7 +834,7 @@ fun ProfileScreen(navController: NavController) {
                         }
                         val hasUpdate = updateState is com.bedivine.app.core.updater.UpdateState.Available
                         VersionCard(
-                            updateHeadline = if (hasUpdate) UpdateHeadline else null,
+                            updateHeadline = if (hasUpdate) stringResource(UpdateHeadlineRes) else null,
                             onCardClick = { zoomOutState.showUpdateSheet(updateState, onOpenDevSpace = openDevSpace) },
                             onPillClick = {
                                 if (hasUpdate) {
@@ -842,7 +847,7 @@ fun ProfileScreen(navController: NavController) {
                         Spacer(Modifier.height(16.dp))
                         DeveloperCard(onClick = { navController.navigate("developer_space") })
                         Spacer(Modifier.height(28.dp))
-                        Text("Settings", style = PageTitle.copy(fontSize = 15.sp), modifier = Modifier.padding(start = 2.dp, bottom = 10.dp))
+                        Text(stringResource(R.string.settings), style = PageTitle.copy(fontSize = 15.sp), modifier = Modifier.padding(start = 2.dp, bottom = 10.dp))
                         OpenSettingsRow(onClick = { navController.navigate("bedivine_settings") })
                         Spacer(Modifier.height(180.dp))
                     }
@@ -902,7 +907,7 @@ fun ProfileScreen(navController: NavController) {
             )
             if (collapseProgress > 0.01f) {
                 Text(
-                    text = "${BeDivineGreeting.current}, ${accountName.ifBlank { "there" }}!",
+                    text = stringResource(R.string.profile_greeting, stringResource(BeDivineGreeting.current), accountName.ifBlank { stringResource(R.string.profile_greeting_no_name) }),
                     style = PageTitle.copy(fontSize = 18.sp),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -1093,7 +1098,7 @@ private fun ListeningTimeCard(totalMs: Long, onViewStats: () -> Unit) {
                 TimeValue((totalMinutes % 60).toString(), "m", k)
                 Spacer(Modifier.width(10.dp))
                 Text(
-                    "Total Listening\ntime",
+                    stringResource(R.string.profile_total_listening_time),
                     style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 14.sp, lineHeight = 18.sp, color = Color(0xFF8A8A8A), textAlign = TextAlign.End),
                     modifier = Modifier.weight(1f),
                 )
@@ -1103,7 +1108,7 @@ private fun ListeningTimeCard(totalMs: Long, onViewStats: () -> Unit) {
         Box(Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF474747)))
         Spacer(Modifier.height(12.dp))
         Text(
-            "View Stats  >",
+            stringResource(R.string.profile_view_stats),
             style = TextStyle(fontFamily = InterFontFamily, fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = Color(0xFF8A8A8A)),
         )
     }
@@ -1146,7 +1151,7 @@ private fun VersionCard(
                 .padding(CardPadding),
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("Version & about app", style = TextStyle(fontFamily = InterFontFamily, fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = Color(0xFF9A9A9A)))
+                Text(stringResource(R.string.profile_version_about_app), style = TextStyle(fontFamily = InterFontFamily, fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = Color(0xFF9A9A9A)))
                 Text(
                     // "7.1.1 build#1093" -> "7.1.1"
                     BuildConfig.VERSION_NAME.substringBefore(' '),
@@ -1171,7 +1176,7 @@ private fun VersionCard(
  */
 @Composable
 private fun VersionCapsule(update: Boolean, onAbout: () -> Unit) {
-    val shown = if (update) "Update" else "About app"
+    val shown = if (update) stringResource(R.string.update_available) else stringResource(R.string.profile_about_app)
 
     // the pop: a quick squash, then a spring that carries past full size and settles
     val pop = remember { Animatable(1f) }
@@ -1265,7 +1270,7 @@ private fun DeveloperCard(onClick: () -> Unit) {
         }
         Spacer(Modifier.width(12.dp))
         Text(
-            "meet da dev and contributors :3",
+            stringResource(R.string.profile_meet_dev),
             style = TextStyle(fontFamily = InterFontFamily, fontWeight = FontWeight.Bold, fontSize = 15.sp, letterSpacing = (-0.6).sp, color = Color(0xFF9A9A9A)),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -1296,6 +1301,6 @@ private fun OpenSettingsRow(onClick: () -> Unit) {
         ) {
             Icon(painterResource(R.drawable.settings), contentDescription = null, tint = Color(0xFF232323), modifier = Modifier.size(18.dp))
         }
-        Text("Open settings", style = PageTitle.copy(fontSize = 17.sp, fontWeight = FontWeight.SemiBold))
+        Text(stringResource(R.string.profile_open_settings), style = PageTitle.copy(fontSize = 17.sp, fontWeight = FontWeight.SemiBold))
     }
 }

@@ -39,6 +39,7 @@ import com.bedivine.app.ui.player.PressScaleActionButton
 import kotlin.math.roundToInt
 import com.bedivine.app.ui.utils.stableStatusBars
 import com.bedivine.app.ui.component.RemoteFocus
+import androidx.compose.ui.res.stringResource
 
 /** the player's menu item label, exactly as its chevron menu sets it */
 private val MenuLabelStyle = TextStyle(
@@ -300,9 +301,9 @@ internal fun MiddleEditor(
 
         // what each tile edits
         val labelStyle = studioText(StudioType.Title, FontWeight.Bold)
-        MiddleLabel("Edit menus", labelStyle, stage.labelX, stage.menusTile.center.y) { tiles() * (1f - menu() * 2f) }
-        MiddleLabel("Edit Seekbar", labelStyle, stage.labelX, stage.seekTile.center.y) { tiles() * (1f - menu() * 2f) }
-        MiddleLabel("Edit end\ntimestamp", labelStyle, stage.labelX, stage.endTile.center.y) { tiles() * (1f - menu() * 2f) }
+        MiddleLabel(stringResource(R.string.misc_studio_edit_menus), labelStyle, stage.labelX, stage.menusTile.center.y) { tiles() * (1f - menu() * 2f) }
+        MiddleLabel(stringResource(R.string.misc_studio_edit_seekbar), labelStyle, stage.labelX, stage.seekTile.center.y) { tiles() * (1f - menu() * 2f) }
+        MiddleLabel(stringResource(R.string.misc_studio_edit_end), labelStyle, stage.labelX, stage.endTile.center.y) { tiles() * (1f - menu() * 2f) }
 
         // taps
         TileTap(stage.menusTile.copy(right = w), stageMiddle) { studio.go(StudioStage.MENU) }

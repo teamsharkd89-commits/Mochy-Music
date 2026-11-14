@@ -49,6 +49,7 @@ import com.bedivine.app.importer.account.AccountImportState
 import com.bedivine.app.viewmodels.AccountImportViewModel
 import com.bedivine.app.viewmodels.ImportSyncViewModel
 import timber.log.Timber
+import androidx.compose.ui.res.stringResource
 
 const val AccountImportRoutePattern = "account_import/{service}?resync={resync}&then={then}"
 fun accountImportRoute(service: AccountService) = "account_import/${service.route}"
@@ -185,8 +186,8 @@ fun AccountImportScreen(
     LaunchedEffect(resyncStart) {
         if (resyncStart != ResyncStart.Started) return@LaunchedEffect
         val missing = viewModel.missingFromAccount
-        val started = "Looking for new songs on ${service.label}…" +
-            if (missing.isEmpty()) "" else " Couldn't find ${missing.joinToString(", ")} there."
+        val started = context.getString(R.string.misc_import_looking_for, service.label) +
+            if (missing.isEmpty()) "" else context.getString(R.string.misc_import_couldnt_find_there, missing.joinToString(", "))
         Toast.makeText(context, started, Toast.LENGTH_LONG).show()
         navController.navigateUp()
         // re-sync all: on to the next service that needs signing in
@@ -214,11 +215,11 @@ fun AccountImportScreen(
 
     when (val current = state) {
         AccountImportState.SigningIn -> CaptureWebView(
-            title = "Sign in to ${service.label}",
+            title = stringResource(R.string.misc_import_sign_in_to, service.label),
             subtitle = if (viewModel.isResync) {
-                "On ${service.label}'s own page. BeDivine only reads the playlist you're re-syncing"
+                stringResource(R.string.misc_import_signin_resync, service.label)
             } else {
-                "On ${service.label}'s own page. BeDivine only reads your playlists"
+                stringResource(R.string.misc_import_signin_playlists, service.label)
             },
             startUrl = service.loginUrl.orEmpty(),
             playerOrigins = service.playerOrigins,
@@ -237,7 +238,7 @@ fun AccountImportScreen(
                 AccountImportState.NeedsYouTubeSignIn -> {
                     ImportInfoCard {
                         Text(
-                            "YouTube Music import uses the app's YouTube account. Sign in, then choose playlists.",
+                            stringResource(R.string.misc_import_ytm_uses_account),
                             style = MaterialTheme.typography.bodyLarge,
                         )
                     }
@@ -246,7 +247,7 @@ fun AccountImportScreen(
                         style = SettingsGroupStyle.Grouped,
                         items = listOf(
                             SettingsItem(
-                                title = { Text("Sign in to YouTube") },
+                                title = { Text(stringResource(R.string.misc_import_sign_in_yt)) },
                                 icon = painterResource(R.drawable.login),
                                 iconShape = CircleShape,
                                 onClick = { navController.navigate(YouTubeLoginRoute) },
@@ -257,7 +258,7 @@ fun AccountImportScreen(
                 is AccountImportState.Loading -> BusyCard(current.label, fraction = null)
                 is AccountImportState.Reading -> {
                     BusyCard(
-                        label = "${current.label} (${current.done + 1} of ${current.total})",
+                        label = stringResource(R.string.misc_import_of_total, current.label, current.done + 1, current.total),
                         fraction = current.done.toFloat() / current.total.coerceAtLeast(1),
                     )
                     Spacer(Modifier.height(16.dp))
@@ -265,7 +266,7 @@ fun AccountImportScreen(
                         style = SettingsGroupStyle.Grouped,
                         items = listOf(
                             SettingsItem(
-                                title = { Text("Stop") },
+                                title = { Text(stringResource(R.string.misc_import_stop)) },
                                 icon = painterResource(R.drawable.close),
                                 iconShape = CircleShape,
                                 onClick = viewModel::cancelReading,
@@ -283,7 +284,7 @@ fun AccountImportScreen(
                         items = buildList {
                             if (!current.signedOut) add(
                                 SettingsItem(
-                                    title = { Text("Try again") },
+                                    title = { Text(stringResource(R.string.try_again)) },
                                     icon = painterResource(R.drawable.refresh),
                                     iconShape = CircleShape,
                                     onClick = viewModel::retry,
@@ -291,7 +292,7 @@ fun AccountImportScreen(
                             )
                             add(
                                 SettingsItem(
-                                    title = { Text("Sign in again") },
+                                    title = { Text(stringResource(R.string.module_sign_in_again)) },
                                     icon = painterResource(R.drawable.login),
                                     iconShape = CircleShape,
                                     onClick = {
@@ -329,7 +330,7 @@ fun AccountImportScreen(
     notice?.let { message ->
         DefaultDialog(
             onDismiss = viewModel::clearNotice,
-            buttons = { TextButton(onClick = viewModel::clearNotice) { Text("OK") } },
+            buttons = { TextButton(onClick = viewModel::clearNotice) { Text(stringResource(R.string.devices_ok)) } },
         ) {
             Text(message, style = MaterialTheme.typography.bodyLarge)
         }
@@ -338,7 +339,7 @@ fun AccountImportScreen(
     (resyncStart as? ResyncStart.Failed)?.let { failed ->
         DefaultDialog(
             onDismiss = viewModel::clearResyncStart,
-            buttons = { TextButton(onClick = viewModel::clearResyncStart) { Text("OK") } },
+            buttons = { TextButton(onClick = viewModel::clearResyncStart) { Text(stringResource(R.string.devices_ok)) } },
         ) {
             Text(failed.message, style = MaterialTheme.typography.bodyLarge)
         }
@@ -366,7 +367,7 @@ private fun PickForResyncContent(
 ) {
     ImportInfoCard {
         Text(
-            "Couldn't find \"$name\" in your ${service.label} library by its name. Which one is it?",
+            stringResource(R.string.misc_import_couldnt_find_playlist, name, service.label),
             style = MaterialTheme.typography.bodyLarge,
         )
     }
@@ -375,8 +376,8 @@ private fun PickForResyncContent(
         style = SettingsGroupStyle.Grouped,
         items = listOf(
             SettingsItem(
-                title = { Text("It's not in this account") },
-                descriptionText = "Paste the playlist's link instead",
+                title = { Text(stringResource(R.string.misc_import_not_in_account)) },
+                descriptionText = stringResource(R.string.misc_import_paste_link),
                 icon = painterResource(R.drawable.link),
                 iconShape = CircleShape,
                 onClick = onPasteLink,
@@ -386,13 +387,13 @@ private fun PickForResyncContent(
     if (state.playlists.isEmpty()) return
     Spacer(Modifier.height(16.dp))
     SettingsGroup(
-        title = "${state.playlists.size} in your library",
+        title = stringResource(R.string.misc_import_in_library, state.playlists.size),
         style = SettingsGroupStyle.Grouped,
         items = state.playlists.map { playlist ->
             SettingsItem(
                 title = { Text(playlist.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 descriptionText = listOfNotNull(
-                    playlist.trackCount?.let { if (it == 1) "1 song" else "$it songs" },
+                    playlist.trackCount?.let { if (it == 1) stringResource(R.string.misc_import_one_song) else stringResource(R.string.misc_import_n_songs, it) },
                     playlist.subtitle,
                 ).joinToString(" · ").ifEmpty { null },
                 icon = playlist.coverUrl?.let { rememberAsyncImagePainter(it) } ?: painterResource(R.drawable.playlist_play),
@@ -437,8 +438,8 @@ private fun ChoosingContent(
         style = SettingsGroupStyle.Grouped,
         items = listOf(
             SettingsItem(
-                title = { Text(state.accountName?.let { "Signed in as $it" } ?: "Signed in to ${service.label}") },
-                descriptionText = if (service == AccountService.YOUTUBE_MUSIC) "Manage on the Sync page" else "Use a different account",
+                title = { Text(state.accountName?.let { stringResource(R.string.misc_import_signed_in_as, it) } ?: stringResource(R.string.misc_import_sign_in_to, service.label)) },
+                descriptionText = if (service == AccountService.YOUTUBE_MUSIC) stringResource(R.string.misc_import_manage_sync) else stringResource(R.string.misc_import_use_different),
                 icon = painterResource(R.drawable.account),
                 iconShape = CircleShape,
                 onClick = onSwitchAccount,
@@ -447,20 +448,20 @@ private fun ChoosingContent(
                 title = {
                     Text(
                         when (selectedCount) {
-                            0 -> "Choose what to import"
-                            1 -> "Import 1 selected"
-                            else -> "Import $selectedCount selected"
+                            0 -> stringResource(R.string.misc_import_choose)
+                            1 -> stringResource(R.string.misc_import_one_selected)
+                            else -> stringResource(R.string.misc_import_n_selected, selectedCount)
                         }
                     )
                 },
-                descriptionText = if (selectedCount == 0) "Tick playlists below" else "Next you can also add them to YouTube",
+                descriptionText = if (selectedCount == 0) stringResource(R.string.misc_import_tick_below) else stringResource(R.string.misc_import_add_to_yt),
                 icon = painterResource(R.drawable.playlist_add),
                 iconShape = CircleShape,
                 enabled = selectedCount > 0,
                 onClick = onImport,
             ),
             SettingsItem(
-                title = { Text(if (allSelected) "Select none" else "Select all") },
+                title = { Text(if (allSelected) stringResource(R.string.misc_import_select_none) else stringResource(R.string.select)) },
                 icon = painterResource(R.drawable.check),
                 iconShape = CircleShape,
                 onClick = if (allSelected) onSelectNone else onSelectAll,
@@ -471,7 +472,7 @@ private fun ChoosingContent(
     if (service == AccountService.YOUTUBE_MUSIC && autoSync) {
         Spacer(Modifier.height(12.dp))
         Text(
-            "Library sync is on, so saved YouTube playlists are already in your library. Importing makes separate local copies.",
+            stringResource(R.string.misc_import_library_sync_note),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -481,20 +482,20 @@ private fun ChoosingContent(
 
     if (state.playlists.isEmpty()) {
         ImportInfoCard {
-            Text("No playlists in this account.", style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(R.string.misc_import_no_playlists), style = MaterialTheme.typography.bodyLarge)
         }
         return
     }
 
     SettingsGroup(
-        title = "${state.playlists.size} in your library",
+        title = stringResource(R.string.misc_import_in_library, state.playlists.size),
         style = SettingsGroupStyle.Grouped,
         items = state.playlists.map { playlist ->
             val checked = playlist.id in state.selected
             SettingsItem(
                 title = { Text(playlist.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 descriptionText = listOfNotNull(
-                    playlist.trackCount?.let { if (it == 1) "1 song" else "$it songs" },
+                    playlist.trackCount?.let { if (it == 1) stringResource(R.string.misc_import_one_song) else stringResource(R.string.misc_import_n_songs, it) },
                     playlist.subtitle,
                 ).joinToString(" · ").ifEmpty { null },
                 // the playlist's own cover from the service, when it has one

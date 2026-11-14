@@ -3,6 +3,7 @@
 package com.bedivine.app.ui.player.menu
 
 import android.media.AudioManager
+import androidx.annotation.StringRes
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -116,11 +117,11 @@ fun DeviceOutputSheet(onDismiss: () -> Unit) {
                 .padding(horizontal = 20.dp)
                 .padding(top = 10.dp, bottom = 28.dp)
         ) {
-            SectionLabel("Change playback")
+            SectionLabel(stringResource(R.string.misc_output_change_playback))
 
             VolumeCard(
                 icon = R.drawable.volume_up,
-                title = android.os.Build.MODEL ?: "this device",
+                title = android.os.Build.MODEL ?: stringResource(R.string.misc_output_this_device),
                 value = deviceVolume.floatValue,
                 onValueChange = { next ->
                     deviceVolume.floatValue = next
@@ -136,7 +137,7 @@ fun DeviceOutputSheet(onDismiss: () -> Unit) {
 
             VolumeCard(
                 icon = R.drawable.music_note,
-                title = "Music volume",
+                title = stringResource(R.string.misc_output_music_volume),
                 value = musicVolume.floatValue,
                 onValueChange = { next ->
                     musicVolume.floatValue = next
@@ -145,12 +146,12 @@ fun DeviceOutputSheet(onDismiss: () -> Unit) {
             )
 
             Spacer(modifier = Modifier.height(22.dp))
-            SectionLabel("Play on")
+            SectionLabel(stringResource(R.string.misc_output_play_on))
 
             Column(modifier = Modifier.animateContentSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 DeviceRow(
-                    label = "Automatic",
-                    detail = "Wherever Android sends it",
+                    label = stringResource(R.string.ip_version_auto),
+                    detail = stringResource(R.string.misc_output_wherever),
                     icon = Icons.Rounded.AutoMode,
                     selected = !anyChosen && !isCasting,
                     onClick = { service?.setPreferredAudioDevice(null) },
@@ -158,7 +159,7 @@ fun DeviceOutputSheet(onDismiss: () -> Unit) {
                 devices.forEach { device ->
                     val larpRow = larping && device.isActive && !isCasting
                     DeviceRow(
-                        label = if (larpRow) larpName else deviceLabel(device),
+                        label = if (larpRow) larpName else device.name.ifBlank { stringResource(device.kind.labelRes()) },
                         detail = if (larpRow) larpDetail else deviceDetail(device, passthrough),
                         icon = if (larpRow) AudioOutputs.Kind.USB.icon() else device.kind.icon(),
                         selected = device.isChosen && !isCasting,
@@ -173,12 +174,12 @@ fun DeviceOutputSheet(onDismiss: () -> Unit) {
 
             if (castTargets.isNotEmpty() || isCasting) {
                 Spacer(modifier = Modifier.height(22.dp))
-                SectionLabel("Other devices on your network")
+                SectionLabel(stringResource(R.string.misc_output_other_devices))
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     if (isCasting) {
                         DeviceRow(
                             label = castingTo ?: "Cast device",
-                            detail = "Playing here now · tap to stop casting",
+                            detail = stringResource(R.string.misc_output_playing_here),
                             icon = Icons.Rounded.CastConnected,
                             selected = true,
                             onClick = { cast?.disconnect() },
@@ -201,8 +202,8 @@ fun DeviceOutputSheet(onDismiss: () -> Unit) {
 
             Spacer(modifier = Modifier.height(8.dp))
             DeviceRow(
-                label = "Pair a new device",
-                detail = "Opens Bluetooth settings",
+                label = stringResource(R.string.misc_output_pair_new),
+                detail = stringResource(R.string.misc_output_opens_bt),
                 icon = Icons.Rounded.SettingsBluetooth,
                 onClick = {
                     runCatching {
@@ -217,33 +218,35 @@ fun DeviceOutputSheet(onDismiss: () -> Unit) {
     }
 }
 
-private fun deviceLabel(device: AudioOutputs.Device): String = device.name.ifBlank {
-    when (device.kind) {
-        AudioOutputs.Kind.PHONE -> "This phone"
-        AudioOutputs.Kind.WIRED -> "Wired headphones"
-        AudioOutputs.Kind.USB -> "USB audio"
-        AudioOutputs.Kind.BLUETOOTH -> "Bluetooth device"
-        AudioOutputs.Kind.HDMI -> "HDMI"
-    }
+@StringRes
+private fun AudioOutputs.Kind.labelRes(): Int = when (this) {
+    AudioOutputs.Kind.PHONE -> R.string.this_phone
+    AudioOutputs.Kind.WIRED -> R.string.wired_headphones
+    AudioOutputs.Kind.USB -> R.string.flagship_output_usb
+    AudioOutputs.Kind.BLUETOOTH -> R.string.misc_output_bt_device
+    AudioOutputs.Kind.HDMI -> R.string.misc_output_hdmi
 }
 
 // a dac says what it takes, so that's shown; the rest just say what they are
+@Composable
 private fun deviceDetail(device: AudioOutputs.Device, passthrough: Boolean): String {
-    val kind = when (device.kind) {
-        AudioOutputs.Kind.PHONE -> "Speaker"
-        AudioOutputs.Kind.WIRED -> "Headphone jack"
-        AudioOutputs.Kind.USB -> "USB DAC"
-        AudioOutputs.Kind.BLUETOOTH -> "Bluetooth"
-        AudioOutputs.Kind.HDMI -> "HDMI"
-    }
+    val kind = stringResource(
+        when (device.kind) {
+            AudioOutputs.Kind.PHONE -> R.string.misc_output_speaker
+            AudioOutputs.Kind.WIRED -> R.string.misc_output_headphone_jack
+            AudioOutputs.Kind.USB -> R.string.misc_output_usb_dac
+            AudioOutputs.Kind.BLUETOOTH -> R.string.misc_output_bluetooth
+            AudioOutputs.Kind.HDMI -> R.string.misc_output_hdmi
+        }
+    )
     val takes = listOfNotNull(
-        device.maxSampleRate?.let { "up to ${it / 1000} kHz" },
-        device.bitDepths.maxOrNull()?.let { "$it-bit" },
+        device.maxSampleRate?.let { stringResource(R.string.misc_output_up_to_khz, it / 1000) },
+        device.bitDepths.maxOrNull()?.let { stringResource(R.string.misc_output_bit_depth, it) },
     ).takeIf { device.kind == AudioOutputs.Kind.USB }.orEmpty()
-    val bypass = "passthrough on".takeIf {
+    val bypass = stringResource(R.string.misc_output_passthrough).takeIf {
         passthrough && device.kind == AudioOutputs.Kind.USB && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE
     }
-    return (listOf(kind) + takes + listOfNotNull(bypass) + listOfNotNull("playing".takeIf { device.isActive })).joinToString(" · ")
+    return (listOf(kind) + takes + listOfNotNull(bypass) + listOfNotNull(if (device.isActive) stringResource(R.string.misc_output_playing) else null)).joinToString(" · ")
 }
 
 private fun AudioOutputs.Kind.icon(): ImageVector = when (this) {

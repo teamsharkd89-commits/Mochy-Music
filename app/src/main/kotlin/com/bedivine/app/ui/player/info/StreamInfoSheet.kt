@@ -62,6 +62,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
+import androidx.compose.ui.res.stringResource
 
 /** "stream info": where the playing song comes from, and its whole road to the speaker */
 @Composable
@@ -86,15 +87,15 @@ fun StreamInfoSheet(onDismiss: () -> Unit) {
                     .navigationBarsPadding(),
             ) {
                 InfoColumn(modifier = Modifier.widthIn(max = 600.dp)) {
-                    InfoSheetTitle("Stream Info")
+                    InfoSheetTitle(stringResource(R.string.misc_stream_info))
                     Spacer(Modifier.height(16.dp))
                     SongHeader(song)
                     InfoDivider()
-                    InfoSectionTitle("Provider")
+                    InfoSectionTitle(stringResource(R.string.ai_provider))
                     Spacer(Modifier.height(12.dp))
                     ProviderRow(service, from, onForce = { showForce = true })
                     NerdsDivider()
-                    InfoSectionTitle("Format & about")
+                    InfoSectionTitle(stringResource(R.string.misc_stream_format))
                     Spacer(Modifier.height(14.dp))
                     cards.forEachIndexed { index, card ->
                         if (index > 0) CardConnector()
@@ -150,11 +151,11 @@ private fun ProviderRow(service: MusicService, from: PlayingFrom?, onForce: () -
                 // only a module that publishes its code gets the star; others say nothing rather than a dead button
                 val sourceUrl = service.sourceModules.module(from.providerId)?.info?.sourceUrl
                 if (sourceUrl != null) {
-                    InfoPill(text = "Star on GitHub", filled = false, onClick = { runCatching { uriHandler.openUri(sourceUrl) } })
+                    InfoPill(text = stringResource(R.string.misc_stream_star), filled = false, onClick = { runCatching { uriHandler.openUri(sourceUrl) } })
                 }
                 // a file on the phone has nowhere else to come from
                 if (from.providerId != PlayingFrom.Device) {
-                    InfoPill(text = "Force change", filled = true, onClick = onForce)
+                    InfoPill(text = stringResource(R.string.misc_stream_force), filled = true, onClick = onForce)
                 }
             }
         }
@@ -251,7 +252,7 @@ private fun rememberStatCards(service: MusicService, mediaId: String, durationMs
         ),
         passthrough = passthrough,
     )
-    val cards = remember(input) { buildStatCards(input) }
+    val cards = remember(input) { buildStatCards(input, context.resources) }
     // larping, the nerds get the level's gear story instead
     val larp = com.bedivine.app.ui.player.rememberLarpMode()
     return if (larp != null) com.bedivine.app.ui.player.larpStatCards(larp) else cards

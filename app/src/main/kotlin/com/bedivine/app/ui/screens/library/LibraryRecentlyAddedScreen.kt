@@ -20,6 +20,7 @@ import com.bedivine.app.extensions.toMediaItem
 import com.bedivine.app.playback.queues.ListQueue
 import com.bedivine.app.viewmodels.LibraryHomeViewModel
 import com.bedivine.app.viewmodels.LibraryShelfKind
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun LibraryRecentlyAddedScreen(
@@ -31,7 +32,7 @@ fun LibraryRecentlyAddedScreen(
     val viewModel: LibraryHomeViewModel = hiltViewModel()
     // with the lifecycle: the Cached shelf looks at the cache every couple of seconds while watched
     val songs by (shelf?.let(viewModel::shelf)?.songs ?: viewModel.songs).collectAsStateWithLifecycle()
-    val queueTitle = shelf?.label ?: "Recently added"
+    val queueTitle = shelf?.label ?: stringResource(R.string.misc_recent_title)
     val playerConnection = LocalPlayerConnection.current ?: return
 
     val entries = remember(songs) {
@@ -58,9 +59,9 @@ fun LibraryRecentlyAddedScreen(
     }
 
     LibraryGridScreen(
-        title = "Added",
-        subtitle = "Recently",
-        searchPlaceholder = "Find song listed here, by the lyrics, or the artist",
+        title = stringResource(R.string.misc_recent_added),
+        subtitle = stringResource(R.string.misc_recent_recently),
+        searchPlaceholder = stringResource(R.string.misc_recent_find),
         entries = entries,
         onOpen = { entry -> play(songs.indexOfFirst { it.id == entry.id }.coerceAtLeast(0), shuffle = false) },
         onPlay = { play(0, shuffle = false) },

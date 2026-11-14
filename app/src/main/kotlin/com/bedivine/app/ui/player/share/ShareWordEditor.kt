@@ -85,13 +85,15 @@ import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.hypot
+import androidx.annotation.StringRes
 import com.bedivine.app.ui.component.RemoteFocus
+import androidx.compose.ui.res.stringResource
 
 // the three looks a word can take, each with its card and its prompt
-private enum class WordMode(val label: String, val prompt: String) {
-    GLOW("Glow", "Tap or swipe the words you want to glow!"),
-    CAPS("CAPS", "Tap or swipe the words you want in CAPS!"),
-    BIG("Bigggg", "Tap or swipe the words you want bigggg!");
+private enum class WordMode(@StringRes val labelRes: Int, @StringRes val promptRes: Int) {
+    GLOW(R.string.misc_share_glow, R.string.misc_share_glow_prompt),
+    CAPS(R.string.misc_share_caps, R.string.misc_share_caps_prompt),
+    BIG(R.string.misc_share_big, R.string.misc_share_big_prompt);
 
     fun has(look: WordLook): Boolean = when (this) {
         GLOW -> look.glow
@@ -121,7 +123,7 @@ private const val PaintStepPx = 8f
 
 internal fun PopupSheetState.showWordEditor(session: LyricsShareSession) {
     val popup = this
-    show(buttonBar = { SheetPillButton(text = "Done", onClick = popup::dismiss) }) {
+    show(buttonBar = { SheetPillButton(text = stringResource(R.string.done), onClick = popup::dismiss) }) {
         WordEditorContent(session)
     }
 }
@@ -159,7 +161,7 @@ private fun ColumnScope.WordEditorContent(session: LyricsShareSession) {
         "CoolfontEditor",
         beta = true,
         subtitleSlot = {
-            val line = mode?.prompt ?: if (hinting) "Pick Glow, CAPS or Bigggg below first" else null
+            val line = mode?.let { stringResource(it.promptRes) } ?: if (hinting) stringResource(R.string.misc_share_pick_first) else null
             AnimatedContent(
                 targetState = line,
                 transitionSpec = {
@@ -390,7 +392,7 @@ private fun MakeItCard(
             label = "makeItCaption",
         ) { on ->
             Text(
-                if (on) "I'm done making it" else "Make it",
+                if (on) stringResource(R.string.misc_share_done_making) else stringResource(R.string.misc_share_make_it),
                 fontFamily = InterFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 10.sp,
@@ -399,7 +401,7 @@ private fun MakeItCard(
             )
         }
         Text(
-            mode.label,
+            stringResource(mode.labelRes),
             style = TextStyle(
                 fontFamily = InterFontFamily,
                 fontWeight = FontWeight.Bold,

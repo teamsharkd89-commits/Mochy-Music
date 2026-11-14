@@ -54,6 +54,7 @@ import com.bedivine.app.lyrics.LyricsUtils
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import com.bedivine.app.ui.component.RemoteFocus
+import androidx.compose.ui.res.stringResource
 
 /** The slider and the typed value both stop here: 10 seconds either way, shown in ms. */
 private const val MaxOffsetMs = 10_000
@@ -118,7 +119,7 @@ fun LyricsOffsetSheet(onDismiss: () -> Unit) {
                 .padding(top = 16.dp, bottom = 24.dp)
         ) {
             Text(
-                text = "Lyrics offset",
+                text = stringResource(R.string.misc_lyrics_offset),
                 color = Color.White,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
@@ -166,9 +167,9 @@ fun LyricsOffsetSheet(onDismiss: () -> Unit) {
 
             PillButton(
                 label = when (autoHere) {
-                    is LyricsAutoSync.State.Listening -> "listening… ${(autoHere.progress * 100).roundToInt()}%"
-                    is LyricsAutoSync.State.Matching -> "matching…"
-                    else -> "auto offset"
+                    is LyricsAutoSync.State.Listening -> stringResource(R.string.misc_lyrics_listening, (autoHere.progress * 100).roundToInt())
+                    is LyricsAutoSync.State.Matching -> stringResource(R.string.misc_lyrics_matching)
+                    else -> stringResource(R.string.misc_lyrics_auto)
                 },
                 enabled = timedLines != null && !autoRunning,
                 onClick = {
@@ -178,7 +179,7 @@ fun LyricsOffsetSheet(onDismiss: () -> Unit) {
                 },
             )
             Spacer(modifier = Modifier.height(8.dp))
-            PillButton(label = "done", onClick = closeSheet)
+            PillButton(label = stringResource(R.string.misc_lyrics_done), onClick = closeSheet)
         }
     }
 }
@@ -190,12 +191,12 @@ fun LyricsOffsetSheet(onDismiss: () -> Unit) {
 @Composable
 private fun AutoSyncStatus(state: LyricsAutoSync.State?, timed: Boolean, onUndo: (Int) -> Unit) {
     val text = when {
-        !timed -> "Auto offset needs lyrics timed by line or by word. Plain lyrics have no timing to move."
-        state is LyricsAutoSync.State.Listening -> "Listening for where the singing starts and stops…"
-        state is LyricsAutoSync.State.Matching -> "Lining each line up with its singing…"
+        !timed -> stringResource(R.string.misc_lyrics_needs_timed)
+        state is LyricsAutoSync.State.Listening -> stringResource(R.string.misc_lyrics_listening_for)
+        state is LyricsAutoSync.State.Matching -> stringResource(R.string.misc_lyrics_lining)
         state is LyricsAutoSync.State.Synced -> syncedText(state)
         state is LyricsAutoSync.State.Failed -> state.message
-        else -> "Listens to the song and lines the lyrics up with the singing."
+        else -> stringResource(R.string.misc_lyrics_listens)
     }
     Text(
         text = text,
@@ -205,7 +206,7 @@ private fun AutoSyncStatus(state: LyricsAutoSync.State?, timed: Boolean, onUndo:
     )
     if (state is LyricsAutoSync.State.Synced && state.previousOffsetMs != state.offsetMs) {
         Text(
-            text = "Undo",
+            text = stringResource(R.string.undo),
             color = Color.White,
             fontSize = 13.sp,
             fontWeight = FontWeight.Bold,
@@ -220,16 +221,17 @@ private fun AutoSyncStatus(state: LyricsAutoSync.State?, timed: Boolean, onUndo:
     }
 }
 
+@Composable
 private fun syncedText(state: LyricsAutoSync.State.Synced): String {
     val moved = state.offsetMs - state.previousOffsetMs
     val change = when {
-        abs(moved) < 20 -> "The lyrics were already in time with the singing."
-        moved > 0 -> "Lyrics moved ${moved} ms earlier to meet the singing."
-        else -> "Lyrics moved ${-moved} ms later to meet the singing."
+        abs(moved) < 20 -> stringResource(R.string.misc_lyrics_in_time)
+        moved > 0 -> stringResource(R.string.misc_lyrics_moved_earlier, moved)
+        else -> stringResource(R.string.misc_lyrics_moved_later, -moved)
     }
-    val guess = if (state.sure) "" else " It's a best guess, so check it by ear."
+    val guess = if (state.sure) "" else stringResource(R.string.misc_lyrics_best_guess)
     val drift = state.driftMs?.let {
-        " The timing also drifts by ${"%.1f".format(abs(it) / 1_000f)} s over the song, so it's set to fit the middle best."
+        stringResource(R.string.misc_lyrics_drift, "%.1f".format(abs(it) / 1_000f))
     }.orEmpty()
     return change + guess + drift
 }

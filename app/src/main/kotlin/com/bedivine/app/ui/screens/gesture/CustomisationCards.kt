@@ -380,7 +380,7 @@ fun PlayerStyleCard(
     Column(modifier = modifier.fillMaxWidth()) {
         StyleCard(
             category = stringResource(R.string.customise_player_styles),
-            title = selected.displayName,
+            title = stringResource(selected.displayNameRes),
             highlighted = false,
             onClick = onOpenEditor,
         ) { PlayerStylePreview(style = selected) }

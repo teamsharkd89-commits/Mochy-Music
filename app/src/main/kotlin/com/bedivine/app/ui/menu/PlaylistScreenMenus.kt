@@ -97,7 +97,7 @@ fun LocalPlaylistMenu(
             .padding(bottom = 8.dp + WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()),
     ) {
         SheetSearchLauncher(
-            placeholder = "Search any song on playlist",
+            placeholder = stringResource(R.string.menu_search_playlist),
             onClick = {
                 onDismiss()
                 onSearch()
@@ -123,7 +123,7 @@ fun LocalPlaylistMenu(
             // Over this menu rather than closing it: Done comes back here.
             SheetActionCard(
                 icon = R.drawable.edit,
-                title = "Edit playlist",
+                title = stringResource(R.string.menu_edit_playlist),
                 onClick = onEdit,
                 modifier = Modifier.weight(1f),
             )
@@ -146,7 +146,7 @@ fun LocalPlaylistMenu(
         Material3MenuGroup(
             items = listOfNotNull(
                 Material3MenuItemData(
-                    title = { Text("Play next") },
+                    title = { Text(stringResource(R.string.menu_play_next)) },
                     icon = {
                         Icon(
                             painter = painterResource(R.drawable.playlist_play),
@@ -161,7 +161,7 @@ fun LocalPlaylistMenu(
                     } else null,
                 ),
                 Material3MenuItemData(
-                    title = { Text("Sort by") },
+                    title = { Text(stringResource(R.string.menu_sort_by)) },
                     icon = {
                         Icon(
                             painter = painterResource(R.drawable.drag_handle),
@@ -175,7 +175,7 @@ fun LocalPlaylistMenu(
                 ),
                 if (playlist.playlist.isEditable) {
                     Material3MenuItemData(
-                        title = { Text(if (locked) "Edit order" else "Lock order") },
+                        title = { Text(if (locked) stringResource(R.string.misc_modebar_edit_order) else stringResource(R.string.menu_lock_order)) },
                         icon = {
                             Icon(
                                 painter = painterResource(if (locked) R.drawable.lock_open else R.drawable.lock),
@@ -337,7 +337,7 @@ private fun QueueAndDownloadCards(
     val bottom = 8.dp + WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
     if (onSearch != null) {
         SheetSearchLauncher(
-            placeholder = "Search any song here",
+            placeholder = stringResource(R.string.menu_search_here),
             onClick = {
                 onDismiss()
                 onSearch()

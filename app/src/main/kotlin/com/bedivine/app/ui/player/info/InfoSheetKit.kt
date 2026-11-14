@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.bedivine.app.ui.player.menu.MenuRowSurface
 import com.bedivine.app.ui.component.RemoteFocus
+import androidx.compose.ui.res.stringResource
 
 // the look both info sheets share, drawn from the about song and stream info mocks
 
@@ -98,7 +99,7 @@ internal fun NerdsDivider() {
     ) {
         Box(Modifier.weight(1f).height(1.dp).background(InfoLine))
         Text(
-            text = "STATS FOR NERDS",
+            text = stringResource(R.string.misc_stats_for_nerds),
             color = InfoMuted,
             fontSize = 10.sp,
             fontFamily = FontFamily.Monospace,

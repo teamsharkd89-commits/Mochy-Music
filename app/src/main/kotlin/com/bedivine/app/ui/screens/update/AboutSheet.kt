@@ -3,6 +3,7 @@
 package com.bedivine.app.ui.screens.update
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -42,6 +43,7 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
@@ -78,7 +80,7 @@ private data class LeadDevEntry(
 @Immutable
 private data class CreditEntry(
     val name: String,
-    val subtitle: String,
+    @StringRes val subtitle: Int,
     val githubUser: String,
     val url: String,
 )
@@ -87,7 +89,7 @@ private data class CreditEntry(
 private data class LicenseEntry(
     val tag: String,
     val title: String,
-    val subtitle: String,
+    @StringRes val subtitle: Int,
     val url: String,
 )
 
@@ -116,13 +118,13 @@ private val LeadDevs = listOf(
 private val BaseCredits = listOf(
     CreditEntry(
         name = "vivizzz007",
-        subtitle = "Vivimusic dev, The base of this app",
+        subtitle = R.string.about_credit_vivimusic,
         githubUser = "vivizzz007",
         url = "https://github.com/vivizzz007/vivi-music",
     ),
     CreditEntry(
         name = "Mostafa Alagamy",
-        subtitle = "Metrolist dev, The base of vivmusic too",
+        subtitle = R.string.about_credit_metrolist,
         githubUser = "mostafaalagamy",
         url = "https://github.com/mostafaalagamy/Metrolist",
     ),
@@ -131,49 +133,49 @@ private val BaseCredits = listOf(
 private val MoreCredits = listOf(
     CreditEntry(
         name = "maxrave-dev",
-        subtitle = "SimpMusic · lyrics API provider",
+        subtitle = R.string.about_credit_simpmusic,
         githubUser = "maxrave-dev",
         url = "https://github.com/maxrave-dev/SimpMusic",
     ),
     CreditEntry(
         name = "Rukamori",
-        subtitle = "ArchiveTune · design & architecture inspiration",
+        subtitle = R.string.about_credit_archivetune,
         githubUser = "rukamori",
         url = "https://github.com/rukamori/ArchiveTune",
     ),
     CreditEntry(
         name = "fast4x",
-        subtitle = "RiMusic · YouTube Music InnerTube service wrapper",
+        subtitle = R.string.about_credit_rimusic,
         githubUser = "fast4x",
         url = "https://github.com/fast4x/RiMusic",
     ),
     CreditEntry(
         name = "tranxuanthang",
-        subtitle = "LRCLIB · synchronized LRC lyrics provider",
+        subtitle = R.string.about_credit_lrclib,
         githubUser = "tranxuanthang",
         url = "https://github.com/tranxuanthang/lrclib",
     ),
     CreditEntry(
         name = "monochrome-music",
-        subtitle = "Monochrome Music · lossless FLAC streams",
+        subtitle = R.string.about_credit_monochrome,
         githubUser = "monochrome-music",
         url = "https://github.com/monochrome-music/monochrome",
     ),
     CreditEntry(
         name = "Jaakko Pasanen",
-        subtitle = "AutoEq · headphone equalizer database",
+        subtitle = R.string.about_credit_autoeq,
         githubUser = "jaakkopasanen",
         url = "https://github.com/jaakkopasanen/AutoEq",
     ),
     CreditEntry(
         name = "Ibra Al Tabian",
-        subtitle = "LyricsPlus · open source lyrics server",
+        subtitle = R.string.about_credit_lyricsplus,
         githubUser = "ibratabian17",
         url = "https://github.com/ibratabian17/LyricsPlus",
     ),
     CreditEntry(
         name = "Boidushya",
-        subtitle = "Better Lyrics API · synced syllable lyrics",
+        subtitle = R.string.about_credit_betterlyrics,
         githubUser = "boidushya",
         url = "https://github.com/better-lyrics/api",
     ),
@@ -183,49 +185,49 @@ private val Licenses = listOf(
     LicenseEntry(
         tag = "GPL-3.0",
         title = "BeDivine Music · GNU General Public License v3.0",
-        subtitle = "Free and open source software, source code on GitHub",
+        subtitle = R.string.about_license_bedivine,
         url = "$GithubRepoUrl/blob/main/LICENSE",
     ),
     LicenseEntry(
         tag = "GPL-3.0",
         title = "ViviMusic · GNU General Public License v3.0",
-        subtitle = "by vivizzz007 · base project this app was forked from",
+        subtitle = R.string.about_license_vivimusic,
         url = "https://github.com/vivizzz007/vivi-music/blob/main/LICENSE",
     ),
     LicenseEntry(
         tag = "GPL-3.0",
         title = "Metrolist · GNU General Public License v3.0",
-        subtitle = "by Mostafa Alagamy · base framework",
+        subtitle = R.string.about_license_metrolist,
         url = "https://github.com/mostafaalagamy/Metrolist/blob/main/LICENSE",
     ),
     LicenseEntry(
         tag = "GPL-3.0",
         title = "SimpMusic · GNU General Public License v3.0",
-        subtitle = "by maxrave-dev · lyrics provider integration",
+        subtitle = R.string.about_license_simpmusic,
         url = "https://github.com/maxrave-dev/SimpMusic/blob/dev/LICENSE",
     ),
     LicenseEntry(
         tag = "GPL-3.0",
         title = "ArchiveTune · GNU General Public License v3.0",
-        subtitle = "by Rukamori · design and architectural inspiration",
+        subtitle = R.string.about_license_archivetune,
         url = "https://github.com/rukamori/ArchiveTune/blob/main/LICENSE",
     ),
     LicenseEntry(
         tag = "GPL-3.0",
         title = "RiMusic · GNU General Public License v3.0",
-        subtitle = "by fast4x · InnerTube API wrapper",
+        subtitle = R.string.about_license_rimusic,
         url = "https://github.com/fast4x/RiMusic/blob/master/LICENSE",
     ),
     LicenseEntry(
         tag = "MIT",
         title = "LRCLIB · MIT License",
-        subtitle = "by tranxuanthang · synchronized lyrics database",
+        subtitle = R.string.about_license_lrclib,
         url = "https://github.com/tranxuanthang/lrclib/blob/main/LICENSE",
     ),
     LicenseEntry(
         tag = "MIT",
         title = "AutoEq · MIT License",
-        subtitle = "by Jaakko Pasanen · headphone correction profiles",
+        subtitle = R.string.about_license_autoeq,
         url = "https://github.com/jaakkopasanen/AutoEq/blob/master/LICENSE",
     ),
 )
@@ -297,21 +299,21 @@ private suspend fun fetchContributors(): List<ContributorEntry> {
 
 fun PopupSheetState.showAboutSheet(onOpenDevSpace: (Int) -> Unit = {}) {
     val popup = this
-    show(buttonBar = { SheetPrimaryButton(text = "Done", onClick = popup::dismiss) }) {
+    show(buttonBar = { SheetPrimaryButton(text = stringResource(R.string.done), onClick = popup::dismiss) }) {
         AboutSheetContent(popup = popup, onOpenDevSpace = onOpenDevSpace)
     }
 }
 
 private fun PopupSheetState.showCreditsSheet() {
     val popup = this
-    show(buttonBar = { SheetPrimaryButton(text = "Done", onClick = popup::dismiss) }) {
+    show(buttonBar = { SheetPrimaryButton(text = stringResource(R.string.done), onClick = popup::dismiss) }) {
         CreditsSheetContent()
     }
 }
 
 private fun PopupSheetState.showLicenseSheet() {
     val popup = this
-    show(buttonBar = { SheetPrimaryButton(text = "Done", onClick = popup::dismiss) }) {
+    show(buttonBar = { SheetPrimaryButton(text = stringResource(R.string.done), onClick = popup::dismiss) }) {
         LicenseSheetContent()
     }
 }
@@ -379,7 +381,7 @@ private fun ColumnScope.AboutSheetContent(
                 }
                 Spacer(Modifier.height(14.dp))
                 Text(
-                    text = "About app",
+                    text = stringResource(R.string.profile_about_app),
                     fontSize = 36.sp,
                     lineHeight = 38.sp,
                     fontWeight = FontWeight.Bold,
@@ -404,7 +406,7 @@ private fun ColumnScope.AboutSheetContent(
                     .padding(horizontal = 18.dp, vertical = 16.dp),
             ) {
                 Text(
-                    text = "BeDivine Music is a music app but\nkinda cool.",
+                    text = stringResource(R.string.about_tagline),
                     fontSize = 15.sp,
                     lineHeight = 19.sp,
                     fontWeight = FontWeight.Bold,
@@ -413,21 +415,21 @@ private fun ColumnScope.AboutSheetContent(
             }
 
             Spacer(Modifier.height(18.dp))
-            SectionHeader("actions")
+            SectionHeader(stringResource(R.string.about_section_actions))
             Spacer(Modifier.height(8.dp))
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 AboutPillRow(
-                    text = "Support me please :3 \u2192",
+                    text = stringResource(R.string.about_support_me),
                     onClick = { popup.showSupportSheet() },
                 )
                 AboutPillRow(
-                    text = "BeDivine Music github \u2192",
+                    text = stringResource(R.string.about_github),
                     onClick = { context.openUrl(GithubRepoUrl) },
                 )
             }
 
             Spacer(Modifier.height(18.dp))
-            SectionHeader("meet the lead dev")
+            SectionHeader(stringResource(R.string.about_section_lead_dev))
             Spacer(Modifier.height(8.dp))
             Column(
                 modifier = Modifier
@@ -449,7 +451,7 @@ private fun ColumnScope.AboutSheetContent(
             }
 
             Spacer(Modifier.height(18.dp))
-            SectionHeader("we wont exist without these guys")
+            SectionHeader(stringResource(R.string.about_section_credits))
             Spacer(Modifier.height(8.dp))
             Column(
                 modifier = Modifier
@@ -461,7 +463,7 @@ private fun ColumnScope.AboutSheetContent(
                 BaseCredits.forEach { credit ->
                     PersonRow(
                         name = credit.name,
-                        subtitle = credit.subtitle,
+                        subtitle = stringResource(credit.subtitle),
                         avatarUrl = githubAvatarUrl(credit.githubUser),
                         showArrow = false,
                         onClick = { context.openUrl(credit.url) },
@@ -476,15 +478,15 @@ private fun ColumnScope.AboutSheetContent(
             )
 
             Spacer(Modifier.height(18.dp))
-            SectionHeader("License")
+            SectionHeader(stringResource(R.string.feat_license_title))
             Spacer(Modifier.height(8.dp))
             AboutCardButton(
-                text = "More about license",
+                text = stringResource(R.string.about_more_license),
                 onClick = { popup.showLicenseSheet() },
             )
 
             Spacer(Modifier.height(18.dp))
-            SectionHeader("Cool contributors")
+            SectionHeader(stringResource(R.string.about_section_contributors))
             Spacer(Modifier.height(8.dp))
             Column(
                 modifier = Modifier
@@ -518,7 +520,7 @@ private fun ColumnScope.CreditsSheetContent() {
     ) {
         Spacer(Modifier.height(8.dp))
         Text(
-            text = "Credits",
+            text = stringResource(R.string.about_credits_title),
             fontSize = 36.sp,
             lineHeight = 38.sp,
             fontWeight = FontWeight.Bold,
@@ -535,7 +537,7 @@ private fun ColumnScope.CreditsSheetContent() {
             (BaseCredits + MoreCredits).forEach { credit ->
                 PersonRow(
                     name = credit.name,
-                    subtitle = credit.subtitle,
+                    subtitle = stringResource(credit.subtitle),
                     avatarUrl = githubAvatarUrl(credit.githubUser),
                     showArrow = true,
                     onClick = { context.openUrl(credit.url) },
@@ -556,7 +558,7 @@ private fun ColumnScope.LicenseSheetContent() {
     ) {
         Spacer(Modifier.height(8.dp))
         Text(
-            text = "License",
+            text = stringResource(R.string.feat_license_title),
             fontSize = 36.sp,
             lineHeight = 38.sp,
             fontWeight = FontWeight.Bold,
@@ -724,7 +726,7 @@ private fun AndMoreRow(
         }
         Spacer(Modifier.width(12.dp))
         Text(
-            text = "And more \u2192",
+            text = stringResource(R.string.about_and_more),
             fontSize = 15.sp,
             fontWeight = FontWeight.Bold,
             letterSpacing = (-0.4).sp,
@@ -765,7 +767,7 @@ private fun LicenseCard(
             )
             Spacer(Modifier.height(2.dp))
             Text(
-                text = entry.subtitle,
+                text = stringResource(entry.subtitle),
                 fontSize = 11.5.sp,
                 fontWeight = FontWeight.Medium,
                 letterSpacing = (-0.2).sp,

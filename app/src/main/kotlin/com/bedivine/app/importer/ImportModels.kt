@@ -2,6 +2,8 @@
 
 package com.bedivine.app.importer
 
+import androidx.annotation.StringRes
+import com.bedivine.app.R
 import com.music.innertube.models.SongItem
 
 data class ImportedTrack(
@@ -21,15 +23,15 @@ data class ImportedTrack(
 )
 
 /** where imported music came from, kept on every imported song so the library can list imported from spotify and the youtube sync leaves these songs alone */
-enum class ImportSource(val key: String, val label: String) {
-    SPOTIFY("spotify", "Spotify"),
-    APPLE_MUSIC("apple_music", "Apple Music"),
-    TIDAL("tidal", "Tidal"),
-    YOUTUBE_MUSIC("youtube_music", "YouTube Music"),
-    DEEZER("deezer", "Deezer"),
+enum class ImportSource(val key: String, @StringRes val labelRes: Int) {
+    SPOTIFY("spotify", R.string.import_source_spotify),
+    APPLE_MUSIC("apple_music", R.string.import_source_apple_music),
+    TIDAL("tidal", R.string.import_source_tidal),
+    YOUTUBE_MUSIC("youtube_music", R.string.import_source_youtube_music),
+    DEEZER("deezer", R.string.import_source_deezer),
 
     /** a file or a service with no name of its own (a tunemymusic csv, a mochy backup) */
-    OTHER("other", "other sources");
+    OTHER("other", R.string.import_other_sources);
 
     /** the sources the library gives a category of their own */
     val isListed: Boolean get() = this != OTHER

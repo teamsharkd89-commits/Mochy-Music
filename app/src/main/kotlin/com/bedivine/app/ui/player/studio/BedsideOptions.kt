@@ -60,8 +60,8 @@ internal fun ColumnScope.BedsideOptions() {
         }
         SwitchRow(
             CoverOption.Switch(
-                title = stringResource(R.string.bedside_saver),
-                description = stringResource(R.string.bedside_saver_caption),
+                titleRes = R.string.bedside_saver,
+                descriptionRes = R.string.bedside_saver_caption,
                 icon = R.drawable.contrast,
                 key = BedsideScreenSaverKey,
                 default = true,
@@ -69,8 +69,8 @@ internal fun ColumnScope.BedsideOptions() {
         )
         SwitchRow(
             CoverOption.Switch(
-                title = stringResource(R.string.bedside_keep_awake),
-                description = stringResource(R.string.bedside_keep_awake_caption),
+                titleRes = R.string.bedside_keep_awake,
+                descriptionRes = R.string.bedside_keep_awake_caption,
                 icon = R.drawable.lock_open,
                 key = BedsideKeepAwakeKey,
                 default = true,
@@ -88,8 +88,8 @@ private fun LockScreenRows() {
     val allowed by rememberLockScreenAccess()
     SwitchRow(
         CoverOption.Switch(
-            title = stringResource(R.string.bedside_lock_screen),
-            description = stringResource(R.string.bedside_lock_screen_caption),
+            titleRes = R.string.bedside_lock_screen,
+            descriptionRes = R.string.bedside_lock_screen_caption,
             icon = R.drawable.lock,
             key = BedsideLockScreenKey,
             default = true,

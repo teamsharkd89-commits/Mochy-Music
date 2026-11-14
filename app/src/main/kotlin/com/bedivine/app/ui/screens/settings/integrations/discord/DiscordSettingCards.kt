@@ -221,12 +221,12 @@ internal fun DiscordTextCard(
     title: String,
     value: String,
     onValueChange: (String) -> Unit,
-    hint: String = "Hidden",
+    hint: String? = null,
 ) {
     DiscordCard {
         DiscordCardTitle(title)
         Spacer(Modifier.height(10.dp))
-        DiscordTextField(value = value, onValueChange = onValueChange, hint = hint)
+        DiscordTextField(value = value, onValueChange = onValueChange, hint = hint ?: stringResource(R.string.misc_discord_hidden))
     }
 }
 
@@ -265,7 +265,7 @@ internal fun <T> DiscordDropdown(
         ) {
             Icon(
                 painter = painterResource(R.drawable.expand_more),
-                contentDescription = if (open) "Close" else "Open",
+                contentDescription = if (open) stringResource(R.string.close) else stringResource(R.string.open),
                 tint = Color.White,
                 modifier = Modifier
                     .size(22.dp)
@@ -357,17 +357,17 @@ internal fun DiscordImageSourceCard(
     DiscordCard {
         DiscordCardTitle(title)
         Spacer(Modifier.height(10.dp))
-        DiscordDropdown(selected = selected, options = options, label = { it.label }, onSelect = onSelect)
+        DiscordDropdown(selected = selected, options = options, label = { stringResource(it.labelRes) }, onSelect = onSelect)
         if (selected == PresenceImage.CUSTOM) CustomPictureRow(customPicture, onPickCustom)
         if (selected.isRotating && spin != null) {
-            FieldLabel("One full turn")
+            FieldLabel(stringResource(R.string.misc_discord_one_turn))
             DiscordStepSlider(
                 value = spin.secondsPerTurn,
                 values = (PresenceSettings.MinSpinSeconds..PresenceSettings.MaxSpinSeconds).toList(),
                 label = { "${it}s" },
                 onValueChange = { onSpinChange(spin.copy(secondsPerTurn = it)) },
             )
-            FieldLabel("Smoothness")
+            FieldLabel(stringResource(R.string.misc_discord_smoothness))
             DiscordStepSlider(
                 value = spin.fps,
                 values = PresenceSettings.SpinFpsSteps,
@@ -375,10 +375,7 @@ internal fun DiscordImageSourceCard(
                 onValueChange = { onSpinChange(spin.copy(fps = it)) },
             )
             Text(
-                text = "Turns forever. Discord can only show pictures from the web, so BeDivine makes a GIF of " +
-                    "the artwork and puts it on a free file host (uguu.se, which deletes it after three hours). " +
-                    "Slower, smoother turns make a bigger GIF that takes a little longer to show up; the still " +
-                    "artwork stands in meanwhile. 50 fps is as smooth as a GIF can play.",
+                text = stringResource(R.string.misc_discord_gif_note),
                 color = DiscordColors.Secondary,
                 fontSize = 12.sp,
                 lineHeight = 16.sp,
@@ -439,13 +436,13 @@ internal fun DiscordButtonCard(
 ) {
     DiscordCard {
         DiscordCardTitle(title)
-        FieldLabel("Label")
+        FieldLabel(stringResource(R.string.misc_discord_label))
         DiscordTextField(
             value = button.text,
             onValueChange = { onChange(button.copy(text = it)) },
-            hint = "No button",
+            hint = stringResource(R.string.misc_discord_no_button),
         )
-        FieldLabel("Opens")
+        FieldLabel(stringResource(R.string.misc_discord_opens))
         DiscordDropdown(
             selected = button.target,
             options = PresenceButtonTarget.entries,
@@ -590,21 +587,21 @@ internal fun DiscordPlaceholderCard() {
         color = Color.White.copy(alpha = 0.85f),
     )
     DiscordCard {
-        Text("Placeholder list", color = DiscordColors.Primary, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.misc_discord_placeholder_list), color = DiscordColors.Primary, fontSize = 15.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(4.dp))
         PresenceText.Placeholders.forEach { (placeholder, meaning) ->
-            Text("$placeholder = $meaning", style = body)
+            Text("$placeholder = ${stringResource(meaning)}", style = body)
         }
         Spacer(Modifier.height(12.dp))
-        Text("For example, this activity name", style = body)
-        Text("{name} by {artist} on {album}", style = body.copy(color = DiscordColors.Primary, fontWeight = FontWeight.Medium))
+        Text(stringResource(R.string.misc_discord_example), style = body)
+        Text(stringResource(R.string.misc_discord_template_example), style = body.copy(color = DiscordColors.Primary, fontWeight = FontWeight.Medium))
         Spacer(Modifier.height(12.dp))
-        Text("shows up as", style = body)
+        Text(stringResource(R.string.misc_discord_shows_as), style = body)
         Text(
-            "Listening to Fake Plastic Trees by Radiohead on The Bends",
+            stringResource(R.string.misc_discord_rendered_example),
             style = body.copy(color = DiscordColors.Primary, fontWeight = FontWeight.Medium),
         )
         Spacer(Modifier.height(12.dp))
-        Text("They work everywhere on this page, buttons included.", style = body)
+        Text(stringResource(R.string.misc_discord_works_everywhere), style = body)
     }
 }

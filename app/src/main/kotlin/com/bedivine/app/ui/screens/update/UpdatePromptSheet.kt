@@ -51,6 +51,7 @@ import com.bedivine.app.ui.player.menu.MenuRowSurface
 import com.bedivine.app.ui.player.menu.MenuSheetSurface
 import kotlinx.coroutines.launch
 import com.bedivine.app.ui.component.RemoteFocus
+import androidx.compose.ui.res.stringResource
 
 private val CardSurface = MenuRowSurface
 
@@ -82,7 +83,7 @@ fun UpdatePromptSheet(
         } else {
             needsPermission = true
             readyToInstall = true
-            error = "Allow \"Install unknown apps\" for BeDivine, then tap Install here again."
+            error = context.getString(R.string.misc_update_allow_install)
         }
     }
 
@@ -122,7 +123,7 @@ fun UpdatePromptSheet(
             Spacer(modifier = Modifier.height(18.dp))
 
             Text(
-                text = if (userName.isBlank()) "Update available!" else "Update available, $userName!",
+                text = if (userName.isBlank()) stringResource(R.string.misc_update_available) else stringResource(R.string.misc_update_available_user, userName),
                 color = Color.White,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
@@ -140,7 +141,7 @@ fun UpdatePromptSheet(
                     .padding(16.dp)
             ) {
                 Text(
-                    text = "What changed on ${release.version}",
+                    text = stringResource(R.string.misc_update_what_changed, release.version),
                     color = Color.White,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
@@ -152,7 +153,7 @@ fun UpdatePromptSheet(
             Spacer(modifier = Modifier.height(18.dp))
 
             Text(
-                text = "To Be Installed -",
+                text = stringResource(R.string.misc_update_to_install),
                 color = Color(0xFF8A8A8A),
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -209,11 +210,11 @@ fun UpdatePromptSheet(
                 enabled = !downloading && release.apkUrl != null,
                 progress = animatedProgress,
                 label = when {
-                    downloading -> "Downloading… ${(animatedProgress * 100).toInt()}%"
-                    release.apkUrl == null -> "No APK in this release"
-                    needsPermission -> "Install here"
-                    readyToInstall -> "Install here"
-                    else -> "Install here"
+                    downloading -> stringResource(R.string.misc_update_downloading, (animatedProgress * 100).toInt())
+                    release.apkUrl == null -> stringResource(R.string.misc_update_no_apk)
+                    needsPermission -> stringResource(R.string.misc_update_install_here)
+                    readyToInstall -> stringResource(R.string.misc_update_install_here)
+                    else -> stringResource(R.string.misc_update_install_here)
                 },
                 dimmed = release.apkUrl == null,
                 onClick = {
@@ -230,7 +231,7 @@ fun UpdatePromptSheet(
                             downloading = false
                             result.fold(
                                 onSuccess = { startInstall(it) },
-                                onFailure = { error = it.message ?: "Download failed" },
+                                onFailure = { error = it.message ?: context.getString(R.string.misc_update_download_failed) },
                             )
                         }
                     }
@@ -241,7 +242,7 @@ fun UpdatePromptSheet(
 
             PromptButton(
                 enabled = !downloading,
-                label = "Open the web",
+                label = stringResource(R.string.misc_update_open_web),
                 dimmed = downloading,
                 onClick = { context.openReleaseUrl(release.htmlUrl) },
             )
@@ -250,7 +251,7 @@ fun UpdatePromptSheet(
 
             PromptButton(
                 enabled = !downloading,
-                label = "no thanks remind me in 24 hour",
+                label = stringResource(R.string.misc_update_snooze),
                 dimmed = downloading,
                 onClick = onSnooze,
             )

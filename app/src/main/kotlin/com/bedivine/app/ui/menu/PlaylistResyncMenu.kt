@@ -41,6 +41,7 @@ import com.bedivine.app.ui.screens.settings.importsync.accountResyncRoute
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import androidx.compose.ui.res.stringResource
 
 /** One playlist's Re-sync, for its menu. [source] is null while it isn't known to have come from a service. */
 class PlaylistResyncState internal constructor(
@@ -73,14 +74,14 @@ class PlaylistResyncState internal constructor(
     }
 
     /** "Re-sync with Spotify"; null for a playlist made here. */
-    val title: String? get() = source?.let { "Re-sync with ${it.label}" }
+    val title: String? get() = source?.let { context.getString(R.string.misc_resync_with, context.getString(it.labelRes)) }
 
     /** The menu row; null for a playlist made here. */
     fun menuItem(): Material3MenuItemData? {
         val from = source ?: return null
         return Material3MenuItemData(
-            title = { Text("Re-sync with ${from.label}") },
-            description = { Text("Add the songs that are new on ${from.label}") },
+            title = { Text(stringResource(R.string.misc_resync_with, stringResource(from.labelRes))) },
+            description = { Text(stringResource(R.string.misc_resync_add_new, stringResource(from.labelRes))) },
             icon = { Icon(painter = painterResource(R.drawable.sync), contentDescription = null) },
             onClick = ::start,
         )
@@ -89,13 +90,13 @@ class PlaylistResyncState internal constructor(
     private fun handle(start: ResyncStart) {
         when (start) {
             ResyncStart.Started -> {
-                toast("Looking for new songs on ${source?.label ?: "the service"}…")
+                toast(context.getString(R.string.misc_resync_looking_on, source?.let { context.getString(it.labelRes) } ?: context.getString(R.string.misc_resync_the_service)))
                 onDismiss()
             }
             is ResyncStart.ThroughAccount -> {
                 onDismiss()
                 navController?.navigate(accountResyncRoute(start.service, playlistId))
-                    ?: toast("Open the playlist and re-sync it from its menu there.")
+                    ?: toast(context.getString(R.string.misc_resync_open_there))
             }
             ResyncStart.NeedsLink -> askingForLink = true
             is ResyncStart.Failed -> toast(start.message)
@@ -124,7 +125,7 @@ fun rememberPlaylistResync(
     }
     state.source = resyncSourceOf(imported, browseId)
     if (state.askingForLink) {
-        ResyncLinkDialog(sourceLabel = state.source?.label ?: "music service", onDismiss = state::cancelLink, onDone = state::startFromLink)
+        ResyncLinkDialog(sourceLabel = state.source?.let { stringResource(it.labelRes) } ?: stringResource(R.string.misc_resync_music_service), onDismiss = state::cancelLink, onDone = state::startFromLink)
     }
     return state
 }
@@ -144,7 +145,7 @@ fun rememberResyncAll(navController: NavController): () -> Unit {
         {
             scope.launch {
                 val start = resync.startAll()
-                resyncAllMessage(start)?.let { Toast.makeText(context, it, Toast.LENGTH_LONG).show() }
+                resyncAllMessage(context, start)?.let { Toast.makeText(context, it, Toast.LENGTH_LONG).show() }
                 if (!start.busy && start.throughAccount.isNotEmpty()) {
                     navController.navigate(accountResyncAllRoute(start.throughAccount))
                 }
@@ -153,20 +154,20 @@ fun rememberResyncAll(navController: NavController): () -> Unit {
     }
 }
 
-private fun resyncAllMessage(start: ResyncAllStart): String? {
-    if (start.busy) return "An import is still running. Try again once it's done."
+private fun resyncAllMessage(context: Context, start: ResyncAllStart): String? {
+    if (start.busy) return context.getString(R.string.misc_lib_import_running)
     if (start.started == 0 && start.throughAccount.isEmpty() && start.needLink == 0) {
-        return "None of your playlists came from a music service, so there's nothing to re-sync."
+        return context.getString(R.string.misc_resync_none)
     }
     val started = when (start.started) {
         0 -> null
-        1 -> "Looking for new songs in 1 playlist…"
-        else -> "Looking for new songs in ${start.started} playlists…"
+        1 -> context.getString(R.string.misc_resync_looking_1)
+        else -> context.getString(R.string.misc_resync_looking_n, start.started)
     }
     val needLink = when (start.needLink) {
         0 -> null
-        1 -> "1 older import needs its link, so re-sync it from its own menu."
-        else -> "${start.needLink} older imports need their link, so re-sync them from their own menus."
+        1 -> context.getString(R.string.misc_resync_needlink_1)
+        else -> context.getString(R.string.misc_resync_needlink_n, start.needLink)
     }
     return listOfNotNull(started, needLink).joinToString(" ").ifEmpty { null }
 }
@@ -176,14 +177,14 @@ private fun resyncAllMessage(start: ResyncAllStart): String? {
 fun ResyncLinkDialog(sourceLabel: String, onDismiss: () -> Unit, onDone: (String) -> Unit) {
     TextFieldDialog(
         icon = { Icon(painter = painterResource(R.drawable.link), contentDescription = null) },
-        title = { Text("Paste its $sourceLabel link") },
+        title = { Text(stringResource(R.string.misc_resync_paste_link, sourceLabel)) },
         placeholder = { Text("https://…") },
         keyboardType = KeyboardType.Uri,
         onDone = onDone,
         onDismiss = onDismiss,
         extraContent = {
             Text(
-                "This playlist was imported before BeDivine saved where it came from. Its link is how Re-sync finds it again.",
+                stringResource(R.string.misc_resync_link_explainer),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 12.dp),

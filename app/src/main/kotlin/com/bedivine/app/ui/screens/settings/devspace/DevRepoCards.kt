@@ -2,6 +2,7 @@
 
 package com.bedivine.app.ui.screens.settings.devspace
 
+import androidx.annotation.StringRes
 import android.content.Context
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -53,13 +54,14 @@ import com.bedivine.app.ui.component.pressBounce
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import com.bedivine.app.ui.component.RemoteFocus
+import androidx.compose.ui.res.stringResource
 
 private val BugText = Color(0xFFFF8A80)
 private val BugFill = Color(0xFF4A2424)
 private const val IssueRowsShown = 6
 
-private enum class IssueFilter(val label: String) {
-    All("All"), Bug("Bug"), Feature("Feature"), Other("Other");
+private enum class IssueFilter(@StringRes val labelRes: Int) {
+    All(R.string.misc_dl_all), Bug(R.string.misc_dev_bug), Feature(R.string.misc_dev_feature), Other(R.string.misc_dev_other);
 
     fun matches(issue: DevIssue) = when (this) {
         All -> true
@@ -87,12 +89,12 @@ internal fun DevPanel(modifier: Modifier = Modifier, content: @Composable Column
 internal fun PlaygroundCard(stats: DevSpaceStats?, settled: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val interaction = remember { MutableInteractionSource() }
     RepoFiguresCard(
-        title = "Developer playground",
+        title = stringResource(R.string.misc_dev_playground),
         figures = listOf(
-            stats?.newIssues to "new reported issues",
-            stats?.newResolved to "new resolved issue",
-            stats?.commits to "commits",
-            stats?.releases to "releases",
+            stats?.newIssues to R.string.misc_dev_new_issues,
+            stats?.newResolved to R.string.misc_dev_new_resolved,
+            stats?.commits to R.string.misc_dev_commits,
+            stats?.releases to R.string.misc_dev_releases,
         ),
         settled = settled,
         showChevron = true,
@@ -107,7 +109,7 @@ internal fun PlaygroundCard(stats: DevSpaceStats?, settled: Boolean, onClick: ()
 @Composable
 internal fun RepoFiguresCard(
     title: String,
-    figures: List<Pair<Int?, String>>,
+    figures: List<Pair<Int?, @StringRes Int>>,
     settled: Boolean,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
@@ -151,7 +153,7 @@ internal fun RepoFiguresCard(
                             fontSize = devFigureSp(figureDp),
                             letterSpacing = (-1.5).sp,
                         )
-                        Text(label, style = devText(9.5f, FontWeight.Medium, Color(0xFFD1D1D6), 0f), maxLines = 2)
+                        Text(stringResource(label), style = devText(9.5f, FontWeight.Medium, Color(0xFFD1D1D6), 0f), maxLines = 2)
                     }
                 }
             }
@@ -176,7 +178,7 @@ internal fun RepoIssuesSection(
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         DevPanel {
-            Text("Repo issues", style = devText(17f, tracking = -0.6f))
+            Text(stringResource(R.string.misc_dev_repo_issues), style = devText(17f, tracking = -0.6f))
             Spacer(Modifier.height(10.dp))
             FilterChips(
                 selected = filter,
@@ -187,13 +189,13 @@ internal fun RepoIssuesSection(
             val shown = open.filter { filter.matches(it) }
             when {
                 stats == null && loading -> repeat(3) { SkeletonRow() }
-                stats == null -> RetryNote(error ?: "Couldn't reach GitHub", onRetry)
-                shown.isEmpty() -> Note(if (open.isEmpty()) "No open issues. Nice." else "No ${filter.label.lowercase()} issues open.")
+                stats == null -> RetryNote(error ?: stringResource(R.string.misc_update_couldnt_reach_github), onRetry)
+                shown.isEmpty() -> Note(if (open.isEmpty()) stringResource(R.string.misc_dev_no_issues) else stringResource(R.string.misc_dev_no_filter_issues, stringResource(filter.labelRes).lowercase()))
                 else -> IssueList(shown, showAllOpen, context) { showAllOpen = true }
             }
             if (stats != null && error != null) {
                 Spacer(Modifier.height(10.dp))
-                RetryNote("$error. Showing the last numbers.", onRetry)
+                RetryNote(stringResource(R.string.misc_dev_stale, error), onRetry)
             }
         }
 
@@ -201,7 +203,7 @@ internal fun RepoIssuesSection(
         if (stats != null && shownResolved.isNotEmpty()) {
             DevPanel {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Resolved", style = devText(17f, tracking = -0.6f), modifier = Modifier.weight(1f))
+                    Text(stringResource(R.string.misc_dev_resolved), style = devText(17f, tracking = -0.6f), modifier = Modifier.weight(1f))
                     Text("${shownResolved.size}", style = devText(15f, FontWeight.SemiBold, DevMuted))
                 }
                 Spacer(Modifier.height(12.dp))
@@ -221,7 +223,7 @@ private fun FilterChips(selected: IssueFilter, countOf: (IssueFilter) -> Int, on
             val on = f == selected
             val n = countOf(f)
             Text(
-                text = if (n > 0) "${f.label} $n" else f.label,
+                text = if (n > 0) "${stringResource(f.labelRes)} $n" else stringResource(f.labelRes),
                 style = devText(13f, FontWeight.SemiBold, if (on) Color.Black else Color.White, -0.2f),
                 maxLines = 1,
                 modifier = Modifier
@@ -241,7 +243,7 @@ private fun IssueList(issues: List<DevIssue>, showAll: Boolean, context: Context
         visible.forEach { IssueRow(it) { context.openDevUrl(it.url) } }
         if (!showAll && issues.size > IssueRowsShown) {
             Text(
-                "Show all ${issues.size}",
+                stringResource(R.string.misc_dev_show_all, issues.size),
                 style = devText(13f, FontWeight.SemiBold, Color.White, -0.2f),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
@@ -317,7 +319,7 @@ private fun RetryNote(text: String, onRetry: () -> Unit) {
         Text(text, style = devText(13f, FontWeight.Medium, DevMuted, -0.2f), modifier = Modifier.weight(1f))
         Spacer(Modifier.width(10.dp))
         Text(
-            "Try again",
+            stringResource(R.string.try_again),
             style = devText(13f, FontWeight.SemiBold, Color.Black, -0.2f),
             modifier = Modifier
                 .clip(CircleShape)
@@ -328,13 +330,14 @@ private fun RetryNote(text: String, onRetry: () -> Unit) {
     }
 }
 
+@Composable
 private fun ago(at: Instant): String {
     val days = ChronoUnit.DAYS.between(at, Instant.now())
     return when {
-        days <= 0L -> "today"
-        days == 1L -> "yesterday"
-        days < 30L -> "${days}d ago"
-        days < 365L -> "${days / 30}mo ago"
-        else -> "${days / 365}y ago"
+        days <= 0L -> stringResource(R.string.misc_dev_today)
+        days == 1L -> stringResource(R.string.misc_dev_yesterday)
+        days < 30L -> stringResource(R.string.misc_dev_days_ago, days)
+        days < 365L -> stringResource(R.string.misc_dev_months_ago, days / 30)
+        else -> stringResource(R.string.misc_dev_years_ago, days / 365)
     }
 }
