@@ -621,7 +621,7 @@ private fun formatGitHubDate(githubDate: String): String = try {
 }
 
 fun isNewerVersion(latestVersion: String, currentVersion: String): Boolean {
-    // our releases are tagged bedivine-2.0-N and versioned "2.0 build#N": compare with the
+    // our releases are tagged bedivine-8.4.0-N and versioned "8.4.0 build#N": compare with the
     // same parser the launch checker uses instead of splitting the raw strings, which cannot
     // read either form (a bare tag parsed as 0.4.0, and "build#N" is not a version part)
     return parseFullVersion(latestVersion) > parseFullVersion(currentVersion)
@@ -715,7 +715,7 @@ suspend fun checkForUpdate(
                 // beta is the prerelease flag, not the tag: our tags start with "bedivine-"
                 val isBeta = release.optBoolean("prerelease", false)
                 // the bare tag carries no build number, so compare title + tag like the
-                // launch checker does ("BeDivine 2.0 build#7 bedivine-2.0-7")
+                // launch checker does ("BeDivine 8.4.0 build#8 bedivine-8.4.0-8")
                 val releaseVersionText = release.optString("name").orEmpty() + " " + tagName
 
                 if (!isBeta) {

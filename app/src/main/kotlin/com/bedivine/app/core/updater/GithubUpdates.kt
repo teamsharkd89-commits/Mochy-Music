@@ -56,11 +56,6 @@ data class FullVersion(
     val nightly: Int = 0,
 ) : Comparable<FullVersion> {
     override fun compareTo(other: FullVersion): Int {
-        // 2.0 restarts our versioning: any 2.x release is newer than any 8.x one, so the
-        // updater still offers 2.0 to apps on the 8.4.0 line, and later 2.x builds compare
-        // normally among themselves.
-        if (major == 2 && other.major != 2) return 1
-        if (other.major == 2 && major != 2) return -1
         if (major != other.major) return major.compareTo(other.major)
         if (minor != other.minor) return minor.compareTo(other.minor)
         if (patch != other.patch) return patch.compareTo(other.patch)
@@ -173,12 +168,10 @@ private suspend fun fetchReleases(): Result<List<ParsedRelease>> = withContext(D
                 val fullVer = parseFullVersion("$title $tag")
 
                 if (fullVer.major == 0 && fullVer.minor == 0 && fullVer.patch == 0) continue
-                // 2.0 restarts our versioning, so it sits below the 8.2.3 floor; it is still
-                // ours, not the old id, so it passes the filter like the 8.x releases do
-                if (fullVer.major != 2 && fullVer.copy(buildNumber = 0) < FirstReleaseWithThisId) continue
+                if (fullVer.copy(buildNumber = 0) < FirstReleaseWithThisId) continue
 
                 // the number in parentheses was confusing: show the build the same way
-                // everywhere else, "2.0 build#7", so the new version is readable at a glance
+                // everywhere else, "8.4.0 build#8", so the new version is readable at a glance
                 val displayVersion = if (fullVer.buildNumber > 0) "${fullVer.name} build#${fullVer.buildNumber}" else fullVer.name
 
                 val assets = release.optJSONArray("assets")
