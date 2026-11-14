@@ -114,6 +114,11 @@ import com.music.innertube.models.SongItem
 import com.music.innertube.models.WatchEndpoint
 import com.music.innertube.models.YTItem
 import com.bedivine.app.constants.HomeStyle
+import com.bedivine.app.constants.HomeGlowAnimatedKey
+import com.bedivine.app.constants.HomeGlowFixedColorKey
+import com.bedivine.app.constants.HomeGlowLengthKey
+import com.bedivine.app.constants.HomeGlowModeKey
+import com.bedivine.app.constants.HomeGlowStrengthKey
 import com.bedivine.app.constants.HomeStyleKey
 import com.bedivine.app.constants.ProfilePicUriKey
 import com.bedivine.app.constants.ThumbnailCornerRadius
@@ -141,6 +146,11 @@ import com.bedivine.app.ui.component.HomeCardHighlight
 import com.bedivine.app.ui.component.HomeCompactTopBones
 import com.bedivine.app.ui.component.HomeCoverCard
 import com.bedivine.app.ui.component.HomeHopInCard
+import com.bedivine.app.ui.component.HomeGlowFixedColor
+import com.bedivine.app.ui.component.HomeGlowLengthMax
+import com.bedivine.app.ui.component.HomeGlowLengthMin
+import com.bedivine.app.ui.component.HomeGlowMode
+import com.bedivine.app.ui.component.HomeGlowSettings
 import com.bedivine.app.ui.component.HomeTopGlow
 import com.bedivine.app.ui.component.homeRowHeight
 import com.bedivine.app.ui.component.HomeSectionBones
@@ -300,15 +310,20 @@ private fun HomeCompactTop(
     glowCoverUrls: List<String>,
     glowVisibility: () -> Float,
     content: @Composable ColumnScope.() -> Unit,
+    glowSettings: HomeGlowSettings = HomeGlowSettings(),
+    /** the song playing's cover, for Color Vivo; read inside the hero item so only it recomposes on a track change */
+    vivoCoverUrl: String? = null,
 ) {
     val topInset = WindowInsets.stableSystemBars.asPaddingValues().calculateTopPadding()
     Box {
         // outside the launch rise, so the glow never slides down off the top edge while the intro plays
         HomeTopGlow(
             coverUrls = glowCoverUrls,
-            depth = topInset + 150.dp,
+            depth = topInset + glowSettings.length.dp,
             visibility = glowVisibility,
             modifier = Modifier.matchParentSize(),
+            settings = glowSettings,
+            vivoCoverUrl = vivoCoverUrl,
         )
         Column(modifier = Modifier.launchRise(order = 1)) {
             Spacer(Modifier.height(topInset + 78.dp))
@@ -710,6 +725,22 @@ fun HomeScreen(
     val quickPicksLazyGridState = rememberTrackGridState()
     val forgottenFavoritesLazyGridState = rememberTrackGridState()
     val homeStyle by rememberEnumPreference(HomeStyleKey, defaultValue = HomeStyle.MOCHYY)
+
+    // settings > customisation > home gradient: where the top glow's colours come from, how strong, how far, whether it moves
+    val glowModePref by rememberPreference(HomeGlowModeKey, HomeGlowMode.COVERS.key)
+    val glowFixedPref by rememberPreference(HomeGlowFixedColorKey, HomeGlowFixedColor.AMBER.key)
+    val glowStrengthPref by rememberPreference(HomeGlowStrengthKey, 0.9f)
+    val glowLengthPref by rememberPreference(HomeGlowLengthKey, 150f)
+    val glowAnimatedPref by rememberPreference(HomeGlowAnimatedKey, true)
+    val glowSettings = remember(glowModePref, glowFixedPref, glowStrengthPref, glowLengthPref, glowAnimatedPref) {
+        HomeGlowSettings(
+            mode = HomeGlowMode.fromKey(glowModePref),
+            fixedColor = HomeGlowFixedColor.fromKey(glowFixedPref).color,
+            strength = glowStrengthPref.coerceIn(0f, 1f),
+            length = glowLengthPref.coerceIn(HomeGlowLengthMin, HomeGlowLengthMax),
+            animated = glowAnimatedPref,
+        )
+    }
 
     val startListeningSongs = remember(keepListening, recentHistorySongs, mostPlayedSongsForHome, forgottenFavorites) {
         buildList<Song> {
@@ -1342,7 +1373,10 @@ fun HomeScreen(
                             val glowCoverUrls = remember(startListeningSongs, launchHold) {
                                 if (launchHold) emptyList() else startListeningSongs.mapNotNull { it.thumbnailUrl }.take(2)
                             }
-                            HomeCompactTop(glowCoverUrls, topGlowVisibility) {
+                            // launch bones get no glow at all, whatever the mode; it fades in with the songs
+                            val effectiveGlowSettings = if (launchHold) HomeGlowSettings() else glowSettings
+                            val vivoCoverUrl = if (launchHold) null else mediaMetadataState.value?.thumbnailUrl
+                            HomeCompactTop(glowCoverUrls, topGlowVisibility, glowSettings = effectiveGlowSettings, vivoCoverUrl = vivoCoverUrl) {
                                 if (launchHold || (isFirstLoad && startListeningSongs.isEmpty())) {
                                     BonesHost {
                                         HomeCompactTopBones(isHopIn = false)
@@ -1368,7 +1402,10 @@ fun HomeScreen(
                                 if (launchHold) emptyList()
                                 else hopInLocalItems.mapNotNull { (it as? Playlist)?.thumbnails?.firstOrNull() ?: it.thumbnailUrl }.take(2)
                             }
-                            HomeCompactTop(glowCoverUrls, topGlowVisibility) {
+                            // launch bones get no glow at all, whatever the mode; it fades in with the songs
+                            val effectiveGlowSettings = if (launchHold) HomeGlowSettings() else glowSettings
+                            val vivoCoverUrl = if (launchHold) null else mediaMetadataState.value?.thumbnailUrl
+                            HomeCompactTop(glowCoverUrls, topGlowVisibility, glowSettings = effectiveGlowSettings, vivoCoverUrl = vivoCoverUrl) {
                                 if (launchHold || (isFirstLoad && hopInLocalItems.isEmpty())) {
                                     BonesHost {
                                         HomeCompactTopBones(isHopIn = true)

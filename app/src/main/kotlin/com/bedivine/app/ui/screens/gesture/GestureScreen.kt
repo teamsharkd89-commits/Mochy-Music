@@ -124,6 +124,7 @@ private enum class CustomiseSection(@StringRes val titleRes: Int, val keys: List
     PLAYLIST(R.string.customise_playlist_styles, listOf("Playlist styles"), "playlist styles flow classic minimal header"),
     PLAYER(R.string.customise_player_styles, listOf("Player styles"), "player styles flagship turntable ipod poster timeline lyrics editor customize landscape sideways full cover square"),
     HOME(R.string.customise_home_styles, listOf("Home styles"), "home styles bedivine listen now hop in hero"),
+    HOME_GLOW(R.string.home_glow_title, listOf("Degradado del inicio", "Color Vivo", "De las portadas", "Color fijo", "Fuerza", "Largo", "Animado"), "home gradient glow top covers vivo fixed color strength length animated degrade inicio portadas"),
     BLUR(R.string.appearance_blur, listOf("Blur", "Progressive blur", "Blur quality", "Blur strength"), "blur glass frosted progressive flat quality low high strength px"),
     ELEMENT_BLUR(R.string.customise_element_blur, listOf("Element blur"), "element blur lyrics lines cover zoom titles menus page swipes"),
     ANIMATION(R.string.appearance_animation, listOf("Animation", "Animation speed"), "animation speed motion transitions off faster slower"),
@@ -239,6 +240,7 @@ private fun CustomiseSectionContent(section: CustomiseSection) {
                 modifier = pagerBleed,
             ) { HomeStylePreview(style = it, coverRadius = coverRadiusPx.dp) }
         }
+        CustomiseSection.HOME_GLOW -> HomeGlowSection()
         CustomiseSection.BLUR -> BlurSection()
         CustomiseSection.ELEMENT_BLUR -> ElementBlurSection()
         CustomiseSection.ANIMATION -> AnimationSection()

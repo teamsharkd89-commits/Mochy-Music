@@ -1236,4 +1236,23 @@
     <string name="profile_card_tilt_strong">Fuerte</string>
     <string name="profile_card_marquee">Texto lateral</string>
     <string name="profile_card_marquee_desc">El texto vertical del borde de la tarjeta</string>
+    <!-- degradado del inicio, ajustes > personalización -->
+    <string name="home_glow_title">Degradado del inicio</string>
+    <string name="home_glow_desc">El degradado de color de la parte superior del inicio.</string>
+    <string name="home_glow_mode_covers">De las portadas</string>
+    <string name="home_glow_mode_vivo">Color Vivo</string>
+    <string name="home_glow_mode_fixed">Color fijo</string>
+    <string name="home_glow_vivo_desc">Toma sus colores de la portada de la canción que suena.</string>
+    <string name="home_glow_color_amber">Ámbar</string>
+    <string name="home_glow_color_blue">Azul</string>
+    <string name="home_glow_color_violet">Violeta</string>
+    <string name="home_glow_color_green">Verde</string>
+    <string name="home_glow_color_red">Rojo</string>
+    <string name="home_glow_color_pink">Rosa</string>
+    <string name="home_glow_strength">Fuerza</string>
+    <string name="home_glow_length">Largo</string>
+    <string name="home_glow_length_value">%1$d dp</string>
+    <string name="home_glow_percent">%1$d%%</string>
+    <string name="home_glow_animated">Animado</string>
+    <string name="home_glow_animated_desc">Los colores cambian con un fundido suave y el degradado respira despacio.</string>
 </resources>

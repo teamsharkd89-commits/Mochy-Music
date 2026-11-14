@@ -1238,4 +1238,23 @@
     <string name="profile_card_tilt_strong">Strong</string>
     <string name="profile_card_marquee">Side text</string>
     <string name="profile_card_marquee_desc">The vertical text on the card’s edge</string>
+    <!-- home gradient, settings > customisation -->
+    <string name="home_glow_title">Home gradient</string>
+    <string name="home_glow_desc">The wash of colour at the top of Home.</string>
+    <string name="home_glow_mode_covers">From covers</string>
+    <string name="home_glow_mode_vivo">Color Vivo</string>
+    <string name="home_glow_mode_fixed">Fixed color</string>
+    <string name="home_glow_vivo_desc">Takes its colours from the cover of the song playing.</string>
+    <string name="home_glow_color_amber">Amber</string>
+    <string name="home_glow_color_blue">Blue</string>
+    <string name="home_glow_color_violet">Violet</string>
+    <string name="home_glow_color_green">Green</string>
+    <string name="home_glow_color_red">Red</string>
+    <string name="home_glow_color_pink">Pink</string>
+    <string name="home_glow_strength">Strength</string>
+    <string name="home_glow_length">Length</string>
+    <string name="home_glow_length_value">%1$d dp</string>
+    <string name="home_glow_percent">%1$d%%</string>
+    <string name="home_glow_animated">Animated</string>
+    <string name="home_glow_animated_desc">Colours fade in smoothly and the glow breathes gently.</string>
 </resources>
