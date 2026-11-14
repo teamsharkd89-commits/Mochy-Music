@@ -62,11 +62,12 @@ enum class HomeStyle(val displayName: String) {
 
 val HomeStyleKey = stringPreferencesKey("homeStyle")
 
-// settings > customisation > home gradient: where the top glow's colours come from, how strong, how far it reaches, whether it moves
+// settings > customisation > home gradient: where the top glow's colours come from, how strong, how far it reaches, how vivid, whether it moves
 val HomeGlowModeKey = stringPreferencesKey("homeGlowMode")
 val HomeGlowFixedColorKey = stringPreferencesKey("homeGlowFixedColor")
 val HomeGlowStrengthKey = floatPreferencesKey("homeGlowStrength")
 val HomeGlowLengthKey = floatPreferencesKey("homeGlowLength")
+val HomeGlowVividnessKey = floatPreferencesKey("homeGlowVividness")
 val HomeGlowAnimatedKey = booleanPreferencesKey("homeGlowAnimated")
 
 // how playlist and album headers are laid out at the top of the page

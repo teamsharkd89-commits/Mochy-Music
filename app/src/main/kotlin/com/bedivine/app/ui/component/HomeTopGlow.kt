@@ -17,8 +17,11 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
@@ -38,6 +41,7 @@ import coil3.toBitmap
 import com.bedivine.app.R
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 
@@ -48,9 +52,9 @@ private val GlowStopPositions = FloatArray(GlowStopCount + 1) { it / GlowStopCou
 
 /** settings > customisation > home gradient: where the top glow's colours come from */
 enum class HomeGlowMode(val key: String, @StringRes val labelRes: Int) {
-    /** today's behaviour: the first two feed covers tint the corners */
+    /** the feed covers: the first two covers shown on home, the original behaviour */
     COVERS("covers", R.string.home_glow_mode_covers),
-    /** the special one: both corners take their colours from the song playing */
+    /** the special one: both corners take their colours from the song playing; with no cover the feed covers fill in */
     VIVO("vivo", R.string.home_glow_mode_vivo),
     /** one fixed colour for both corners, no cover sampled */
     FIXED("fixed", R.string.home_glow_mode_fixed);
@@ -78,7 +82,7 @@ enum class HomeGlowFixedColor(val key: String, @StringRes val labelRes: Int, val
 const val HomeGlowLengthMin = 80f
 const val HomeGlowLengthMax = 400f
 
-/** everything the customisation page sets for the home glow; the defaults are today's behaviour */
+/** everything the customisation page sets for the home glow; the defaults are what a fresh install shows */
 data class HomeGlowSettings(
     val mode: HomeGlowMode = HomeGlowMode.COVERS,
     val fixedColor: Color = HomeGlowFixedColor.AMBER.color,
@@ -86,11 +90,13 @@ data class HomeGlowSettings(
     val strength: Float = 0.9f,
     /** how far down the gradient reaches, in dp past the top inset (was fixed at 150) */
     val length: Float = 150f,
-    /** on: colours crossfade and the glow breathes gently; off: colours switch instantly, no movement */
+    /** 0..1, how vivid the colours look: 0 is the old dimming (saturation ≤ 0.6, lightness ≤ 0.32), 1 lets them run full */
+    val vividness: Float = 0.5f,
+    /** on: the colours drift through the cover's tones and the glow breathes gently; off: colours switch instantly, no movement */
     val animated: Boolean = true,
 )
 
-// the soft wash at the top of the listen now and hop in homes: the first cover tints the left corner, the second the right
+// the soft wash at the top of the listen now and hop in homes: the song playing tints both corners, the feed covers fill in when nothing plays
 @Composable
 fun HomeTopGlow(
     coverUrls: List<String>,
@@ -110,15 +116,40 @@ fun HomeTopGlow(
             else -> GlowSource.Covers(coverUrls)
         }
     }
-    // seeded from the cache so coming back to home shows the glow straight away instead of fading it in again
-    val colors = remember { mutableStateOf(cachedGlowColors(source)) }
-    LaunchedEffect(source) { colors.value = loadGlowColors(context, source) }
+    // seeded from the cache so coming back to home shows the glow straight away instead of fading it in again;
+    // the seed follows the vividness too, so the slider repaints at once instead of waiting for the reload
+    val colors = remember(source, settings.vividness) { mutableStateOf(cachedGlowColors(source, settings.vividness)) }
+    LaunchedEffect(source, settings.vividness) { colors.value = loadGlowColors(context, source, settings.vividness) }
+    // the cover's tones in walking order, so the animated glow can move through them instead of sitting still
+    val palette = remember(source, settings.vividness) { mutableStateOf(cachedGlowPalette(source, settings.vividness)) }
+    LaunchedEffect(source, settings.vividness) { palette.value = loadGlowPalette(context, source, settings.vividness) }
+    var step by remember { mutableIntStateOf(0) }
+    LaunchedEffect(source, settings.animated, palette.value) {
+        step = 0
+        if (!settings.animated) return@LaunchedEffect
+        val tones = palette.value
+        if ((tones?.size ?: 0) < 2) return@LaunchedEffect
+        // one step every four seconds; the crossfade below makes the change drift instead of jump
+        while (true) {
+            delay(4000)
+            step++
+        }
+    }
+    // animated: the glow slowly walks through the cover's colours, left and right one step apart,
+    // so the gradient itself moves instead of only breathing; off, or with fewer than two tones, it stays put
+    val shownPair: Pair<Color, Color>? = when {
+        settings.animated && (palette.value?.size ?: 0) >= 2 -> {
+            val tones = palette.value!!
+            tones[step % tones.size] to tones[(step + 1) % tones.size]
+        }
+        else -> colors.value
+    }
 
     // starts from clear, so the wash fades in once the colours are sampled and blends over when they change;
     // with animation off the fade is instant, so a new song repaints the glow at once
     val fadeMs = if (settings.animated) 700 else 0
-    val left = animateColorAsState(colors.value?.first ?: Color.Transparent, tween(fadeMs), label = "homeGlowLeft")
-    val right = animateColorAsState(colors.value?.second ?: Color.Transparent, tween(fadeMs), label = "homeGlowRight")
+    val left = animateColorAsState(shownPair?.first ?: Color.Transparent, tween(fadeMs), label = "homeGlowLeft")
+    val right = animateColorAsState(shownPair?.second ?: Color.Transparent, tween(fadeMs), label = "homeGlowRight")
     val leftPaint = remember { Paint().apply { isDither = true } }
     val rightPaint = remember { Paint().apply { isDither = true } }
     // a gentle breathing while animated: the glow swells and settles about ±8% over ~4s
@@ -189,49 +220,116 @@ private sealed interface GlowSource {
     data class Fixed(val color: Color) : GlowSource
 }
 
-private fun cachedGlowColors(source: GlowSource): Pair<Color, Color>? = when (source) {
-    is GlowSource.Covers -> cachedGlowPair(source.urls)
-    is GlowSource.Vivo -> HomeGlowColor.cachedPair(source.url)
-    is GlowSource.Fixed -> HomeGlowColor.dimmed(source.color).let { it to it }
+private fun cachedGlowColors(source: GlowSource, vividness: Float): Pair<Color, Color>? = when (source) {
+    is GlowSource.Covers -> cachedGlowPair(source.urls, vividness)
+    is GlowSource.Vivo -> HomeGlowColor.cachedPair(source.url, vividness)
+    is GlowSource.Fixed -> HomeGlowColor.dimmed(source.color, vividness).let { it to it }
 }
 
-private suspend fun loadGlowColors(context: Context, source: GlowSource): Pair<Color, Color>? = when (source) {
-    is GlowSource.Covers -> loadGlowPair(context, source.urls)
-    is GlowSource.Vivo -> HomeGlowColor.loadPair(context, source.url)
-    is GlowSource.Fixed -> HomeGlowColor.dimmed(source.color).let { it to it }
+private suspend fun loadGlowColors(context: Context, source: GlowSource, vividness: Float): Pair<Color, Color>? = when (source) {
+    is GlowSource.Covers -> loadGlowPair(context, source.urls, vividness)
+    is GlowSource.Vivo -> HomeGlowColor.loadPair(context, source.url, vividness)
+    is GlowSource.Fixed -> HomeGlowColor.dimmed(source.color, vividness).let { it to it }
 }
 
-private fun cachedGlowPair(urls: List<String>): Pair<Color, Color>? =
-    glowPair(urls.getOrNull(0)?.let(HomeGlowColor::cached), urls.getOrNull(1)?.let(HomeGlowColor::cached))
+private fun cachedGlowPair(urls: List<String>, vividness: Float): Pair<Color, Color>? =
+    glowPair(urls.getOrNull(0)?.let { HomeGlowColor.cached(it, vividness) }, urls.getOrNull(1)?.let { HomeGlowColor.cached(it, vividness) })
 
-private suspend fun loadGlowPair(context: Context, urls: List<String>): Pair<Color, Color>? =
-    glowPair(urls.getOrNull(0)?.let { HomeGlowColor.load(context, it) }, urls.getOrNull(1)?.let { HomeGlowColor.load(context, it) })
+private suspend fun loadGlowPair(context: Context, urls: List<String>, vividness: Float): Pair<Color, Color>? =
+    glowPair(urls.getOrNull(0)?.let { HomeGlowColor.load(context, it, vividness) }, urls.getOrNull(1)?.let { HomeGlowColor.load(context, it, vividness) })
 
-// one dim colour per cover, sampled off the main thread from a tiny copy and kept so a cover is never sampled twice
+// the tones the animated glow walks through: the playing cover's palette, or the feed covers' palettes merged
+private fun cachedGlowPalette(source: GlowSource, vividness: Float): List<Color>? = when (source) {
+    is GlowSource.Covers -> mergePalettes(source.urls.mapNotNull { HomeGlowColor.cachedPalette(it, vividness) })
+    is GlowSource.Vivo -> HomeGlowColor.cachedPalette(source.url, vividness)
+    is GlowSource.Fixed -> null
+}
+
+private suspend fun loadGlowPalette(context: Context, source: GlowSource, vividness: Float): List<Color>? = when (source) {
+    is GlowSource.Covers -> mergePalettes(source.urls.mapNotNull { HomeGlowColor.loadPalette(context, it, vividness) })
+    is GlowSource.Vivo -> HomeGlowColor.loadPalette(context, source.url, vividness)
+    is GlowSource.Fixed -> null
+}
+
+// merged in order, each tone a clearly different hue from the ones before it, up to five;
+// a cover with only one colour gives no walk, so the glow stays put instead of cycling on itself
+private fun mergePalettes(palettes: List<List<Color>>): List<Color>? {
+    val tones = mutableListOf<Color>()
+    for (palette in palettes) {
+        for (tone in palette) {
+            if (tones.size >= 5) break
+            val hsl = FloatArray(3).also { ColorUtils.colorToHSL(tone.toArgb(), it) }
+            if (tones.any { existing ->
+                val existingHsl = FloatArray(3).also { ColorUtils.colorToHSL(existing.toArgb(), it) }
+                hueDistance(existingHsl[0], hsl[0]) < 30f
+            }) continue
+            tones += tone
+        }
+    }
+    return tones.takeIf { it.size >= 2 }
+}
+
+// how far apart two hues sit on the wheel, 0..180
+private fun hueDistance(a: Float, b: Float): Float {
+    val d = kotlin.math.abs(a - b) % 360f
+    return minOf(d, 360f - d)
+}
+
+// one raw colour per cover, sampled off the main thread from a tiny copy and kept so a cover is never sampled twice;
+// the dimming — and the vividness the user picks — is applied when the colour is read, so the slider repaints at once
 private object HomeGlowColor {
     private val cache = LruCache<String, Int>(48)
     private val pairCache = LruCache<String, Pair<Int, Int>>(48)
 
-    fun cached(url: String): Color? = cache.get(url)?.let { Color(it) }
+    fun cached(url: String, vividness: Float): Color? = cache.get(url)?.let { Color(dimArgb(it, vividness)) }
 
-    suspend fun load(context: Context, url: String): Color? {
-        cached(url)?.let { return it }
+    suspend fun load(context: Context, url: String, vividness: Float): Color? {
+        cached(url, vividness)?.let { return it }
         val bitmap = loadBitmap(context, url) ?: return null
-        val argb = withContext(Dispatchers.Default) { glowTone(bitmap) } ?: return null
+        val argb = withContext(Dispatchers.Default) { rawTone(bitmap) } ?: return null
         cache.put(url, argb)
-        return Color(argb)
+        return Color(dimArgb(argb, vividness))
     }
 
-    fun cachedPair(url: String): Pair<Color, Color>? =
-        pairCache.get(url)?.let { Color(it.first) to Color(it.second) }
+    fun cachedPair(url: String, vividness: Float): Pair<Color, Color>? =
+        pairCache.get(url)?.let { Color(dimArgb(it.first, vividness)) to Color(dimArgb(it.second, vividness)) }
 
     // both corners from one cover: its main tone and a second, different tone from the same cover
-    suspend fun loadPair(context: Context, url: String): Pair<Color, Color>? {
-        cachedPair(url)?.let { return it }
+    suspend fun loadPair(context: Context, url: String, vividness: Float): Pair<Color, Color>? {
+        cachedPair(url, vividness)?.let { return it }
         val bitmap = loadBitmap(context, url) ?: return null
-        val tones = withContext(Dispatchers.Default) { pairTones(bitmap) } ?: return null
+        val tones = withContext(Dispatchers.Default) { rawPairTones(bitmap) } ?: return null
         pairCache.put(url, tones)
-        return Color(tones.first) to Color(tones.second)
+        return Color(dimArgb(tones.first, vividness)) to Color(dimArgb(tones.second, vividness))
+    }
+
+    // the cover's tones for the animated walk: up to four, biggest patches first, each a clearly different hue
+    private val paletteCache = LruCache<String, List<Int>>(48)
+
+    fun cachedPalette(url: String, vividness: Float): List<Color>? =
+        paletteCache.get(url)?.map { Color(dimArgb(it, vividness)) }?.takeIf { it.size >= 2 }
+
+    suspend fun loadPalette(context: Context, url: String, vividness: Float): List<Color>? {
+        cachedPalette(url, vividness)?.let { return it }
+        val bitmap = loadBitmap(context, url) ?: return null
+        val tones = withContext(Dispatchers.Default) { rawPaletteTones(bitmap) } ?: return null
+        paletteCache.put(url, tones)
+        return tones.map { Color(dimArgb(it, vividness)) }.takeIf { it.size >= 2 }
+    }
+
+    private fun rawPaletteTones(bitmap: Bitmap): List<Int>? {
+        val swatches = Palette.from(bitmap).maximumColorCount(12).generate().swatches
+        val dominant = swatches.maxByOrNull { it.population } ?: return null
+        val ranked = swatches
+            .filter { it.hsl[1] >= 0.2f && it.hsl[2] in 0.08f..0.9f && it.population >= dominant.population / 8 }
+            .sortedByDescending { it.population }
+        val picked = mutableListOf<Palette.Swatch>()
+        for (swatch in ranked) {
+            if (picked.size >= 4) break
+            if (picked.any { hueDistance(it.hsl[0], swatch.hsl[0]) < 30f }) continue
+            picked += swatch
+        }
+        return picked.map { it.rgb }.takeIf { it.size >= 2 }
     }
 
     private suspend fun loadBitmap(context: Context, url: String): Bitmap? {
@@ -251,16 +349,15 @@ private object HomeGlowColor {
         }
     }
 
-    // the biggest patch of real colour on the cover (its main grey if it has none), kept dim so white text stays easy to read on it
-    private fun glowTone(bitmap: Bitmap): Int? {
+    // the biggest patch of real colour on the cover (its main grey if it has none), undimmed
+    private fun rawTone(bitmap: Bitmap): Int? {
         val swatches = Palette.from(bitmap).maximumColorCount(12).generate().swatches
-        val pick = pickGlowSwatch(swatches) ?: return null
-        return dimSwatch(pick)
+        return pickGlowSwatch(swatches)?.rgb
     }
 
-    // two tones from one cover: its main tone, plus the biggest patch of a clearly different hue;
+    // two raw tones from one cover: its main tone, plus the biggest patch of a clearly different hue;
     // a cover with only one colour paints both corners with it, like a single cover does today
-    private fun pairTones(bitmap: Bitmap): Pair<Int, Int>? {
+    private fun rawPairTones(bitmap: Bitmap): Pair<Int, Int>? {
         val swatches = Palette.from(bitmap).maximumColorCount(12).generate().swatches
         val first = pickGlowSwatch(swatches) ?: return null
         val second = swatches
@@ -269,7 +366,7 @@ private object HomeGlowColor {
             .maxByOrNull { it.population }
             ?: swatches.filter { it !== first }.maxByOrNull { it.population }
             ?: first
-        return dimSwatch(first) to dimSwatch(second)
+        return first.rgb to second.rgb
     }
 
     // the main tone: the biggest patch of real colour, or the cover's dominant swatch when it has none
@@ -281,26 +378,18 @@ private object HomeGlowColor {
             ?: dominant
     }
 
-    // dimmed the same way every glow tone is: some colour kept, but dark enough for white text
-    private fun dimSwatch(swatch: Palette.Swatch): Int {
-        val hsl = swatch.hsl.copyOf()
-        hsl[1] = hsl[1].coerceAtMost(0.6f)
-        hsl[2] = hsl[2].coerceIn(0.2f, 0.32f)
+    // dimmed for the glow: some colour kept, but dark enough for white text.
+    // vividness 0 is exactly the old dimming (saturation ≤ 0.6, lightness 0.2–0.32);
+    // vividness 1 lets saturation run full and lightness reach 0.60
+    private fun dimArgb(argb: Int, vividness: Float): Int {
+        val v = vividness.coerceIn(0f, 1f)
+        val hsl = FloatArray(3)
+        ColorUtils.colorToHSL(argb, hsl)
+        hsl[1] = hsl[1].coerceAtMost(0.6f + 0.4f * v)
+        hsl[2] = hsl[2].coerceIn(0.2f, 0.32f + 0.28f * v)
         return ColorUtils.HSLToColor(hsl)
     }
 
     // a picked colour dimmed the same way the sampled tones are, so a fixed colour glows as softly as a cover's
-    fun dimmed(color: Color): Color {
-        val hsl = FloatArray(3)
-        ColorUtils.colorToHSL(color.toArgb(), hsl)
-        hsl[1] = hsl[1].coerceAtMost(0.6f)
-        hsl[2] = hsl[2].coerceIn(0.2f, 0.32f)
-        return Color(ColorUtils.HSLToColor(hsl))
-    }
-
-    // how far apart two hues sit on the wheel, 0..180
-    private fun hueDistance(a: Float, b: Float): Float {
-        val d = kotlin.math.abs(a - b) % 360f
-        return minOf(d, 360f - d)
-    }
+    fun dimmed(color: Color, vividness: Float): Color = Color(dimArgb(color.toArgb(), vividness))
 }

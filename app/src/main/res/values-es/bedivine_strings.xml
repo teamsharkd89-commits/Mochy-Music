@@ -1242,7 +1242,9 @@
     <string name="home_glow_mode_covers">De las portadas</string>
     <string name="home_glow_mode_vivo">Color Vivo</string>
     <string name="home_glow_mode_fixed">Color fijo</string>
+    <string name="home_glow_covers_desc">Toma sus colores de las portadas que se ven en el inicio.</string>
     <string name="home_glow_vivo_desc">Toma sus colores de la portada de la canción que suena.</string>
+    <string name="home_glow_fixed_desc">Un color fijo para el degradado.</string>
     <string name="home_glow_color_amber">Ámbar</string>
     <string name="home_glow_color_blue">Azul</string>
     <string name="home_glow_color_violet">Violeta</string>
@@ -1250,9 +1252,11 @@
     <string name="home_glow_color_red">Rojo</string>
     <string name="home_glow_color_pink">Rosa</string>
     <string name="home_glow_strength">Fuerza</string>
+    <string name="home_glow_vividness">Viveza</string>
+    <string name="home_glow_vividness_desc">Qué tan intensos se ven los colores del degradado.</string>
     <string name="home_glow_length">Largo</string>
     <string name="home_glow_length_value">%1$d dp</string>
     <string name="home_glow_percent">%1$d%%</string>
     <string name="home_glow_animated">Animado</string>
-    <string name="home_glow_animated_desc">Los colores cambian con un fundido suave y el degradado respira despacio.</string>
+    <string name="home_glow_animated_desc">Los colores se van moviendo despacio por el degradado.</string>
 </resources>

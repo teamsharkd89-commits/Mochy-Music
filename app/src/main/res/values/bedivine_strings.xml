@@ -1244,7 +1244,9 @@
     <string name="home_glow_mode_covers">From covers</string>
     <string name="home_glow_mode_vivo">Color Vivo</string>
     <string name="home_glow_mode_fixed">Fixed color</string>
+    <string name="home_glow_covers_desc">Takes its colours from the covers shown on Home.</string>
     <string name="home_glow_vivo_desc">Takes its colours from the cover of the song playing.</string>
+    <string name="home_glow_fixed_desc">One fixed colour for the gradient.</string>
     <string name="home_glow_color_amber">Amber</string>
     <string name="home_glow_color_blue">Blue</string>
     <string name="home_glow_color_violet">Violet</string>
@@ -1252,9 +1254,11 @@
     <string name="home_glow_color_red">Red</string>
     <string name="home_glow_color_pink">Pink</string>
     <string name="home_glow_strength">Strength</string>
+    <string name="home_glow_vividness">Vividness</string>
+    <string name="home_glow_vividness_desc">How intense the gradient colours look.</string>
     <string name="home_glow_length">Length</string>
     <string name="home_glow_length_value">%1$d dp</string>
     <string name="home_glow_percent">%1$d%%</string>
     <string name="home_glow_animated">Animated</string>
-    <string name="home_glow_animated_desc">Colours fade in smoothly and the glow breathes gently.</string>
+    <string name="home_glow_animated_desc">The colours slowly drift across the gradient.</string>
 </resources>

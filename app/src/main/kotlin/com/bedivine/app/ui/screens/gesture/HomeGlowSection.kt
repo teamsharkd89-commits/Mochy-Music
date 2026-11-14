@@ -1,4 +1,4 @@
-// settings > customisation > home gradient: where the top glow's colours come from, how strong, how far, whether it moves
+// settings > customisation > home gradient: where the top glow's colours come from, how strong, how vivid, how far, whether it moves
 
 package com.bedivine.app.ui.screens.gesture
 
@@ -31,7 +31,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -44,6 +43,7 @@ import com.bedivine.app.constants.HomeGlowFixedColorKey
 import com.bedivine.app.constants.HomeGlowLengthKey
 import com.bedivine.app.constants.HomeGlowModeKey
 import com.bedivine.app.constants.HomeGlowStrengthKey
+import com.bedivine.app.constants.HomeGlowVividnessKey
 import com.bedivine.app.ui.component.HomeGlowFixedColor
 import com.bedivine.app.ui.component.HomeGlowLengthMax
 import com.bedivine.app.ui.component.HomeGlowLengthMin
@@ -61,24 +61,16 @@ internal fun HomeGlowSection() {
     val (fixedPref, setFixedPref) = rememberPreference(HomeGlowFixedColorKey, HomeGlowFixedColor.AMBER.key)
     val (strengthPref, setStrengthPref) = rememberPreference(HomeGlowStrengthKey, 0.9f)
     val (lengthPref, setLengthPref) = rememberPreference(HomeGlowLengthKey, 150f)
+    val (vividnessPref, setVividnessPref) = rememberPreference(HomeGlowVividnessKey, 0.5f)
     val (animatedPref, setAnimatedPref) = rememberPreference(HomeGlowAnimatedKey, true)
     val mode = HomeGlowMode.fromKey(modePref)
     val fixed = HomeGlowFixedColor.fromKey(fixedPref)
     val haptic = LocalHapticFeedback.current
     var lastStrengthTick by remember { mutableIntStateOf((strengthPref * 10f).roundToInt()) }
     var lastLengthTick by remember { mutableIntStateOf((lengthPref / 20f).roundToInt()) }
+    var lastVividnessTick by remember { mutableIntStateOf((vividnessPref * 10f).roundToInt()) }
 
-    Text(
-        text = stringResource(R.string.home_glow_title),
-        style = TextStyle(
-            fontFamily = InterFontFamily,
-            fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
-            letterSpacing = (-0.05).em,
-        ),
-        color = Color.White,
-    )
-    Spacer(Modifier.height(14.dp))
+    // the title lives inside the card, like every other section on this screen
     LabCard(padding = 20.dp) {
         Text(
             stringResource(R.string.home_glow_title),
@@ -127,16 +119,20 @@ internal fun HomeGlowSection() {
                 }
             }
         }
-        if (mode == HomeGlowMode.VIVO) {
-            Text(
-                text = stringResource(R.string.home_glow_vivo_desc),
-                fontFamily = InterFontFamily,
-                fontWeight = FontWeight.Medium,
-                fontSize = 13.sp,
-                color = LabColors.Secondary,
-                modifier = Modifier.padding(top = 10.dp),
-            )
-        }
+        // what the chosen mode does, so the two cover modes stop looking like the same thing:
+        // portadas take their colours from the covers shown on Home, Vivo from the song playing
+        Text(
+            text = stringResource(when (mode) {
+                HomeGlowMode.COVERS -> R.string.home_glow_covers_desc
+                HomeGlowMode.VIVO -> R.string.home_glow_vivo_desc
+                HomeGlowMode.FIXED -> R.string.home_glow_fixed_desc
+            }),
+            fontFamily = InterFontFamily,
+            fontWeight = FontWeight.Medium,
+            fontSize = 13.sp,
+            color = LabColors.Secondary,
+            modifier = Modifier.padding(top = 10.dp),
+        )
         if (mode == HomeGlowMode.FIXED) {
             Spacer(Modifier.height(16.dp))
             Row(
@@ -200,6 +196,32 @@ internal fun HomeGlowSection() {
                 }
                 setStrengthPref(next)
             },
+        )
+        Spacer(Modifier.height(11.dp))
+        CustomiseSliderCard(
+            title = stringResource(R.string.home_glow_vividness),
+            valueText = stringResource(R.string.home_glow_percent, (vividnessPref * 100f).roundToInt()),
+            startLabel = stringResource(R.string.home_glow_percent, 0),
+            endLabel = stringResource(R.string.home_glow_percent, 100),
+            fraction = vividnessPref.coerceIn(0f, 1f),
+            onFractionChange = { f ->
+                val next = f.coerceIn(0f, 1f)
+                // a tick every 10%, so the drag feels like it has notches
+                val tick = (next * 10f).roundToInt()
+                if (tick != lastVividnessTick) {
+                    lastVividnessTick = tick
+                    haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                }
+                setVividnessPref(next)
+            },
+        )
+        Text(
+            text = stringResource(R.string.home_glow_vividness_desc),
+            fontFamily = InterFontFamily,
+            fontWeight = FontWeight.Medium,
+            fontSize = 13.sp,
+            color = LabColors.Secondary,
+            modifier = Modifier.padding(top = 8.dp),
         )
         Spacer(Modifier.height(11.dp))
         CustomiseSliderCard(

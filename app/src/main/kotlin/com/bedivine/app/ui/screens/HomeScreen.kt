@@ -119,6 +119,7 @@ import com.bedivine.app.constants.HomeGlowFixedColorKey
 import com.bedivine.app.constants.HomeGlowLengthKey
 import com.bedivine.app.constants.HomeGlowModeKey
 import com.bedivine.app.constants.HomeGlowStrengthKey
+import com.bedivine.app.constants.HomeGlowVividnessKey
 import com.bedivine.app.constants.HomeStyleKey
 import com.bedivine.app.constants.ProfilePicUriKey
 import com.bedivine.app.constants.ThumbnailCornerRadius
@@ -726,18 +727,20 @@ fun HomeScreen(
     val forgottenFavoritesLazyGridState = rememberTrackGridState()
     val homeStyle by rememberEnumPreference(HomeStyleKey, defaultValue = HomeStyle.MOCHYY)
 
-    // settings > customisation > home gradient: where the top glow's colours come from, how strong, how far, whether it moves
+    // settings > customisation > home gradient: where the top glow's colours come from, how strong, how vivid, how far, whether it moves
     val glowModePref by rememberPreference(HomeGlowModeKey, HomeGlowMode.COVERS.key)
     val glowFixedPref by rememberPreference(HomeGlowFixedColorKey, HomeGlowFixedColor.AMBER.key)
     val glowStrengthPref by rememberPreference(HomeGlowStrengthKey, 0.9f)
     val glowLengthPref by rememberPreference(HomeGlowLengthKey, 150f)
+    val glowVividnessPref by rememberPreference(HomeGlowVividnessKey, 0.5f)
     val glowAnimatedPref by rememberPreference(HomeGlowAnimatedKey, true)
-    val glowSettings = remember(glowModePref, glowFixedPref, glowStrengthPref, glowLengthPref, glowAnimatedPref) {
+    val glowSettings = remember(glowModePref, glowFixedPref, glowStrengthPref, glowLengthPref, glowVividnessPref, glowAnimatedPref) {
         HomeGlowSettings(
             mode = HomeGlowMode.fromKey(glowModePref),
             fixedColor = HomeGlowFixedColor.fromKey(glowFixedPref).color,
             strength = glowStrengthPref.coerceIn(0f, 1f),
             length = glowLengthPref.coerceIn(HomeGlowLengthMin, HomeGlowLengthMax),
+            vividness = glowVividnessPref.coerceIn(0f, 1f),
             animated = glowAnimatedPref,
         )
     }
