@@ -309,10 +309,10 @@ private fun <T> HomeTrackGrid(
 private fun HomeCompactTop(
     glowCoverUrls: List<String>,
     glowVisibility: () -> Float,
-    content: @Composable ColumnScope.() -> Unit,
     glowSettings: HomeGlowSettings = HomeGlowSettings(),
     /** the song playing's cover, for Color Vivo; read inside the hero item so only it recomposes on a track change */
     vivoCoverUrl: String? = null,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     val topInset = WindowInsets.stableSystemBars.asPaddingValues().calculateTopPadding()
     Box {
