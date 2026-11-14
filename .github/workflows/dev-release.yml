@@ -23,8 +23,8 @@ jobs:
 
       - name: Set Up Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          cache-disabled: true
+        # cache on (default): dependencies and previous build outputs are reused,
+        # so follow-up builds only recompile what changed instead of everything
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
