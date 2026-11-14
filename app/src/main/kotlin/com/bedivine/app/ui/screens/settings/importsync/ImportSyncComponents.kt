@@ -94,7 +94,7 @@ fun LinkInputDialog(
     DefaultDialog(
         onDismiss = onDismiss,
         horizontalAlignment = Alignment.Start,
-        title = { Text(stringResource(R.string.misc_import_from_source, stringResource(source.labelRes))) },
+        title = { Text(stringResource(R.string.misc_import_from_source, source.label)) },
         buttons = {
             TextButton(onClick = {
                 clipboard.getText()?.text?.trim()?.takeIf { it.isNotEmpty() }?.let { link = it }
@@ -107,7 +107,7 @@ fun LinkInputDialog(
         },
     ) {
         Text(
-            text = stringResource(R.string.misc_import_paste_link_public, stringResource(source.labelRes)),
+            text = stringResource(R.string.misc_import_paste_link_public, source.label),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

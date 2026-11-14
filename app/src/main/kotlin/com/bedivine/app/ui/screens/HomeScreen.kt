@@ -647,6 +647,9 @@ fun HomeScreen(
     // a new install's hero: what was just imported, or else a song from each artist picked in
     // onboarding (the artists themselves if their songs couldn't be fetched)
     val starterSongs by viewModel.starterSongs.collectAsState()
+    // the detail string is built inside remember{} below, where stringResource() is
+    // not available, so it comes from Resources (the pattern CarCatalog uses)
+    val starterResources = LocalContext.current.resources
     val starterItems = remember(localPlaylists, libraryArtists, starterSongs) {
         val imported = localPlaylists.orEmpty()
             .filter { it.songCount > 0 && it.id != "liked" }
@@ -656,7 +659,7 @@ fun HomeScreen(
                     kind = com.bedivine.app.ui.component.StarterItem.Kind.Playlist,
                     id = it.id,
                     title = it.playlist.name,
-                    detail = stringResource(R.string.misc_lib_n_songs, it.songCount),
+                    detail = starterResources.getString(R.string.misc_lib_n_songs, it.songCount),
                     thumbnailUrl = it.thumbnails.firstOrNull() ?: it.playlist.thumbnailUrl,
                 )
             }

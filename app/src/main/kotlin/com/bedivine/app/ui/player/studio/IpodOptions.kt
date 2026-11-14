@@ -88,7 +88,7 @@ private fun Swatch(look: IpodLook, title: String, description: String) {
     }
 }
 
-@StringRes
+@get:StringRes
 private val IpodTheme.titleRes: Int
     get() = when (this) {
         IpodTheme.SILVER -> R.string.misc_ipod_silver
@@ -97,7 +97,7 @@ private val IpodTheme.titleRes: Int
         IpodTheme.TRUE_DARK -> R.string.misc_ipod_true_dark
     }
 
-@StringRes
+@get:StringRes
 private val IpodTheme.descriptionRes: Int
     get() = when (this) {
         IpodTheme.SILVER -> R.string.misc_ipod_silver_desc
@@ -106,7 +106,7 @@ private val IpodTheme.descriptionRes: Int
         IpodTheme.TRUE_DARK -> R.string.misc_ipod_truedark_desc
     }
 
-@StringRes
+@get:StringRes
 private val IpodWheelColor.titleRes: Int
     get() = when (this) {
         IpodWheelColor.THEME -> R.string.misc_ipod_match_body
@@ -115,7 +115,7 @@ private val IpodWheelColor.titleRes: Int
         IpodWheelColor.RED -> R.string.misc_ipod_red
     }
 
-@StringRes
+@get:StringRes
 private val IpodWheelColor.descriptionRes: Int
     get() = when (this) {
         IpodWheelColor.THEME -> R.string.misc_ipod_theme_desc

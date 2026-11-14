@@ -2715,6 +2715,7 @@
     <string name="import_source_apple_music">Apple Music</string>
     <string name="import_source_tidal">Tidal</string>
     <string name="import_source_youtube_music">YouTube Music</string>
+    <string name="import_source_youtube">YouTube</string>
     <string name="import_source_deezer">Deezer</string>
     <string name="import_other_sources">other sources</string>
     <string name="studio_button_default">Default</string>
@@ -2754,7 +2755,7 @@
     <!-- fix12 coordinator: half-Spanish sentences completed -->
     <string name="misc_import_reading_on">Reading "%1$s" on %2$s</string>
     <string name="misc_resync_paste_link_on">Paste a link to the playlist on %1$s.</string>
-    <string name="misc_resync_wrong_link_source">That's a %1$s link, but this playlist came from %2$s.</string>
+    <string name="misc_resync_wrong_link_source">That\'s a %1$s link, but this playlist came from %2$s.</string>
     <!-- fix12 coordinator: final Text() scan leftovers -->
     <string name="misc_reverb_fine_tune">FINE TUNE</string>
     <string name="misc_lyrics_no_synced">No synced lyrics for this song</string>

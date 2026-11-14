@@ -36,7 +36,7 @@ val PlayerCoverStyle.isBigDisc: Boolean
 val PlayerCoverStyle.hasTonearm: Boolean
     get() = this == PlayerCoverStyle.DISC_BIG_LABEL
 
-@StringRes
+@get:StringRes
 val PlayerCoverStyle.displayNameRes: Int
     get() = when (this) {
         PlayerCoverStyle.EDGE_TO_EDGE -> R.string.misc_cover_edge_to_edge

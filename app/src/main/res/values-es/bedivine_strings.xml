@@ -2713,6 +2713,7 @@
     <string name="import_source_apple_music">Apple Music</string>
     <string name="import_source_tidal">Tidal</string>
     <string name="import_source_youtube_music">YouTube Music</string>
+    <string name="import_source_youtube">YouTube</string>
     <string name="import_source_deezer">Deezer</string>
     <string name="import_other_sources">otras fuentes</string>
     <string name="studio_button_default">Predeterminado</string>

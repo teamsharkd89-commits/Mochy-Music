@@ -187,6 +187,11 @@ fun AlbumScreen(
         featuredArtistsOf(filteredSongs.flatMap { it.artists }, id = { it.id }, name = { it.name })
     }
     val mainArtistName = album?.artists?.firstOrNull()?.name
+    // resolved here in composable scope: the scaffold content runs in a LazyListScope,
+    // where stringResource() is not available
+    val moreByTitle = if (mainArtistName != null) stringResource(R.string.misc_album_more_by, mainArtistName) else stringResource(R.string.misc_album_more_this)
+    val otherVersionsTitle = stringResource(R.string.misc_album_other)
+    val releasesTitle = stringResource(R.string.misc_album_releases)
 
     fun play(startIndex: Int = 0, shuffled: Boolean = false) {
         val current = album ?: return
@@ -384,7 +389,7 @@ fun AlbumScreen(
 
         albumShelf(
             key = "more_by_artist",
-            title = if (mainArtistName != null) stringResource(R.string.misc_album_more_by, mainArtistName) else stringResource(R.string.misc_album_more_this),
+            title = moreByTitle,
             albums = moreByArtist,
             onTitleClick = album.artists.firstOrNull()?.id?.let { id -> { navController.navigate("artist/$id") } },
             navController = navController,
@@ -397,7 +402,7 @@ fun AlbumScreen(
         )
         albumShelf(
             key = "other_versions",
-            title = stringResource(R.string.misc_album_other),
+            title = otherVersionsTitle,
             albums = otherVersions,
             navController = navController,
             onLongClick = { item ->
@@ -409,7 +414,7 @@ fun AlbumScreen(
         )
         albumShelf(
             key = "releases_for_you",
-            title = stringResource(R.string.misc_album_releases),
+            title = releasesTitle,
             albums = releasesForYou,
             navController = navController,
             onLongClick = { item ->

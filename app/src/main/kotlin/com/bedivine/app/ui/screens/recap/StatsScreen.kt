@@ -185,6 +185,9 @@ fun StatsScreen(navController: NavController) {
 
     Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
         Box(modifier = Modifier.fillMaxSize().glassRoot(glassState, isActive = { collapse > 0f })) {
+            // resolved here in composable scope: the LazyColumn content runs in a
+            // LazyListScope, where stringResource() is not available
+            val thisWhat = if (kind == StatsRange.Kind.Month) stringResource(R.string.misc_stats_this_month) else stringResource(R.string.misc_stats_this_year)
             LazyColumn(
                 state = listState,
                 contentPadding = PaddingValues(top = topInset + 82.dp, bottom = 200.dp),
@@ -251,7 +254,6 @@ fun StatsScreen(navController: NavController) {
                         }
                     }
                 } else {
-                    val thisWhat = if (kind == StatsRange.Kind.Month) stringResource(R.string.misc_stats_this_month) else stringResource(R.string.misc_stats_this_year)
                     item(key = "total") { TotalCard(s, thisWhat, expanded) }
                     item(key = "genre") { GenreCard(genres, expanded) }
                     s.topArtists.firstOrNull()?.let { top -> item(key = "artist") { ArtistCard(s, top, expanded) } }
@@ -696,6 +698,11 @@ private fun ColumnScope.StatsPicker(
         val to = if (y == today.year) today.monthValue else 12
         (from..to).toList()
     }
+    // resolved here in composable scope: Wheel's label lambda is plain (T) -> String,
+    // so it cannot call stringResource() itself
+    val monthLabels = months.associateWith { mm ->
+        if (y == today.year && mm == today.monthValue) stringResource(R.string.misc_stats_this_month_label, monthFull(mm)) else monthFull(mm)
+    }
     if (m !in months) m = months.last()
 
     // two wheels and their titles are taller than a sheet gets on most phones, so the picker scrolls
@@ -737,7 +744,7 @@ private fun ColumnScope.StatsPicker(
                 Wheel(
                     items = months,
                     selected = m,
-                    label = { mm -> if (y == today.year && mm == today.monthValue) stringResource(R.string.misc_stats_this_month_label, monthFull(mm)) else monthFull(mm) },
+                    label = { mm -> monthLabels[mm] ?: monthFull(mm) },
                     onSelected = { m = it },
                 )
             }

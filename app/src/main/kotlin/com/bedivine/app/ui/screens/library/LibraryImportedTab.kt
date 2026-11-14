@@ -87,7 +87,7 @@ internal fun LazyListScope.libraryImportedTab(
         LibraryCardGrid(
             services.map { service ->
                 LibraryCardEntry(
-                    title = service.source.cardLabel,
+                    title = stringResource(service.source.cardLabelRes),
                     count = service.songCount,
                     covers = service.songCovers,
                     onClick = { if (service.songCount == 0) onOpenImportSheet() else onOpenSongs(service.source) },
@@ -104,7 +104,7 @@ internal fun LazyListScope.libraryImportedTab(
         LibraryCardGrid(
             services.map { service ->
                 LibraryCardEntry(
-                    title = service.source.cardLabel,
+                    title = stringResource(service.source.cardLabelRes),
                     count = service.playlists.size,
                     covers = service.playlists.take(2).flatMap { it.thumbnails },
                     onClick = { if (service.playlists.isEmpty()) onOpenImportSheet() else onOpenPlaylists(service.source) },
@@ -121,7 +121,7 @@ internal fun LazyListScope.libraryImportedTab(
         LibraryCardGrid(
             services.map { service ->
                 LibraryCardEntry(
-                    title = service.source.cardLabel,
+                    title = stringResource(service.source.cardLabelRes),
                     count = service.albums.count,
                     covers = service.albums.covers,
                     onClick = { if (service.albums.count == 0) onOpenImportSheet() else onOpenAlbums(service.source) },

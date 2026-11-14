@@ -109,7 +109,7 @@ internal fun PlaygroundCard(stats: DevSpaceStats?, settled: Boolean, onClick: ()
 @Composable
 internal fun RepoFiguresCard(
     title: String,
-    figures: List<Pair<Int?, @StringRes Int>>,
+    figures: List<Pair<Int?, Int>>,
     settled: Boolean,
     modifier: Modifier = Modifier,
     subtitle: String? = null,

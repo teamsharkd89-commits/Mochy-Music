@@ -100,7 +100,7 @@ import com.bedivine.app.ui.utils.stableStatusBars
 import com.bedivine.app.ui.utils.stableStatusBarsPadding
 import androidx.compose.ui.res.stringResource
 
-@StringRes
+@get:StringRes
 internal val PlayerBackgroundStyle.studioNameRes: Int
     get() = when (this) {
         PlayerBackgroundStyle.COVER_GRADIENT -> R.string.misc_studio_bg_cover_gradient

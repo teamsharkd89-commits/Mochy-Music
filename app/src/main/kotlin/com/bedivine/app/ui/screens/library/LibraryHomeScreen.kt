@@ -253,7 +253,8 @@ fun LibraryHomeScreen(
 }
 
 /** The download and local import cards; each only shows while its job runs. */
-@Composable
+// not @Composable on purpose: it runs in a LazyListScope, and the strings are resolved
+// inside the item {} content lambda below, which is composable on its own
 private fun LazyListScope.libraryProgressCards(
     downloads: TransferBatch,
     localImports: TransferBatch,

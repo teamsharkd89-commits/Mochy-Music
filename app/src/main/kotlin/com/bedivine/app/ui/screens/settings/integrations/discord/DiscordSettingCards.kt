@@ -236,7 +236,7 @@ internal fun DiscordTextCard(
 internal fun <T> DiscordDropdown(
     selected: T,
     options: List<T>,
-    label: (T) -> String,
+    label: @Composable (T) -> String,
     onSelect: (T) -> Unit,
     optionIcon: ((T) -> Int)? = null,
 ) {
@@ -458,7 +458,7 @@ internal fun DiscordButtonCard(
 internal fun <T> DiscordSegmented(
     options: List<T>,
     selected: T,
-    label: (T) -> String,
+    label: @Composable (T) -> String,
     onSelect: (T) -> Unit,
 ) {
     Row(

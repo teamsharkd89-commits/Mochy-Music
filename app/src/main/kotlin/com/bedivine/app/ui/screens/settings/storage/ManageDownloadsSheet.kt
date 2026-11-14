@@ -176,6 +176,11 @@ private fun ManageDownloadsContent(viewModel: StorageViewModel, picks: DownloadP
         )
         Box(Modifier.fillMaxWidth().height(1.dp).background(Color.White.copy(alpha = 0.12f)))
 
+        // resolved here in composable scope: the LazyColumn content runs in a
+        // LazyListScope, where stringResource() is not available
+        val biggestTitle = stringResource(R.string.misc_dl_biggest)
+        val lessTitle = stringResource(R.string.misc_dl_less)
+        val lessSubTitle = stringResource(R.string.misc_dl_less_sub)
         LazyColumn(
             contentPadding = PaddingValues(top = 14.dp, bottom = 12.dp),
             modifier = Modifier.fillMaxWidth().weight(1f),
@@ -192,9 +197,9 @@ private fun ManageDownloadsContent(viewModel: StorageViewModel, picks: DownloadP
                 }
                 else -> {
                     if (all.size >= ShelvesFrom) {
-                        shelf("biggest", stringResource(R.string.misc_dl_biggest), null, biggest, picks)
+                        shelf("biggest", biggestTitle, null, biggest, picks)
                         if (lessListened.isNotEmpty()) {
-                            shelf("less", stringResource(R.string.misc_dl_less), stringResource(R.string.misc_dl_less_sub), lessListened, picks)
+                            shelf("less", lessTitle, lessSubTitle, lessListened, picks)
                         }
                     }
                     item(key = "all-label") {

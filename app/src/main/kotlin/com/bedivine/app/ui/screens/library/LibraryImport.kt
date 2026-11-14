@@ -6,6 +6,7 @@
 
 package com.bedivine.app.ui.screens.library
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
@@ -92,8 +93,9 @@ internal val ImportedTabServices = listOf(
 )
 
 /** A service's name on a half-width card, where "YouTube Music" next to its icon would be cut off. */
-internal val ImportSource.cardLabel: String
-    get() = if (this == ImportSource.YOUTUBE_MUSIC) "YouTube" else label
+@get:StringRes
+internal val ImportSource.cardLabelRes: Int
+    get() = if (this == ImportSource.YOUTUBE_MUSIC) R.string.import_source_youtube else labelRes
 
 /** A source's app icon, or - for one with no icon of ours - a neutral squircle with a note in it. */
 @Composable

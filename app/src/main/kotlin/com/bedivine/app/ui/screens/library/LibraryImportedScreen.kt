@@ -38,6 +38,8 @@ fun LibraryImportedScreen(
     val source = viewModel.source
 
     val label = source?.let { stringResource(it.labelRes) } ?: stringResource(R.string.misc_libimport_unknown)
+    // resolved here in composable scope: the onClick lambda below is plain, not @Composable
+    val queueTitle = stringResource(R.string.misc_libimport_from, label)
     val sourceIcon: (@Composable () -> Unit)? = if (source != null) {
         { ImportSourceIcon(source, size = AvatarSize) }
     } else {
@@ -62,7 +64,7 @@ fun LibraryImportedScreen(
             val ordered = sortForLibraryIndex(songs) { it.song.title }
             playerConnection.playQueue(
                 ListQueue(
-                    title = stringResource(R.string.misc_libimport_from, label),
+                    title = queueTitle,
                     items = ordered.map { it.toMediaItem() },
                     startIndex = ordered.indexOf(song).coerceAtLeast(0),
                 ),

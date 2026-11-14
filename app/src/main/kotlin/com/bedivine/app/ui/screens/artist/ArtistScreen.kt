@@ -336,6 +336,13 @@ fun ArtistScreen(
 
             BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
                 val screenWidth = maxWidth
+                // the shelf titles, resolved here in composable scope: artistShelves runs in a
+                // LazyListScope, where stringResource() is not available
+                val albumsTitle = stringResource(R.string.albums)
+                val singlesTitle = stringResource(R.string.misc_artist_singles)
+                val videosTitle = stringResource(R.string.filter_videos)
+                val concertTitle = stringResource(R.string.misc_artist_concert)
+                val featuredTitle = stringResource(R.string.misc_artist_featured)
                 LazyColumn(
                     state = lazyListState,
                     contentPadding = LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom).asPaddingValues(),
@@ -452,6 +459,11 @@ fun ArtistScreen(
                             onMenu = ::showItemMenu,
                             onPlaySong = ::playSong,
                             onSimilarTitle = { navController.navigate("artist/${viewModel.artistId}/similar") },
+                            albumsTitle = albumsTitle,
+                            singlesTitle = singlesTitle,
+                            videosTitle = videosTitle,
+                            concertTitle = concertTitle,
+                            featuredTitle = featuredTitle,
                             topSongsMenu = { dismiss ->
                                 page?.artist?.shuffleEndpoint?.let { endpoint ->
                                     ArtistMenuItem(text = stringResource(R.string.shuffle), icon = R.drawable.shuffle) {
@@ -555,6 +567,11 @@ private fun LazyListScope.artistShelves(
     onPlaySong: (SongItem) -> Unit,
     onSimilarTitle: () -> Unit,
     topSongsMenu: @Composable (dismiss: () -> Unit) -> Unit,
+    albumsTitle: String,
+    singlesTitle: String,
+    videosTitle: String,
+    concertTitle: String,
+    featuredTitle: String,
 ) {
     shelves.topSongs?.let { section ->
         val songs = section.items.filterIsInstance<SongItem>().distinctBy { it.id }
@@ -611,8 +628,8 @@ private fun LazyListScope.artistShelves(
         coverShelf(
             key = "albums_$index",
             title = when (index) {
-                0 -> stringResource(R.string.albums)
-                1 -> stringResource(R.string.misc_artist_singles)
+                0 -> albumsTitle
+                1 -> singlesTitle
                 else -> section.title
             },
             items = section.items,
@@ -628,7 +645,7 @@ private fun LazyListScope.artistShelves(
 
     videoShelf(
         key = "videos",
-        title = stringResource(R.string.filter_videos),
+        title = videosTitle,
         videos = shelves.videos,
         moreEndpoint = shelves.videoShelf?.moreEndpoint,
         screenWidth = screenWidth,
@@ -643,7 +660,7 @@ private fun LazyListScope.artistShelves(
 
     videoShelf(
         key = "live",
-        title = stringResource(R.string.misc_artist_concert),
+        title = concertTitle,
         videos = shelves.live,
         moreEndpoint = shelves.liveShelf?.moreEndpoint,
         screenWidth = screenWidth,
@@ -659,7 +676,7 @@ private fun LazyListScope.artistShelves(
     shelves.playlistShelves.forEachIndexed { index, section ->
         coverShelf(
             key = "playlists_$index",
-            title = if (index == 0) stringResource(R.string.misc_artist_featured) else section.title,
+            title = if (index == 0) featuredTitle else section.title,
             items = section.items,
             moreEndpoint = section.moreEndpoint,
             revealSeen = revealSeen,
