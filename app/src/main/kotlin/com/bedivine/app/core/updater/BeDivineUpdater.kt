@@ -111,7 +111,9 @@ sealed class BeDivineUpdateStatus {
         val releaseDate: String,
         val description: String?,
         val imageUrl: String?,
-        val apkUrl: String?
+        val apkUrl: String?,
+        // the release tag, for building a download url when apkUrl is missing
+        val tag: String = ""
     ) : BeDivineUpdateStatus()
 
     data class NoUpdate(val version: String) : BeDivineUpdateStatus()
@@ -188,7 +190,7 @@ fun UpdateScreen(navController: NavHostController) {
             delay(1000L)
             checkForUpdate(
                 context = context,
-                onSuccess = { tag, isAvailable, changelog, size, date, description, imageUrl, apkUrl ->
+                onSuccess = { tag, isAvailable, changelog, size, date, description, imageUrl, apkUrl, tagName ->
                     saveLastCheckedTime(context, LocalDateTime.now().format(DateTimeFormatter.ofPattern("d MMMM yyyy, h:mm a")))
                     saveUpdateAvailableState(context, isAvailable)
                     status = if (isAvailable) {
@@ -199,7 +201,8 @@ fun UpdateScreen(navController: NavHostController) {
                             releaseDate = date,
                             description = description,
                             imageUrl = imageUrl,
-                            apkUrl = apkUrl
+                            apkUrl = apkUrl,
+                            tag = tagName
                         )
                     } else {
                         BeDivineUpdateStatus.NoUpdate(tag)
@@ -324,7 +327,13 @@ fun UpdateScreen(navController: NavHostController) {
                                                 ContextCompat.startActivity(context, installIntent, null)
                                             }
                                         } else {
-                                            val urlToDownload = currentStatus.apkUrl ?: "https://github.com/teamsharkd89-commits/Mochy-Music/releases/download/${currentStatus.version}/mochy.apk"
+                                            val urlToDownload = currentStatus.apkUrl ?: run {
+                                                val archAsset = when (runCatching { BuildConfig.ARCHITECTURE }.getOrDefault("universal")) {
+                                                    "arm64" -> "BeDivine-arm64-foss-release.apk"
+                                                    else -> "BeDivine-universal-foss-release.apk"
+                                                }
+                                                "https://github.com/teamsharkd89-commits/Mochy-Music/releases/download/${currentStatus.tag}/$archAsset"
+                                            }
                                             val downloadRequest = OneTimeWorkRequestBuilder<UpdateDownloadWorker>()
                                                 .setInputData(workDataOf("apk_url" to urlToDownload, "version" to currentStatus.version, "file_size" to currentStatus.size))
                                                 .addTag("update_download")
@@ -612,34 +621,15 @@ private fun formatGitHubDate(githubDate: String): String = try {
 }
 
 fun isNewerVersion(latestVersion: String, currentVersion: String): Boolean {
-    val latestVersionClean = latestVersion.removePrefix("b").removePrefix("v")
-    val currentVersionClean = currentVersion.removePrefix("b").removePrefix("v")
-
-    val latestParts = latestVersionClean.split(".").map { it.toIntOrNull() ?: 0 }
-    val currentParts = currentVersionClean.split(".").map { it.toIntOrNull() ?: 0 }
-
-    for (i in 0 until maxOf(latestParts.size, currentParts.size)) {
-        val latest = latestParts.getOrElse(i) { 0 }
-        val current = currentParts.getOrElse(i) { 0 }
-        when {
-            latest > current -> return true
-            latest < current -> return false
-        }
-    }
-
-    if (latestVersionClean == currentVersionClean) {
-        val latestIsBeta = latestVersion.startsWith("b")
-        val currentIsBeta = currentVersion.startsWith("b")
-
-        if (currentIsBeta && !latestIsBeta) return true
-    }
-
-    return false
+    // our releases are tagged bedivine-8.4.0-N and versioned "8.4.0 build#N": compare with the
+    // same parser the launch checker uses instead of splitting the raw strings, which cannot
+    // read either form (a bare tag parsed as 0.4.0, and "build#N" is not a version part)
+    return parseFullVersion(latestVersion) > parseFullVersion(currentVersion)
 }
 
 suspend fun checkForUpdate(
     context: Context,
-    onSuccess: (tag: String, isAvailable: Boolean, changelog: List<ChangelogSection>, size: String, date: String, description: String?, imageUrl: String?, apkUrl: String?) -> Unit,
+    onSuccess: (tag: String, isAvailable: Boolean, changelog: List<ChangelogSection>, size: String, date: String, description: String?, imageUrl: String?, apkUrl: String?, tagName: String) -> Unit,
     onError: () -> Unit,
 ) {
     withContext(Dispatchers.IO) {
@@ -711,7 +701,7 @@ suspend fun checkForUpdate(
                 val apkDownloadUrl = "https://nightly.link/teamsharkd89-commits/Mochy-Music/workflows/nightly.yml/main/mochy-gms-nightly.zip"
 
                 withContext(Dispatchers.Main) {
-                    onSuccess(displayTag, true, changelogList, "~30", formattedReleaseDate, "Bleeding-edge nightly build from main branch.", null, apkDownloadUrl)
+                    onSuccess(displayTag, true, changelogList, "~30", formattedReleaseDate, "Bleeding-edge nightly build from main branch.", null, apkDownloadUrl, displayTag)
                 }
                 return@withContext
             }
@@ -722,15 +712,19 @@ suspend fun checkForUpdate(
             for (i in 0 until releases.length()) {
                 val release = releases.getJSONObject(i)
                 val tagName = release.getString("tag_name")
-                val isBeta = tagName.startsWith("b")
+                // beta is the prerelease flag, not the tag: our tags start with "bedivine-"
+                val isBeta = release.optBoolean("prerelease", false)
+                // the bare tag carries no build number, so compare title + tag like the
+                // launch checker does ("BeDivine 8.4.0 build#4 bedivine-8.4.0-4")
+                val releaseVersionText = release.optString("name").orEmpty() + " " + tagName
 
                 if (!isBeta) {
-                    if (bestStableRelease == null || isNewerVersion(tagName, bestStableRelease.getString("tag_name"))) {
+                    if (bestStableRelease == null || isNewerVersion(releaseVersionText, bestStableRelease.optString("name").orEmpty() + " " + bestStableRelease.getString("tag_name"))) {
                         bestStableRelease = release
                     }
                 }
 
-                if (bestOverallRelease == null || isNewerVersion(tagName, bestOverallRelease.getString("tag_name"))) {
+                if (bestOverallRelease == null || isNewerVersion(releaseVersionText, bestOverallRelease.optString("name").orEmpty() + " " + bestOverallRelease.getString("tag_name"))) {
                     bestOverallRelease = release
                 }
             }
@@ -739,14 +733,13 @@ suspend fun checkForUpdate(
 
             if (targetRelease != null) {
                 val targetTagName = targetRelease.getString("tag_name")
-                val isNewer = isNewerVersion(targetTagName, currentVersion)
+                val targetVersionText = targetRelease.optString("name").orEmpty() + " " + targetTagName
+                val isNewer = isNewerVersion(targetVersionText, currentVersion)
 
-                val currentIsBeta = currentVersion.startsWith("b")
-                val targetIsStable = targetTagName.startsWith("v")
+                val currentIsBeta = BuildConfig.IS_NIGHTLY
+                val targetIsStable = !targetRelease.optBoolean("prerelease", false)
 
-                val currentClean = currentVersion.removePrefix("b").removePrefix("v")
-                val targetClean = targetTagName.removePrefix("b").removePrefix("v")
-                val isDifferentVersion = currentClean != targetClean
+                val isDifferentVersion = parseFullVersion(targetVersionText) != parseFullVersion(currentVersion)
 
                 var shouldShow = isNewer
                 if (!shouldShow && !betaEnabled) {
@@ -761,7 +754,7 @@ suspend fun checkForUpdate(
 
                 if (shouldShow) {
                     val tagWithPrefix = targetRelease.getString("tag_name")
-                    val displayTag = tagWithPrefix
+                    val displayTag = targetRelease.optString("name").orEmpty().ifBlank { tagWithPrefix }
 
                     val changelogList = mutableListOf<ChangelogSection>()
                     var description: String? = null
@@ -799,20 +792,41 @@ suspend fun checkForUpdate(
 
                     var apkSizeInMB = ""
                     var apkDownloadUrl = ""
+                    // our assets are BeDivine-<arch>-foss-release.apk, never mochy.apk:
+                    // prefer this device's arch, then universal, then any apk
+                    val appArch = runCatching { BuildConfig.ARCHITECTURE }.getOrDefault("universal")
+                    var universalUrl = ""
+                    var universalSizeMB = ""
+                    var fallbackUrl = ""
+                    var fallbackSizeMB = ""
                     for (j in 0 until assets.length()) {
                         val asset = assets.getJSONObject(j)
-                        val assetName = asset.getString("name")
-                        if (assetName == "mochy.apk") {
-                            val apkSizeInBytes = asset.getLong("size")
-                            apkSizeInMB = String.format("%.1f", apkSizeInBytes / (1024.0 * 1024.0))
-                            apkDownloadUrl = asset.getString("browser_download_url")
+                        val assetName = asset.optString("name").orEmpty()
+                        if (!assetName.endsWith(".apk", ignoreCase = true)) continue
+                        val sizeMB = String.format("%.1f", asset.optLong("size", 0L) / (1024.0 * 1024.0))
+                        val url = asset.optString("browser_download_url").orEmpty()
+                        if (appArch.isNotBlank() && appArch != "universal" && assetName.contains(appArch, ignoreCase = true)) {
+                            apkDownloadUrl = url
+                            apkSizeInMB = sizeMB
                             break
+                        } else if (assetName.contains("universal", ignoreCase = true)) {
+                            if (universalUrl.isEmpty()) {
+                                universalUrl = url
+                                universalSizeMB = sizeMB
+                            }
+                        } else if (fallbackUrl.isEmpty()) {
+                            fallbackUrl = url
+                            fallbackSizeMB = sizeMB
                         }
+                    }
+                    if (apkDownloadUrl.isEmpty()) {
+                        apkDownloadUrl = universalUrl.ifEmpty { fallbackUrl }
+                        apkSizeInMB = universalSizeMB.ifEmpty { fallbackSizeMB }
                     }
 
                     if (apkDownloadUrl.isNotEmpty()) {
                         withContext(Dispatchers.Main) {
-                            onSuccess(displayTag, true, changelogList, apkSizeInMB, formattedReleaseDate, description, imageUrl, apkDownloadUrl)
+                            onSuccess(displayTag, true, changelogList, apkSizeInMB, formattedReleaseDate, description, imageUrl, apkDownloadUrl, tagWithPrefix)
                         }
                         return@withContext
                     }
@@ -820,7 +834,7 @@ suspend fun checkForUpdate(
             }
 
             withContext(Dispatchers.Main) {
-                onSuccess(currentVersion, false, emptyList(), "", "", null, null, null)
+                onSuccess(currentVersion, false, emptyList(), "", "", null, null, null, "")
             }
         } catch (e: Exception) {
             Log.e("UpdateCheck", "Error checking for updates: ${e.message}", e)

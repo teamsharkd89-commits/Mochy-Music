@@ -480,8 +480,8 @@ fun AllTimeHitsCard(
 }
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
-private val HomeMarkWidth = 31.dp
-private val HomeMarkHeight = 34.dp
+private val HomeMarkWidth = 48.dp
+private val HomeMarkHeight = 52.dp
 private val HomeTopBarRise = 16.dp
 
 /**
