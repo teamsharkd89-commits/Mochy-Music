@@ -2758,4 +2758,13 @@
     <string name="misc_reverb_fine_tune">AJUSTE FINO</string>
     <string name="misc_lyrics_no_synced">No hay letra sincronizada para esta canción</string>
     <string name="misc_playlist_sort_order">Orden</string>
+    <string name="support_sheet_enjoying">¿Te gusta BeDivine?</string>
+    <string name="support_sheet_title">¡Sígueme en Instagram!</string>
+    <string name="support_sheet_body">BeDivine siempre será gratis. Si te gusta, sígueme en Instagram: @dvn.vii</string>
+    <string name="support_sheet_follow">Seguir en Instagram</string>
+    <string name="support_sheet_dismiss">No, gracias</string>
+    <string name="donate_sheet_title">¡Gracias!</string>
+    <string name="donate_sheet_body">Si te gusta BeDivine, sígueme en Instagram: @dvn.vii</string>
+    <string name="donate_sheet_follow">Seguir en Instagram</string>
+    <string name="donate_sheet_dismiss">No, gracias</string>
 </resources>

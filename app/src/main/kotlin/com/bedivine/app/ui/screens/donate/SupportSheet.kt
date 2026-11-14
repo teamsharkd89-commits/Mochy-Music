@@ -1,4 +1,4 @@
-// the "support BeDivine's development" sheet: the auto prompt, help us! on the version sheet, and support me on about app all open this
+// the "follow me on Instagram" sheet: the auto prompt, help us! on the version sheet, and support me on about app all open this
 
 package com.bedivine.app.ui.screens.donate
 
@@ -20,18 +20,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.bedivine.app.core.updater.GithubRepoUrl
+import com.bedivine.app.R
 import com.bedivine.app.ui.component.PopupSheetHandleHeight
 import com.bedivine.app.ui.component.PopupSheetState
 import com.bedivine.app.ui.screens.update.openUrl
 
-// the band ends around her chest, above where her fade starts (56%), or the letters show through her
-private const val BandEndsOnCharacter = 0.53f
+// the band ends around the middle of the round photo, so the rainbow sits behind its top half
+private const val BandEndsOnPhoto = 0.55f
 
 /** shows the support sheet, donate us! pushes the donate sheet on top of it */
 fun PopupSheetState.showSupportSheet() {
@@ -45,12 +46,12 @@ fun PopupSheetState.showSupportSheet() {
 private fun SupportSheetContent() {
     val scroll = rememberScrollState()
     BoxWithConstraints(Modifier.fillMaxWidth()) {
-        val characterWidth = characterWidth(maxWidth, maxHeight)
-        val bandHeight = PopupSheetHandleHeight + CharacterTop + characterWidth * CharacterAspect * BandEndsOnCharacter
+        val photoSize = characterWidth(maxWidth, maxHeight)
+        val bandHeight = PopupSheetHandleHeight + CharacterTop + photoSize * BandEndsOnPhoto
 
         NameMarquee(
             modifier = Modifier
-                // starts up behind the handle so the blue runs right to the sheet's top edge, and takes no room of its own
+                // starts up behind the handle so the rainbow runs right to the sheet's top edge, and takes no room of its own
                 .layout { measurable, constraints ->
                     val placeable = measurable.measure(Constraints.fixed(constraints.maxWidth, bandHeight.roundToPx()))
                     layout(constraints.maxWidth, 0) { placeable.place(0, -PopupSheetHandleHeight.roundToPx()) }
@@ -67,17 +68,17 @@ private fun SupportSheetContent() {
                 .padding(horizontal = 26.dp),
         ) {
             Spacer(Modifier.height(CharacterTop))
-            DonateCharacter(width = characterWidth)
+            SupportProfilePhoto(size = photoSize)
             Spacer(Modifier.height(14.dp))
             Text(
-                text = "Enjoying BeDivine Music?",
+                text = stringResource(R.string.support_sheet_enjoying),
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = DonateSoftText,
             )
             Spacer(Modifier.height(6.dp))
             Text(
-                text = "Support BeDivine’s development!",
+                text = stringResource(R.string.support_sheet_title),
                 fontSize = 32.sp,
                 lineHeight = 36.sp,
                 fontWeight = FontWeight.Bold,
@@ -87,8 +88,7 @@ private fun SupportSheetContent() {
             )
             Spacer(Modifier.height(14.dp))
             Text(
-                text = "thanks for trying it out! btw, BeDivine Music will always be free, forever yours! <3\n\n" +
-                    "giving a star to BeDivine’s repo is already enough. and thanks again!",
+                text = stringResource(R.string.support_sheet_body),
                 fontSize = 13.5.sp,
                 lineHeight = 18.sp,
                 fontWeight = FontWeight.Bold,
@@ -105,12 +105,12 @@ private fun SupportButtons(popup: PopupSheetState) {
     val context = LocalContext.current
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         DonatePillButton(
-            text = "Star the repo!",
-            onClick = { context.openUrl(GithubRepoUrl) },
+            text = stringResource(R.string.support_sheet_follow),
+            onClick = { context.openUrl(InstagramUrl) },
             modifier = Modifier.fillMaxWidth(),
         )
         DonatePillButton(
-            text = "get these beggar outta here, No!",
+            text = stringResource(R.string.support_sheet_dismiss),
             onClick = popup::dismiss,
             quiet = true,
         )

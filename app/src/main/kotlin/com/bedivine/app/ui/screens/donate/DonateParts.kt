@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -29,14 +32,20 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.bedivine.app.R
+import com.bedivine.app.constants.ProfilePicUriKey
 import com.bedivine.app.ui.component.pressBounce
 import com.bedivine.app.ui.player.menu.MenuRowSurface
 import com.bedivine.app.ui.component.RemoteFocus
+import com.bedivine.app.ui.screens.profile.ProfilePhotoGrey
+import com.bedivine.app.utils.rememberPreference
 
 // the art is 768 x 1013, solid down to 56% of her height and fading out below that
 internal const val CharacterAspect = 1013f / 768f
 
-// gap between the sheet's handle row and the top of her hair
+// Daniel's Instagram, the only place the support/donate sheets point to now
+internal const val InstagramUrl = "https://www.instagram.com/dvn.vii"
+
+// gap between the sheet's handle row and the top of the photo
 internal val CharacterTop = 24.dp
 
 internal val DonateSoftText = Color.White.copy(alpha = 0.72f)
@@ -66,6 +75,32 @@ internal fun DonateCharacter(width: Dp, modifier: Modifier = Modifier, overlapBe
                 .wrapContentHeight(Alignment.Top, unbounded = true)
                 .size(width, height),
         )
+    }
+}
+
+/** the user's own profile photo, in the spot the coffee girl used to sit on the support sheet */
+@Composable
+internal fun SupportProfilePhoto(size: Dp, modifier: Modifier = Modifier) {
+    // the stored value is a plain file path, coil wants a file:// uri (same conversion as HomeScreen)
+    val profilePicUri by rememberPreference(ProfilePicUriKey, "")
+    val model = profilePicUri
+        .takeIf { it.isNotBlank() }
+        ?.let { if (it.contains("://")) it else "file://$it" }
+    Box(
+        modifier
+            .size(size)
+            .clip(CircleShape)
+            .background(ProfilePhotoGrey),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (model != null) {
+            AsyncImage(
+                model = model,
+                contentDescription = stringResource(R.string.misc_profile_picture),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
     }
 }
 

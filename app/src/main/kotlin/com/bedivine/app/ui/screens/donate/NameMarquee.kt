@@ -1,4 +1,4 @@
-// the blue band at the top of the support sheet, two rows of huge BEDIVINE gliding past each other
+// the rainbow band at the top of the support sheet, two rows of huge BEDIVINE gliding past each other
 
 package com.bedivine.app.ui.screens.donate
 
@@ -21,6 +21,7 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -55,13 +56,20 @@ private const val BottomRowHeadStart = 0.42f
 private const val MaxFrameStepNanos = 50_000_000L
 private const val FadeInNanos = 300_000_000L
 
-val MarqueeBlue = Color(0xFF9FC6E2)
+private val RainbowColors = listOf(
+    Color(0xFFE53935),
+    Color(0xFFFF9800),
+    Color(0xFFFFEB3B),
+    Color(0xFF43A047),
+    Color(0xFF1E88E5),
+    Color(0xFF8E24AA),
+)
 private val MarqueeInk = Color(0xFFE6F0F7)
 
 @Immutable
 private class MarqueeStrip(val image: ImageBitmap, val capHeight: Float, val margin: Float)
 
-/** two rows of BEDIVINE on the blue band, the top one drifting right and the bottom one left, forever */
+/** two rows of BEDIVINE on the rainbow band, the top one drifting right and the bottom one left, forever */
 @Composable
 fun NameMarquee(modifier: Modifier = Modifier, speed: Dp = 34.dp) {
     val context = LocalContext.current
@@ -91,7 +99,7 @@ fun NameMarquee(modifier: Modifier = Modifier, speed: Dp = 34.dp) {
             // only this band repaints each frame, not the whole sheet
             .damageBoundary()
             .drawBehind {
-                drawRect(MarqueeBlue)
+                drawRect(brush = Brush.horizontalGradient(colors = RainbowColors, startX = 0f, endX = size.width))
                 val ready = strip ?: return@drawBehind
                 val elapsed = elapsedNanos.longValue
                 // in doubles, a float would start to wobble after the sheet sat open for a few hours

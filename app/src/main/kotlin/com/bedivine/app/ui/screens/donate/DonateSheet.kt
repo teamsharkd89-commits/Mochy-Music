@@ -1,12 +1,12 @@
-// the "arigatou! :3" sheet with the actual places to donate, opened from donate us! or a dev's profile
+// the "thank you" sheet: the app logo and a follow on Daniel's Instagram, opened from donate us! or a dev's profile
 
 package com.bedivine.app.ui.screens.donate
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -30,9 +31,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
@@ -46,11 +49,7 @@ import com.bedivine.app.ui.screens.update.VersionRing
 import com.bedivine.app.ui.screens.update.openUrl
 import com.bedivine.app.ui.component.RemoteFocus
 
-const val KofiUrl = "https://ko-fi.com/realidkroo"
-const val SocialBuzzUrl = "https://sociabuzz.com/realidkroo/tribe"
-const val BuyMeACoffeeUrl = "https://buymeacoffee.com/realkeichii"
-
-// the title tucks up over her faded bottom by this much, like the mock
+// the title tucks up over the logo's bottom by this much, like the mock
 private val TitleOverlap = 18.dp
 
 /** shows the donate sheet, on top of the support sheet when that's what opened it */
@@ -58,7 +57,7 @@ fun PopupSheetState.showDonateSheet() {
     val popup = this
     show(
         fullBleed = true,
-        buttonBar = { DonatePillButton(text = "what no i dont want to", onClick = popup::dismiss, quiet = true) },
+        buttonBar = { DonatePillButton(text = stringResource(R.string.donate_sheet_dismiss), onClick = popup::dismiss, quiet = true) },
     ) {
         DonateSheetContent()
     }
@@ -91,13 +90,13 @@ private fun DonateSheetContent() {
                 .padding(horizontal = 26.dp),
         ) {
             Spacer(Modifier.height(CharacterTop))
-            DonateCharacter(
+            DonateLogo(
                 width = characterWidth,
                 overlapBelow = TitleOverlap,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
             )
             Text(
-                text = "Arigatou! :3",
+                text = stringResource(R.string.donate_sheet_title),
                 fontSize = 36.sp,
                 lineHeight = 40.sp,
                 fontWeight = FontWeight.Bold,
@@ -106,7 +105,7 @@ private fun DonateSheetContent() {
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text = "Here’s a way to support and donate to us!",
+                text = stringResource(R.string.donate_sheet_body),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = (-0.3).sp,
@@ -114,40 +113,32 @@ private fun DonateSheetContent() {
             )
 
             Spacer(Modifier.height(24.dp))
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                DonateLinkRow(
-                    title = "Support us on Ko-fi",
-                    icon = R.drawable.ic_kofi,
-                    iconSize = 22.dp,
-                    onClick = { context.openUrl(KofiUrl) },
-                )
-                DonateLinkRow(
-                    title = "Support us on SociaBuzz",
-                    subtitle = "Recommended for some SEA and LATAM countries",
-                    icon = R.drawable.link,
-                    iconSize = 16.dp,
-                    iconTint = Color.Black,
-                    onClick = { context.openUrl(SocialBuzzUrl) },
-                )
-                DonateLinkRow(
-                    title = "Support us on Buy Me a Coffee",
-                    icon = R.drawable.ic_bmc_logo,
-                    iconSize = 20.dp,
-                    onClick = { context.openUrl(BuyMeACoffeeUrl) },
-                )
-            }
-
-            Spacer(Modifier.height(22.dp))
-            Text(
-                text = "your donation, no matter how small it is, will always be very very useful for us :3",
-                fontSize = 14.sp,
-                lineHeight = 19.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = (-0.3).sp,
-                color = DonateSoftText,
+            DonateLinkRow(
+                title = stringResource(R.string.donate_sheet_follow),
+                subtitle = "@dvn.vii",
+                icon = R.drawable.link,
+                iconSize = 16.dp,
+                iconTint = Color.Black,
+                onClick = { context.openUrl(InstagramUrl) },
             )
+
             Spacer(Modifier.height(12.dp))
         }
+    }
+}
+
+@Composable
+private fun DonateLogo(width: Dp, modifier: Modifier = Modifier, overlapBelow: Dp = 0.dp) {
+    // square mark: takes up less room than it's tall, so whatever comes next can sit over its transparent bottom
+    Box(modifier.size(width, width - overlapBelow)) {
+        Image(
+            painter = painterResource(R.drawable.ic_bedivine_mark),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .wrapContentHeight(Alignment.Top, unbounded = true)
+                .size(width, width),
+        )
     }
 }
 

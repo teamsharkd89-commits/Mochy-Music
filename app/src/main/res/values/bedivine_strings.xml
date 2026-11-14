@@ -2760,4 +2760,13 @@
     <string name="misc_reverb_fine_tune">FINE TUNE</string>
     <string name="misc_lyrics_no_synced">No synced lyrics for this song</string>
     <string name="misc_playlist_sort_order">Sort order</string>
+    <string name="support_sheet_enjoying">Enjoying BeDivine?</string>
+    <string name="support_sheet_title">Follow me on Instagram!</string>
+    <string name="support_sheet_body">BeDivine will always be free. If you like it, follow me on Instagram: @dvn.vii</string>
+    <string name="support_sheet_follow">Follow on Instagram</string>
+    <string name="support_sheet_dismiss">No, thanks</string>
+    <string name="donate_sheet_title">Thank you!</string>
+    <string name="donate_sheet_body">If you like BeDivine, follow me on Instagram: @dvn.vii</string>
+    <string name="donate_sheet_follow">Follow on Instagram</string>
+    <string name="donate_sheet_dismiss">No, thanks</string>
 </resources>
