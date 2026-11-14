@@ -161,7 +161,12 @@ private val StableGreen = Color(0xFF9CF58A)
 private const val StableLabel = "STABLE"
 
 /** "8.1.0 build#1165" -> "8.1.0", "8.0.2 (1100)" -> "8.0.2" */
-internal fun shortVersion(version: String): String = version.substringBefore(' ')
+// the version as shown in big type: "8.4.0 build#4", not just "8.4.0", so the installed
+// build and the new build never look identical
+internal fun shortVersion(version: String): String {
+    val parsed = parseFullVersion(version)
+    return if (parsed.buildNumber > 0) "${parsed.name} build#${parsed.buildNumber}" else parsed.name
+}
 
 /** the app version sheet: the app, the version you're on and its channel, what's newer, and what you can do about it */
 @Composable
@@ -596,7 +601,7 @@ private fun ColumnScope.UpdateDetailContent(
         Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = release.apkName ?: "mochy.apk",
+                text = release.apkName ?: "bedivine.apk",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,

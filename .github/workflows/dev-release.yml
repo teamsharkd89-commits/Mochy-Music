@@ -44,12 +44,12 @@ jobs:
           sha256sum *.apk > SHA256SUMS.txt
           cat > changelog.json <<'EOF'
           {
-            "description": "BeDivine sobre Mochy-Music: rápida, personalizable y con el nombre y el logo de BeDivine.",
+            "description": "BeDivine: rápida, personalizable y con el nombre y el logo de BeDivine.",
             "changelog": [
               {
                 "title": "BeDivine",
                 "items": [
-                  "Base cambiada a Mochy-Music (rápida y muy personalizable)",
+                  "Rápida y muy personalizable",
                   "Nombre e icono de BeDivine (rayo + D)",
                   "Las actualizaciones llegan desde este mismo repo"
                 ]
@@ -65,7 +65,7 @@ jobs:
           tag_name: bedivine-8.4.0-${{ github.run_number }}
           name: BeDivine 8.4.0 build#${{ github.run_number }}
           body: |
-            BeDivine sobre la base de Mochy-Music.
+            BeDivine 8.4.0 build#${{ github.run_number }}.
             Instala el APK arm64 en el Redmi Note 10S (o el universal en cualquier otro Android).
           prerelease: false
           files: |
