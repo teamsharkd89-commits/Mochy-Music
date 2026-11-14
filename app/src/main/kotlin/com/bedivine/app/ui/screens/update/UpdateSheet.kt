@@ -516,7 +516,7 @@ private fun ColumnScope.UpdateDetailContent(
 
     val startInstall: (java.io.File) -> Unit = { file ->
         if (!installApk(context, file)) {
-            error = "Allow \"Install unknown apps\" for mochy, then tap Install here again."
+            error = "Allow \"Install unknown apps\" for BeDivine, then tap Install here again."
         }
     }
 

@@ -1,4 +1,4 @@
-// the "support mochy's development" sheet: the auto prompt, help us! on the version sheet, and support me on about app all open this
+// the "support BeDivine's development" sheet: the auto prompt, help us! on the version sheet, and support me on about app all open this
 
 package com.bedivine.app.ui.screens.donate
 

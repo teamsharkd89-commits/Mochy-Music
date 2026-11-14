@@ -55,7 +55,7 @@ object StoragePlaces {
             return phone
         }
         if (needsFolderAccess(context, root)) {
-            Log.w(Tag, "${kind.folder} lives in a folder mochy lost access to, using the phone for now")
+            Log.w(Tag, "${kind.folder} lives in a folder BeDivine lost access to, using the phone for now")
             return phone
         }
         return File(root, kind.folder)

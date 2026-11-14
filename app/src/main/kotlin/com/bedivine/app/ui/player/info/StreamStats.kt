@@ -112,7 +112,7 @@ private fun decoderCard(input: StatsInput): StatCard {
 private fun resamplerCard(input: StatsInput): StatCard {
     val d = input.details
     val effects = input.effects
-    if (d.resampledFrom != null && d.resampledTo != null) return mochyResamplerCard(d, effects)
+    if (d.resampledFrom != null && d.resampledTo != null) return bedivineResamplerCard(d, effects)
     val inRate = d.decodedSampleRate ?: d.sampleRate ?: return StatCard("Resampler", emptyList())
     val outRate = input.mixer?.sampleRate ?: input.systemMixerRate?.takeIf { input.device?.kind in FixedRateKinds && input.castingTo == null }
     val timeStretch = effects.speed != 1f || effects.pitch != 1f
@@ -139,7 +139,7 @@ private fun resamplerCard(input: StatsInput): StatCard {
 }
 
 // mochy's own filter did the work, so android's mixer is handed the rate it already runs at
-private fun mochyResamplerCard(d: StreamDetails, effects: EffectsSnapshot): StatCard = StatCard(
+private fun bedivineResamplerCard(d: StreamDetails, effects: EffectsSnapshot): StatCard = StatCard(
     title = "Resampler",
     lines = listOfNotNull(
         "Type" to "BeDivine hi-fi, windowed sinc (Kaiser)",

@@ -106,7 +106,7 @@ internal const val DESKTOP_USER_AGENT =
  * The pseudo header under which the sign-in page reports a query Spotify's web player made, as JSON
  * {name, hash, variables, url, post}, so the app can send the same query for the rest of a list.
  */
-const val WEB_PLAYER_QUERY_HEADER = "mochy-web-player-query"
+const val WEB_PLAYER_QUERY_HEADER = "bedivine-web-player-query"
 
 /** One query the web player was seen making, ready to be sent again with other variables. */
 class WebPlayerQuery(

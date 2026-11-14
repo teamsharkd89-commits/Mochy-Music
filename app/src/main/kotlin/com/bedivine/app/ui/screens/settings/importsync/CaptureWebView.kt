@@ -69,9 +69,9 @@ private val SESSION_HEADERS = setOf("authorization", "media-user-token", "client
 /** wraps fetch and xhr so the session headers and spotify's library queries the web player sends reach the app */
 private val HOOK_JS = """
 (function() {
-  if (window.__mochyHooked) return;
-  window.__mochyHooked = true;
-  window.__mochyQueries = window.__mochyQueries || {};
+  if (window.__bedivineHooked) return;
+  window.__bedivineHooked = true;
+  window.__bedivineQueries = window.__bedivineQueries || {};
   var wanted = { 'authorization': 1, 'media-user-token': 1, 'client-token': 1, 'app-platform': 1, 'spotify-app-version': 1 };
   var seen = {};
   var seenCount = 0;
@@ -108,7 +108,7 @@ private val HOOK_JS = """
         post = false;
       }
       if (!name || !hash) return;
-      window.__mochyQueries[name] = 1;
+      window.__bedivineQueries[name] = 1;
       address.search = '';
       var key = 'query|' + name + '|' + hash;
       if (seen[key]) return;
@@ -147,16 +147,16 @@ private val HOOK_JS = """
     var originalOpen = XMLHttpRequest.prototype.open;
     var originalSet = XMLHttpRequest.prototype.setRequestHeader;
     XMLHttpRequest.prototype.open = function(method, url) {
-      try { this.__mochyUrl = url; } catch (e) {}
+      try { this.__bedivineUrl = url; } catch (e) {}
       return originalOpen.apply(this, arguments);
     };
     XMLHttpRequest.prototype.setRequestHeader = function(name, value) {
-      report(name, value, this.__mochyUrl);
+      report(name, value, this.__bedivineUrl);
       return originalSet.apply(this, arguments);
     };
     var originalSend = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function(body) {
-      reportQuery(this.__mochyUrl, body);
+      reportQuery(this.__bedivineUrl, body);
       return originalSend.apply(this, arguments);
     };
   } catch (e) {}

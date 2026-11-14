@@ -144,7 +144,7 @@ fun ImportSyncScreen(
                     detail = "Liked songs and playlists, import it back from Import → BeDivine backup",
                     icon = painterResource(R.drawable.backup),
                     iconShape = CircleShape,
-                    onClick = { exportLauncher.launch("mochy-library-${LocalDate.now()}.csv") },
+                    onClick = { exportLauncher.launch("bedivine-library-${LocalDate.now()}.csv") },
                 ),
             ),
         )

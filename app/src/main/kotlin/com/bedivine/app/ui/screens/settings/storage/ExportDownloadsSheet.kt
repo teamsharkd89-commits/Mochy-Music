@@ -1,4 +1,4 @@
-// storage → export downloaded songs: copies them as plain files into a mochy-preserve folder, sorted by playlist or by album
+// storage → export downloaded songs: copies them as plain files into a bedivine-preserve folder, sorted by playlist or by album
 
 package com.bedivine.app.ui.screens.settings.storage
 

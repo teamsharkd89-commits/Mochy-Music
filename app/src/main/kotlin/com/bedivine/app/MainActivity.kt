@@ -467,7 +467,7 @@ class MainActivity : ComponentActivity() {
             lifecycle,
         )
         setContent(parent = motionRecomposer) {
-            mochyApp(
+            bedivineApp(
                 playerConnection = playerConnection,
                 database = database,
                 downloadUtil = downloadUtil,
@@ -479,7 +479,7 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class, androidx.compose.animation.ExperimentalSharedTransitionApi::class)
     @Composable
-    private fun mochyApp(
+    private fun bedivineApp(
         playerConnection: PlayerConnection?,
         database: MusicDatabase,
         downloadUtil: DownloadUtil,

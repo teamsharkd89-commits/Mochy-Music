@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <!-- lets android auto draw mochy's own player from the media session -->
+    <!-- lets android auto draw BeDivine's own player from the media session -->
     <uses-permission android:name="androidx.car.app.MEDIA_TEMPLATES" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
@@ -27,7 +27,7 @@
     <!-- Optional: If you also need to scan for Bluetooth devices -->
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
 
-    <!-- Library > Local: lets Mochy find the songs already on the phone. Android 13 has its own
+    <!-- Library > Local: lets BeDivine find the songs already on the phone. Android 13 has its own
          audio permission; older phones need the general storage one. -->
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
@@ -78,7 +78,7 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="false"
-        android:theme="@style/Theme.mochy"
+        android:theme="@style/Theme.BeDivine"
         tools:targetApi="tiramisu">
         <uses-library
             android:name="org.apache.http.legacy"
@@ -87,7 +87,7 @@
         <activity
             android:name=".ui.screens.CrashActivity"
             android:exported="false"
-            android:theme="@style/Theme.mochy"
+            android:theme="@style/Theme.BeDivine"
             android:excludeFromRecents="true"
             android:process=":crash" />
 
@@ -97,7 +97,7 @@
             android:exported="true"
             android:launchMode="singleTask"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|navigation|uiMode"
-            android:theme="@style/Theme.mochy"
+            android:theme="@style/Theme.BeDivine"
             android:windowSoftInputMode="adjustNothing">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -1058,7 +1058,7 @@
             </intent-filter>
         </service>
 
-        <!-- mochy's own android auto screens: tabs, lists, the player and lyrics, all from google's car templates -->
+        <!-- BeDivine's own android auto screens: tabs, lists, the player and lyrics, all from google's car templates -->
         <service
             android:name=".car.BeDivineCarAppService"
             android:exported="true"
@@ -1069,7 +1069,7 @@
             </intent-filter>
         </service>
 
-        <!-- "hey google, play … on mochy" on the phone: the assistant only offers apps that take this intent with no data, and the phone is often locked in the car -->
+        <!-- "hey google, play … on BeDivine" on the phone: the assistant only offers apps that take this intent with no data, and the phone is often locked in the car -->
         <activity
             android:name=".playback.voice.VoicePlayActivity"
             android:exported="true"
@@ -1085,7 +1085,7 @@
             </intent-filter>
         </activity>
 
-        <!-- keeps a paired tv able to reach this phone while mochy is closed -->
+        <!-- keeps a paired tv able to reach this phone while BeDivine is closed -->
         <service
             android:name=".link.phone.PhoneLinkService"
             android:exported="false"

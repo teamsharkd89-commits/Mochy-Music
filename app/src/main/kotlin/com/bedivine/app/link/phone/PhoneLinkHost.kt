@@ -326,7 +326,7 @@ class PhoneLinkHost @Inject constructor(
 
     private fun route(request: LinkRequest): LinkResponse {
         // a device still on the old protocol sends its key in a header; told to update rather than turned away as unpaired, which made it forget this phone
-        if (request.header(LinkWire.OldKeyHeader) != null) return LinkResponse.status(426, "update mochy on that device")
+        if (request.header(LinkWire.OldKeyHeader) != null) return LinkResponse.status(426, "update BeDivine on that device")
         // the call must be signed by a paired device's key; the key itself is never in the call
         val from = verifier.verify(request) { id -> _devices.value.firstOrNull { it.id == id }?.key }
         val device = from?.let { id -> _devices.value.firstOrNull { it.id == id } }
@@ -391,7 +391,7 @@ class PhoneLinkHost @Inject constructor(
     private fun controlled(request: LinkRequest, device: PairedDevice): LinkResponse {
         if (device.kind.isTv) return LinkResponse.status(404)
         if (!device.remoteControl) return LinkResponse.status(403, "remote control is off on this phone")
-        val connection = LinkPlayer.current() ?: return LinkResponse.status(409, "mochy isn't open on this phone")
+        val connection = LinkPlayer.current() ?: return LinkResponse.status(409, "BeDivine isn't open on this phone")
         return control.handle(request, connection)
     }
 

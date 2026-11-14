@@ -414,7 +414,7 @@ internal class WebModule(
     private companion object {
         const val MissMemoryMs = 30L * 60 * 1000
         const val UnreachableRetryMs = 10L * 60 * 1000
-        val headers = mapOf("Accept" to "application/json", "User-Agent" to "Mochy")
+        val headers = mapOf("Accept" to "application/json", "User-Agent" to "BeDivine")
 
         // the id the audio quality page looks for to list a module's qualities
         const val ChoiceQuality = "quality"

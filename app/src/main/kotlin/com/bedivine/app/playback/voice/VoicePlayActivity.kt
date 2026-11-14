@@ -19,7 +19,7 @@ import androidx.media3.session.SessionError
 import androidx.media3.session.SessionToken
 import com.bedivine.app.playback.MusicService
 
-// google assistant on the phone sends "play … on mochy" here; it draws nothing, hands the words to the music service and closes
+// google assistant on the phone sends "play … on BeDivine" here; it draws nothing, hands the words to the music service and closes
 class VoicePlayActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

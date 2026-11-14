@@ -626,7 +626,7 @@ class ModuleRegistry @Inject constructor(
             val entry = service.metaData?.getString(EntryMetaKey) ?: return@mapNotNull null
             // its code runs inside mochy, so only an app signed with mochy's own key is let in
             if (pm.checkSignatures(context.packageName, pkg) != PackageManager.SIGNATURE_MATCH) {
-                Timber.tag(Tag).w("Skipping module $pkg: not signed like Mochy")
+                Timber.tag(Tag).w("Skipping module $pkg: not signed like BeDivine")
                 return@mapNotNull null
             }
             runCatching {
