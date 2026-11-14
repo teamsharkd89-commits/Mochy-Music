@@ -33,7 +33,7 @@ jobs:
         run: echo "${{ secrets.DEBUG_KEYSTORE_BASE64 }}" | base64 -d > app/persistent-debug.keystore
 
       - name: Build foss release APKs
-        run: ./gradlew assembleArm64FossRelease assembleUniversalFossRelease --no-configuration-cache --console=plain --warning-mode summary
+        run: ./gradlew assembleArm64FossRelease assembleUniversalFossRelease -PbedivineBuild=${{ github.run_number }} --no-configuration-cache --console=plain --warning-mode summary
 
       - name: Prepare release files
         run: |

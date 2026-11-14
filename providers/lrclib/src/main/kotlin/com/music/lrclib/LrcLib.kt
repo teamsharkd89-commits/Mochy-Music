@@ -34,7 +34,7 @@ object LrcLib {
             }
 
             // says who's asking so the server owner can reach us instead of blocking us
-            install(UserAgent) { agent = "Mochy (+https://github.com/realidkroo/Mochy-Music)" }
+            install(UserAgent) { agent = "BeDivine (+https://github.com/teamsharkd89-commits/Mochy-Music)" }
 
             expectSuccess = true
         }
