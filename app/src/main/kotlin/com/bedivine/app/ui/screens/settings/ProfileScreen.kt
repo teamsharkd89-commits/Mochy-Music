@@ -1215,38 +1215,6 @@ private fun DeveloperCard(onClick: () -> Unit) {
 }
 
 @Composable
-private fun DiscordCard(onClick: () -> Unit) {
-    val face = 30.dp
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(22.dp))
-            .background(PageCard)
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-    ) {
-        Image(
-            painter = rememberResourcePainter(R.drawable.mochy_discord),
-            contentDescription = "Discord",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(face)
-                .clip(CircleShape)
-                .background(Color.White),
-        )
-        Spacer(Modifier.width(12.dp))
-        Text(
-            "Join mochy’s discord server!",
-            style = TextStyle(fontFamily = InterFontFamily, fontWeight = FontWeight.Bold, fontSize = 15.sp, letterSpacing = (-0.6).sp, color = Color.White),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f),
-        )
-    }
-}
-
-@Composable
 private fun OpenSettingsRow(onClick: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,

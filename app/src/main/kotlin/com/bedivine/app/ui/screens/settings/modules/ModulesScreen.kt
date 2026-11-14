@@ -178,31 +178,3 @@ private fun TwoPhones(modifier: Modifier) {
         }
     }
 }
-
-/** mochy peeking up from the bottom of the card, leading to the discord server where people share modules */
-@Composable
-private fun ModulesBarBanner(onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(112.dp)
-            .clip(CardShape)
-            .background(LabColors.Card)
-            .clickable(onClick = onClick)
-            .padding(start = 24.dp, end = 18.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        // the drawing ends at her jacket, so sitting on the card's bottom edge cuts her off there like the design
-        Image(
-            painterResource(R.drawable.modules_bar_mochy), null,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.align(Alignment.Bottom).padding(top = 10.dp).fillMaxHeight(),
-        )
-        Spacer(Modifier.width(22.dp))
-        Text(
-            stringResource(R.string.modules_bar),
-            fontFamily = InterFontFamily, fontWeight = FontWeight.Bold, fontSize = 21.sp, lineHeight = 24.sp,
-            letterSpacing = (-0.7).sp, color = Color.White, modifier = Modifier.weight(1f),
-        )
-    }
-}

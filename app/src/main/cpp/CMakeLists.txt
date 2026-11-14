@@ -8,6 +8,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_library(bedivinepass SHARED usb_pass.cpp exclusive_pass.cpp)
 target_compile_options(bedivinepass PRIVATE -O2 -Wall -fvisibility=hidden)
 # aaudio is opened at runtime, so only the log and the loader are linked; that keeps the library loadable on android 7
-target_link_libraries(mochypass log dl)
+target_link_libraries(bedivinepass log dl)
 # 16 kb pages on android 15 phones need the segments aligned to them
-target_link_options(mochypass PRIVATE "-Wl,-z,max-page-size=16384")
+target_link_options(bedivinepass PRIVATE "-Wl,-z,max-page-size=16384")
