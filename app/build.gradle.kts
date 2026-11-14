@@ -19,7 +19,7 @@ plugins {
 }
 
 extensions.configure<ApplicationExtension> {
-    namespace = "com.mochyy.mochymusic"
+    namespace = "com.bedivine.app"
     compileSdk = 36
     ndkVersion = "27.0.12077973"
 
@@ -28,7 +28,7 @@ extensions.configure<ApplicationExtension> {
         minSdk = 24
         targetSdk = 36
         versionCode = 73
-        versionName = "8.3.2 build#1243"
+        versionName = "8.4.0 build#" + ((project.findProperty("bedivineBuild") as String?) ?: "0")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true

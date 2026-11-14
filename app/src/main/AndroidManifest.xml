@@ -1060,7 +1060,7 @@
 
         <!-- mochy's own android auto screens: tabs, lists, the player and lyrics, all from google's car templates -->
         <service
-            android:name=".car.MochyCarAppService"
+            android:name=".car.BeDivineCarAppService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -1132,9 +1132,9 @@
             android:label="@string/widget_music_player">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.mochyy.mochymusic.widget.PLAY_PAUSE" />
-                <action android:name="com.mochyy.mochymusic.widget.LIKE" />
-                <action android:name="com.mochyy.mochymusic.widget.UPDATE_WIDGET" />
+                <action android:name="com.bedivine.app.widget.PLAY_PAUSE" />
+                <action android:name="com.bedivine.app.widget.LIKE" />
+                <action android:name="com.bedivine.app.widget.UPDATE_WIDGET" />
             </intent-filter>
 
             <meta-data
@@ -1149,9 +1149,9 @@
             android:label="@string/widget_turntable">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.mochyy.mochymusic.widget.TURNTABLE_PLAY_PAUSE" />
-                <action android:name="com.mochyy.mochymusic.widget.TURNTABLE_LIKE" />
-                <action android:name="com.mochyy.mochymusic.widget.UPDATE_TURNTABLE_WIDGET" />
+                <action android:name="com.bedivine.app.widget.TURNTABLE_PLAY_PAUSE" />
+                <action android:name="com.bedivine.app.widget.TURNTABLE_LIKE" />
+                <action android:name="com.bedivine.app.widget.UPDATE_TURNTABLE_WIDGET" />
             </intent-filter>
 
             <meta-data
@@ -1162,7 +1162,7 @@
         <!-- Google Cast Options Provider -->
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
-            android:value="com.mochyy.mochymusic.cast.CastOptionsProvider" />
+            android:value="com.bedivine.app.cast.CastOptionsProvider" />
     </application>
 
 </manifest>
