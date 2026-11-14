@@ -1,7 +1,9 @@
-// the profile id card from the mocks, dark on the profile page and silver on hello and done
+// the profile id card from the mocks: dark by default on the profile page, silver on hello
+// and done, and the other finishes from the card customiser on the profile page
 
 package com.bedivine.app.ui.screens.setup.onboarding
 
+import androidx.annotation.StringRes
 import com.bedivine.app.ui.theme.InterFontFamily
 import androidx.compose.animation.core.withInfiniteAnimationFrameNanos
 import androidx.compose.foundation.Canvas
@@ -42,6 +44,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
@@ -69,6 +72,141 @@ internal const val IdCardAspect = 1.89f
 /** the name the card shows, shared with the profile page so the two always say the same thing */
 internal fun idCardName(username: String): String = username.trim().ifEmpty { "{username}" }
 
+/** the profile card's finish: its background, its text and strip colors, and how the light plays on it */
+internal enum class CardFinish(
+    val key: String,
+    @StringRes val labelRes: Int,
+    /** stops for the diagonal background gradient, top-left to bottom-right; one stop is a solid color */
+    val stops: List<Pair<Float, Color>>,
+    val bodyText: Color,
+    val mutedText: Color,
+    val stripText: Color,
+    val stripBackground: Color,
+    val photoPlaceholder: Color,
+    /** a metal finish gets the brushed grain and a stronger highlight */
+    val metal: Boolean,
+    /** how strong the diagonal highlight is, 0..1 */
+    val sheenAlpha: Float,
+    /** true when the finish is light, so the picked check on its swatch is dark */
+    val light: Boolean,
+) {
+    DARK(
+        key = "dark",
+        labelRes = R.string.profile_card_finish_dark,
+        stops = listOf(1f to Color(0xFF2F2F2F)),
+        bodyText = Color.White,
+        mutedText = Color(0xFFB5B5B5),
+        stripText = Color(0xFF8A8A8A),
+        stripBackground = Color(0xFF1B1B1B),
+        photoPlaceholder = Color(0xFF4F4F4F),
+        metal = false,
+        sheenAlpha = 0.22f,
+        light = false,
+    ),
+    SILVER(
+        key = "silver",
+        labelRes = R.string.profile_card_finish_silver,
+        stops = listOf(
+            0f to Color(0xFFBFC1C6),
+            0.35f to Color(0xFFE9EAEE),
+            0.55f to Color(0xFFA9ABB2),
+            0.8f to Color(0xFFD7D9DE),
+            1f to Color(0xFF9C9EA5),
+        ),
+        bodyText = Color(0xFF111114),
+        mutedText = Color(0xFF3A3A40),
+        stripText = Color(0xFF2B2B30).copy(alpha = 0.75f),
+        stripBackground = Color.Black.copy(alpha = 0.18f),
+        photoPlaceholder = Color(0xFF5A5A60),
+        metal = true,
+        sheenAlpha = 0.55f,
+        light = true,
+    ),
+    GOLD(
+        key = "gold",
+        labelRes = R.string.profile_card_finish_gold,
+        stops = listOf(
+            0f to Color(0xFF9A7B2E),
+            0.3f to Color(0xFFE9C767),
+            0.5f to Color(0xFFC9A227),
+            0.75f to Color(0xFFF6DE8C),
+            1f to Color(0xFF8C6D1F),
+        ),
+        bodyText = Color(0xFF241B02),
+        mutedText = Color(0xFF5D4E18),
+        stripText = Color(0xFF3A2E08).copy(alpha = 0.75f),
+        stripBackground = Color.Black.copy(alpha = 0.18f),
+        photoPlaceholder = Color(0xFF8A7440),
+        metal = true,
+        sheenAlpha = 0.4f,
+        light = true,
+    ),
+    BLUE(
+        key = "blue",
+        labelRes = R.string.profile_card_finish_blue,
+        stops = listOf(
+            0f to Color(0xFF0A2450),
+            0.35f to Color(0xFF155E9C),
+            0.55f to Color(0xFF0E3A6E),
+            0.8f to Color(0xFF1B7FB8),
+            1f to Color(0xFF081A3D),
+        ),
+        bodyText = Color.White,
+        mutedText = Color(0xFFA8C8E8),
+        stripText = Color(0xFFBFE0F5),
+        stripBackground = Color(0xFF061A38),
+        photoPlaceholder = Color(0xFF2A4A70),
+        metal = false,
+        sheenAlpha = 0.32f,
+        light = false,
+    ),
+    VIOLET(
+        key = "violet",
+        labelRes = R.string.profile_card_finish_violet,
+        stops = listOf(
+            0f to Color(0xFF2A0A4A),
+            0.35f to Color(0xFF6D28D9),
+            0.55f to Color(0xFF4C1D95),
+            0.8f to Color(0xFF8B5CF6),
+            1f to Color(0xFF1E0A3C),
+        ),
+        bodyText = Color.White,
+        mutedText = Color(0xFFC4B5FD),
+        stripText = Color(0xFFE0D4FF),
+        stripBackground = Color(0xFF1E0A3C),
+        photoPlaceholder = Color(0xFF4C2A7A),
+        metal = false,
+        sheenAlpha = 0.32f,
+        light = false,
+    );
+
+    companion object {
+        fun fromKey(key: String): CardFinish = entries.find { it.key == key } ?: DARK
+    }
+
+    /** the background as a brush for swatches: the diagonal gradient, scaled to whatever draws it */
+    fun brush(): Brush = if (stops.size == 1) {
+        SolidColor(stops.first().second)
+    } else {
+        Brush.linearGradient(
+            *stops.toTypedArray(),
+            start = Offset.Zero,
+            end = Offset.Infinite,
+        )
+    }
+}
+
+/** how much the finger and the phone's lean tilt the card on the profile page */
+internal enum class TiltIntensity(val key: String, @StringRes val labelRes: Int, val factor: Float) {
+    SOFT("soft", R.string.profile_card_tilt_soft, 0.5f),
+    MEDIUM("medium", R.string.profile_card_tilt_medium, 1f),
+    STRONG("strong", R.string.profile_card_tilt_strong, 1.8f);
+
+    companion object {
+        fun fromKey(key: String): TiltIntensity = entries.find { it.key == key } ?: MEDIUM
+    }
+}
+
 /** where the card's photo, name and number are, read only while drawing so the profile page can fly copies without recomposing */
 internal class IdCardAnchors {
     var root: LayoutCoordinates? = null
@@ -89,10 +227,12 @@ internal fun ProfileIdCard(
     cardNumber: String,
     joinedText: String,
     modifier: Modifier = Modifier,
-    silver: Boolean = false,
-    showIdCardOf: Boolean = silver,
-    /** 0..1 across the card, where the silver highlight sits */
+    finish: CardFinish = CardFinish.DARK,
+    showIdCardOf: Boolean = finish == CardFinish.SILVER,
+    /** 0..1 across the card, where the highlight sits */
     sheen: () -> Float = { 0.5f },
+    /** false hides the diagonal highlight entirely */
+    sheenEnabled: Boolean = true,
     onPhotoClick: (() -> Unit)? = null,
     /** filled in with where the photo, name and number sit, for the profile page's morph */
     anchors: IdCardAnchors? = null,
@@ -100,6 +240,8 @@ internal fun ProfileIdCard(
     partsAlpha: () -> Float = { 1f },
     /** false holds the side strip's text still while something covers the card */
     marqueeRunning: () -> Boolean = { true },
+    /** false hides the side strip entirely */
+    showMarquee: Boolean = true,
     /** shows a tiny pencil after the number and the name so people see the card can be edited */
     showEditHint: Boolean = false,
     /** true while a finger is down on the card, the whole card lights up a little */
@@ -107,8 +249,8 @@ internal fun ProfileIdCard(
 ) {
     val name = idCardName(username)
     val shape = RoundedCornerShape(22.dp)
-    val bodyText = if (silver) Color(0xFF111114) else Color.White
-    val mutedText = if (silver) Color(0xFF3A3A40) else Color(0xFFB5B5B5)
+    val bodyText = finish.bodyText
+    val mutedText = finish.mutedText
 
     BoxWithConstraints(
         modifier = modifier
@@ -116,10 +258,10 @@ internal fun ProfileIdCard(
             .aspectRatio(IdCardAspect)
             .then(if (anchors != null) Modifier.onPlaced { anchors.root = it } else Modifier)
             .clip(shape)
-            .then(if (silver) Modifier.silverSurface(sheen) else Modifier.background(Color(0xFF2F2F2F)))
+            .then(Modifier.cardSurface(finish, sheen, sheenEnabled))
             .drawWithContent {
                 drawContent()
-                if (pressed()) drawRect(Color.White.copy(alpha = if (silver) 0.28f else 0.14f))
+                if (pressed()) drawRect(Color.White.copy(alpha = if (finish.metal) 0.28f else 0.14f))
             },
     ) {
         // everything scales with the card, so it reads the same on a narrow phone and a tablet
@@ -150,7 +292,7 @@ internal fun ProfileIdCard(
                             .size(unit * 96f)
                             .flyingPart(anchors, partsAlpha) { this.photo = it }
                             .clip(CircleShape)
-                            .background(if (silver) Color(0xFF5A5A60) else Color(0xFF4F4F4F))
+                            .background(finish.photoPlaceholder)
                             .then(if (onPhotoClick != null) Modifier.clickable(onClick = onPhotoClick) else Modifier),
                         contentAlignment = Alignment.Center,
                     ) {
@@ -211,16 +353,18 @@ internal fun ProfileIdCard(
                 }
                 Spacer(Modifier.weight(1f))
             }
-            MarqueeStrip(
-                text = "${name}`s CARD",
-                color = if (silver) Color(0xFF2B2B30).copy(alpha = 0.75f) else Color(0xFF8A8A8A),
-                background = if (silver) Color.Black.copy(alpha = 0.18f) else Color(0xFF1B1B1B),
-                modifier = Modifier
-                    .width(unit * 40f)
-                    .fillMaxHeight(),
-                fontSizeSp = unit.value * 17f,
-                running = marqueeRunning,
-            )
+            if (showMarquee) {
+                MarqueeStrip(
+                    text = "${name}`s CARD",
+                    color = finish.stripText,
+                    background = finish.stripBackground,
+                    modifier = Modifier
+                        .width(unit * 40f)
+                        .fillMaxHeight(),
+                    fontSizeSp = unit.value * 17f,
+                    running = marqueeRunning,
+                )
+            }
         }
     }
 }
@@ -297,35 +441,39 @@ internal fun MarqueeStrip(
     }
 }
 
-/** brushed silver with a soft diagonal highlight at sheen, 0..1 across the card */
-private fun Modifier.silverSurface(sheen: () -> Float): Modifier = drawWithCache {
-    val base = Brush.linearGradient(
-        0f to Color(0xFFBFC1C6),
-        0.35f to Color(0xFFE9EAEE),
-        0.55f to Color(0xFFA9ABB2),
-        0.8f to Color(0xFFD7D9DE),
-        1f to Color(0xFF9C9EA5),
-        start = Offset.Zero,
-        end = Offset(size.width, size.height),
-    )
-    // fine horizontal grain, what makes it read as metal rather than grey plastic
+/** a finish's background: its diagonal gradient, brushed grain on metal, and the diagonal highlight at sheen, 0..1 across the card */
+private fun Modifier.cardSurface(finish: CardFinish, sheen: () -> Float, sheenEnabled: Boolean): Modifier = drawWithCache {
+    val base = if (finish.stops.size == 1) {
+        SolidColor(finish.stops.first().second)
+    } else {
+        Brush.linearGradient(
+            *finish.stops.toTypedArray(),
+            start = Offset.Zero,
+            end = Offset(size.width, size.height),
+        )
+    }
+    // fine horizontal grain, what makes a metal finish read as metal rather than grey plastic
     val lines = (size.height / 3f).toInt()
     onDrawBehind {
         drawRect(base)
-        for (i in 0 until lines) {
-            val y = i * 3f
-            drawLine(Color.White.copy(alpha = if (i % 2 == 0) 0.05f else 0.025f), Offset(0f, y), Offset(size.width, y), strokeWidth = 1f)
+        if (finish.metal) {
+            for (i in 0 until lines) {
+                val y = i * 3f
+                drawLine(Color.White.copy(alpha = if (i % 2 == 0) 0.05f else 0.025f), Offset(0f, y), Offset(size.width, y), strokeWidth = 1f)
+            }
         }
-        val center = sheen().coerceIn(-0.2f, 1.2f) * size.width
-        drawRect(
-            Brush.linearGradient(
-                0f to Color.Transparent,
-                0.5f to Color.White.copy(alpha = 0.55f),
-                1f to Color.Transparent,
-                start = Offset(center - size.width * 0.35f, 0f),
-                end = Offset(center + size.width * 0.15f, size.height),
-            ),
-            blendMode = BlendMode.Screen,
-        )
+        if (sheenEnabled) {
+            val center = sheen().coerceIn(-0.2f, 1.2f) * size.width
+            drawRect(
+                Brush.linearGradient(
+                    0f to Color.Transparent,
+                    0.5f to Color.White.copy(alpha = finish.sheenAlpha),
+                    1f to Color.Transparent,
+                    start = Offset(center - size.width * 0.35f, 0f),
+                    end = Offset(center + size.width * 0.15f, size.height),
+                ),
+                blendMode = BlendMode.Screen,
+            )
+        }
     }
 }

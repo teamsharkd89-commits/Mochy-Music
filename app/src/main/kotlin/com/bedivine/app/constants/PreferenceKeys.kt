@@ -155,6 +155,12 @@ val YtSyncHoldKey = booleanPreferencesKey("ytSyncHold")
 val ProfileCardNumberKey = stringPreferencesKey("profileCardNumber")
 val ProfileJoinedEpochDayKey = longPreferencesKey("profileJoinedEpochDay")
 
+/** The profile ID card's look, picked on the profile page (Personalizar tarjeta). */
+val ProfileCardFinishKey = stringPreferencesKey("profileCardFinish")
+val ProfileCardSheenKey = booleanPreferencesKey("profileCardSheen")
+val ProfileCardTiltKey = stringPreferencesKey("profileCardTilt")
+val ProfileCardMarqueeKey = booleanPreferencesKey("profileCardMarquee")
+
 val AudioQualityKey = stringPreferencesKey("audioQuality")
 
 // data saver: lighter streams and no canvas or video backgrounds, on mobile data only unless the second switch is off

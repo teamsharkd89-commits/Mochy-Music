@@ -130,7 +130,11 @@ import com.bedivine.app.LocalAppContentObscured
 import com.bedivine.app.LocalDatabase
 import com.bedivine.app.R
 import com.bedivine.app.constants.InnerTubeCookieKey
+import com.bedivine.app.constants.ProfileCardFinishKey
+import com.bedivine.app.constants.ProfileCardMarqueeKey
 import com.bedivine.app.constants.ProfileCardNumberKey
+import com.bedivine.app.constants.ProfileCardSheenKey
+import com.bedivine.app.constants.ProfileCardTiltKey
 import com.bedivine.app.constants.ProfileJoinedEpochDayKey
 import com.bedivine.app.constants.ProfilePicUriKey
 import com.bedivine.app.constants.UsernameKey
@@ -172,8 +176,10 @@ import com.bedivine.app.ui.screens.recap.rememberRecapTime
 import com.bedivine.app.ui.screens.settings.devspace.DevAvatar
 import com.bedivine.app.ui.screens.settings.devspace.DevPeople
 import com.bedivine.app.ui.screens.settings.devspace.openDevUrl
+import com.bedivine.app.ui.screens.setup.onboarding.CardFinish
 import com.bedivine.app.ui.screens.setup.onboarding.IdCardAspect
 import com.bedivine.app.ui.screens.setup.onboarding.ProfileIdCard
+import com.bedivine.app.ui.screens.setup.onboarding.TiltIntensity
 import com.bedivine.app.ui.screens.update.UpdateHeadline
 import com.bedivine.app.ui.screens.update.rememberUpdateState
 import com.bedivine.app.ui.screens.update.showAboutSheet
@@ -244,6 +250,13 @@ fun ProfileScreen(navController: NavController) {
     val (profilePicUri) = rememberPreference(ProfilePicUriKey, "")
     val (cardNumberPref, setCardNumber) = rememberPreference(ProfileCardNumberKey, "")
     val (joinedEpochDay, setJoinedEpochDay) = rememberPreference(ProfileJoinedEpochDayKey, -1L)
+    // the card's look, picked in Personalizar tarjeta; the card behind the sheet follows at once
+    val (cardFinishPref, setCardFinish) = rememberPreference(ProfileCardFinishKey, CardFinish.DARK.key)
+    val (cardSheenPref, setCardSheen) = rememberPreference(ProfileCardSheenKey, true)
+    val (cardTiltPref, setCardTilt) = rememberPreference(ProfileCardTiltKey, TiltIntensity.MEDIUM.key)
+    val (cardMarqueePref, setCardMarquee) = rememberPreference(ProfileCardMarqueeKey, true)
+    val cardFinish = CardFinish.fromKey(cardFinishPref)
+    val cardTilt = TiltIntensity.fromKey(cardTiltPref)
     val (forceRecap) = rememberPreference(com.bedivine.app.constants.ForceMonthlyRecapKey, false)
 
     // the profile page that opens out of the card (ui/screens/profile)
@@ -294,6 +307,7 @@ fun ProfileScreen(navController: NavController) {
     var story by remember { mutableStateOf<Pair<RecapStoryData, RecapAnchors>?>(null) }
     var storyCovering by remember { mutableStateOf(false) }
     var cardHidden by remember { mutableStateOf(false) }
+    var showCardSheet by remember { mutableStateOf(false) }
     val contentIn = remember { Animatable(1f) }
     var rootOnScreen by remember { mutableStateOf(Offset.Zero) }
     var cardOnScreen by remember { mutableStateOf(Rect.Zero) }
@@ -619,8 +633,8 @@ fun ProfileScreen(navController: NavController) {
                                         val t = time.sway
                                         // the phone's lean too; half as much on the back, so scratching stays steady
                                         val lean = if (flip.value >= 0.5f) 0.5f else 1f
-                                        val liveY = flip.value * 180f + tiltY.value + deviceTilt.rotationY * lean + sway * sin(t * 0.9f) * 3f
-                                        val liveX = tiltX.value + deviceTilt.rotationX * lean + sway * cos(t * 0.7f) * 2f - (if (stage == HeaderStage.Pulling) expand * 14f else 0f)
+                                        val liveY = flip.value * 180f + (tiltY.value + deviceTilt.rotationY * lean) * cardTilt.factor + sway * sin(t * 0.9f) * 3f
+                                        val liveX = (tiltX.value + deviceTilt.rotationX * lean) * cardTilt.factor + sway * cos(t * 0.7f) * 2f - (if (stage == HeaderStage.Pulling) expand * 14f else 0f)
                                         leanX = lerpF(leanX, liveX, follow)
                                         leanY = lerpF(leanY, liveY, follow)
                                     }
@@ -644,10 +658,15 @@ fun ProfileScreen(navController: NavController) {
                                     photo = photo,
                                     cardNumber = cardNumber,
                                     joinedText = joinedText,
+                                    finish = cardFinish,
+                                    // the highlight rides the same lean as the card, 0..1 across it
+                                    sheen = { (0.5f + (tiltY.value * cardTilt.factor + deviceTilt.rotationY * cardTilt.factor) / 52f).coerceIn(0f, 1f) },
+                                    sheenEnabled = cardSheenPref,
                                     showIdCardOf = true,
                                     anchors = profile.card,
                                     partsAlpha = { if (profile.coversCard) 0f else 1f },
                                     marqueeRunning = { !profile.holdsPage },
+                                    showMarquee = cardMarqueePref,
                                     showEditHint = true,
                                     pressed = { cardPressed && stage == HeaderStage.Collapsed },
                                 )
@@ -775,6 +794,33 @@ fun ProfileScreen(navController: NavController) {
                             )
                         }
                         Spacer(Modifier.height(24.dp))
+                        // the card customiser: only while the header is collapsed, the card is up there
+                        if (stage == HeaderStage.Collapsed) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(Color.White.copy(alpha = 0.06f))
+                                    .clickable { showCardSheet = true }
+                                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.edit),
+                                    contentDescription = null,
+                                    tint = Color.White.copy(alpha = 0.7f),
+                                    modifier = Modifier.size(18.dp),
+                                )
+                                Spacer(Modifier.width(12.dp))
+                                Text(
+                                    text = stringResource(R.string.profile_card_customize),
+                                    color = Color.White,
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                            }
+                            Spacer(Modifier.height(16.dp))
+                        }
                         ListeningTimeCard(totalListeningMs, onViewStats = { navController.navigate("stats") })
                         Spacer(Modifier.height(16.dp))
                         val openDevSpace: (Int) -> Unit = { personIndex ->
@@ -912,6 +958,20 @@ fun ProfileScreen(navController: NavController) {
                 story = null
                 scope.launch { contentIn.go(1f, 900, Emphasized) }
             },
+        )
+    }
+
+    if (showCardSheet) {
+        ProfileCardCustomSheet(
+            finish = cardFinish,
+            onFinishChange = { setCardFinish(it.key) },
+            sheenEnabled = cardSheenPref,
+            onSheenChange = setCardSheen,
+            tilt = cardTilt,
+            onTiltChange = { setCardTilt(it.key) },
+            marqueeEnabled = cardMarqueePref,
+            onMarqueeChange = setCardMarquee,
+            onDismiss = { showCardSheet = false },
         )
     }
 }

@@ -174,7 +174,7 @@ internal fun HelloCardStep(
             photo = card.photo,
             cardNumber = card.cardNumber,
             joinedText = card.joinedText,
-            silver = true,
+            finish = CardFinish.SILVER,
             sheen = { 0.5f + (tiltY.value + deviceTilt.rotationY + cos(time * 1.4f) * 7f) / 45f },
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -274,7 +274,7 @@ internal fun DoneStep(card: CardInfo, onFinished: () -> Unit) {
                 photo = card.photo,
                 cardNumber = card.cardNumber,
                 joinedText = card.joinedText,
-                silver = true,
+                finish = CardFinish.SILVER,
                 sheen = { 0.3f + time / 3f + deviceTilt.rotationY / 45f },
                 modifier = Modifier
                     .width(cardWidth)
