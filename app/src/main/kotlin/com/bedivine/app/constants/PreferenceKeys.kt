@@ -87,6 +87,7 @@ val AppleMusicDarkChromeKey = booleanPreferencesKey("appleMusicDarkChrome")
 val HidePlayerThumbnailKey = booleanPreferencesKey("hidePlayerThumbnail")
 val ThumbnailCornerRadiusKey = floatPreferencesKey("thumbnailCornerRadius")
 val CropAlbumArtKey = booleanPreferencesKey("cropAlbumArt")
+val ImmersiveLyricsKey = booleanPreferencesKey("immersiveLyrics")
 val SeekExtraSeconds = booleanPreferencesKey("seekExtraSeconds")
 val PauseOnMute = booleanPreferencesKey("pauseOnMute")
 // keep playing when another app makes sound, and don't pause that app either

@@ -40,6 +40,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -181,6 +182,12 @@ private val MiniSwipeFling = 500.dp
  * (as well as the whole cover, when it's the edge-to-edge one).
  */
 private val PlayerCloseStrip = 64.dp
+
+/** Immersive lyrics: how long the open player waits, playing, before hiding everything. */
+private const val ImmersiveLyricsDelayMs = 5_000L
+
+/** Immersive lyrics: how much bigger the cover grows while the lyrics are up. */
+private const val ImmersiveCoverGrow = 0.06f
 
 // the sheet's content is fully faded out up to here, see BottomSheet
 private const val StyleHiddenBelow = 0.25f
@@ -579,13 +586,44 @@ private fun PlayerSheet(
     // array, not state - it is only read when a swipe begins.
     val seekBarTop = remember { floatArrayOf(Float.NaN) }
 
+    // Immersive lyrics (Ajustes > Personalización > Reproductor): 5 s after the player opens,
+    // with the song playing and no page or sheet up, the title, the seek bar and every control
+    // fade out, the cover grows a little and the lyrics take their place. One tap brings it all
+    // back and the 5 s start again. Paused, the player stays as it is.
+    val (immersiveLyricsEnabled) = rememberPreference(
+        com.bedivine.app.constants.ImmersiveLyricsKey,
+        defaultValue = true,
+    )
+    var mainImmersiveHidden by remember { mutableStateOf(false) }
+    var immersiveEpoch by remember { mutableIntStateOf(0) }
+    // the flagship in portrait, on its main page: the alternate styles draw their own screen
+    val immersiveApplies = playerStyle.flagshipFamily && !landscapeFlagship && !onTv
+    val immersiveEligible = immersiveLyricsEnabled && immersiveApplies &&
+        state.isExpandedOrExpanding && transportState.isPlaying &&
+        transition.page == PlayerPage.NONE && !studioEngaged &&
+        !showExpandMenu && !showActionMenu && !showSongDetails && !showSleepTimer &&
+        !showStreamInfo && !showPlaybackSpeed && !showDeviceOutput && !showLyricsSource
+    LaunchedEffect(immersiveEligible, trackInfo.mediaId, immersiveEpoch) {
+        mainImmersiveHidden = false
+        if (!immersiveEligible) return@LaunchedEffect
+        kotlinx.coroutines.delay(ImmersiveLyricsDelayMs)
+        mainImmersiveHidden = true
+    }
+    // how far the main-page hide has run: 1 while the lyrics are up, 0 otherwise
+    val mainImmersiveProgress by animateFloatAsState(
+        targetValue = if (mainImmersiveHidden && immersiveEligible) 1f else 0f,
+        animationSpec = tween(durationMillis = 420, easing = CubicBezierEasing(0.4f, 0f, 0.2f, 1f)),
+        label = "mainImmersiveHide",
+    )
+
     var lyricsImmersive by remember { mutableStateOf(false) }
     // The queue hides the controls the same way when scrolled, each page with its own flag so one
     // page's state never hides the controls on the other.
     var queueImmersive by remember { mutableStateOf(false) }
     val controlsHidden by animateFloatAsState(
         targetValue = if (
-            (lyricsImmersive && showLyrics) || (queueImmersive && showQueue)
+            (lyricsImmersive && showLyrics) || (queueImmersive && showQueue) ||
+            (mainImmersiveHidden && immersiveEligible)
         ) 1f else 0f,
         animationSpec = tween(durationMillis = 420, easing = CubicBezierEasing(0.4f, 0f, 0.2f, 1f)),
         label = "lyricsControlsHide",
@@ -938,7 +976,14 @@ private fun PlayerSheet(
                     glassState = morphingGlassState,
                     lyricsProgressProvider = { lyricsProgress },
                     forceVideoBackground = seeVideo,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        // immersive lyrics: the cover grows a little while the lyrics are up
+                        .graphicsLayer {
+                            val grow = 1f + ImmersiveCoverGrow * mainImmersiveProgress
+                            scaleX = grow
+                            scaleY = grow
+                        },
                     coverStyle = shownCoverStyle,
                     backgroundStyle = backgroundStyle,
                     editMode = studioEngaged,
@@ -1684,6 +1729,36 @@ private fun PlayerSheet(
                 enabled = { !studio.engaged },
                 modifier = Modifier.align(Alignment.TopCenter),
             )
+
+            // Immersive lyrics: the lyrics in place of the hidden controls, and one tap
+            // anywhere to bring everything back. Only on the main page, never over a page
+            // the user opened themselves.
+            if (mainImmersiveProgress > 0.001f && transition.page == PlayerPage.NONE && !studioEngaged) {
+                ImmersiveLyricsList(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .height(screenHeight * 0.42f)
+                        .navigationBarsPadding()
+                        .graphicsLayer {
+                            alpha = mainImmersiveProgress
+                            letTouchesThroughWhenHidden()
+                        },
+                )
+                // one tap anywhere brings the player back; swipes still reach the sheet
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onTap = {
+                                    mainImmersiveHidden = false
+                                    immersiveEpoch++
+                                },
+                            )
+                        },
+                )
+            }
         }
 
         // Above the player and its controls, so a heart can fly over everything on its way home.
