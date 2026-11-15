@@ -2774,4 +2774,10 @@
     <string name="devspace_attribution">BeDivine está inspirada en Mochy-Music</string>
     <string name="immersive_lyrics_title">Letra inmersiva</string>
     <string name="immersive_lyrics_desc">A los 5 segundos se oculta todo y aparece la letra.</string>
+    <string name="lyrics_reveal_title">Revelado línea por línea</string>
+    <string name="lyrics_reveal_desc">Las líneas aparecen una por una conforme se cantan.</string>
+    <string name="lyrics_reveal_animation">Animación de revelado</string>
+    <string name="lyrics_reveal_fade">Fundido</string>
+    <string name="lyrics_reveal_slide">Deslizar</string>
+    <string name="lyrics_reveal_scale">Escala</string>
 </resources>

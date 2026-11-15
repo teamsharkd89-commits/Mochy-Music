@@ -979,6 +979,18 @@ enum class LyricsMotionStyle(
     val withoutShader: LyricsMotionStyle get() = if (risesWords) BORING else PLAIN
 }
 
+/** Line-by-line reveal of the immersive lyrics: lines stay hidden until they're sung. */
+val LyricsRevealKey = booleanPreferencesKey("lyricsReveal")
+val LyricsRevealAnimationKey = stringPreferencesKey("lyricsRevealAnimation")
+
+enum class LyricsRevealAnimation(
+    @StringRes val labelRes: Int,
+) {
+    FADE(R.string.lyrics_reveal_fade),
+    SLIDE(R.string.lyrics_reveal_slide),
+    SCALE(R.string.lyrics_reveal_scale),
+}
+
 val LyricsAnimationStyleKey = stringPreferencesKey("lyricsAnimationStyle")
 enum class LyricsAnimationStyle {
     NONE,

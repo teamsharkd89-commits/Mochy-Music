@@ -6,6 +6,14 @@
 
 package com.bedivine.app.ui.player
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,9 +45,14 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.bedivine.app.LocalPlayerConnection
 import com.bedivine.app.R
+import com.bedivine.app.constants.LyricsRevealAnimation
+import com.bedivine.app.constants.LyricsRevealAnimationKey
+import com.bedivine.app.constants.LyricsRevealKey
 import com.bedivine.app.db.entities.LyricsEntity.Companion.LYRICS_NOT_FOUND
 import com.bedivine.app.lyrics.LyricsEntry
 import com.bedivine.app.lyrics.LyricsUtils
+import com.bedivine.app.utils.rememberEnumPreference
+import com.bedivine.app.utils.rememberPreference
 import com.bedivine.app.viewmodels.LyricsScreenViewModel
 
 /**
@@ -82,6 +95,13 @@ internal fun ImmersiveLyricsList(
             if (unsynced) -1 else LyricsUtils.findCurrentLineIndex(lines, progress.position + lyricsOffsetMs)
         }
     }
+
+    // the reveal: lines stay hidden until they're sung, then each one animates in.
+    // unsynced lyrics have no timing to reveal against, so they show whole as before.
+    val revealEnabled by rememberPreference(LyricsRevealKey, defaultValue = true)
+    val revealAnimation by rememberEnumPreference(LyricsRevealAnimationKey, defaultValue = LyricsRevealAnimation.SLIDE)
+    val revealActive = revealEnabled && !unsynced
+    val revealedUpTo = if (revealActive) activeIndex.coerceIn(-1, lines.lastIndex) else lines.lastIndex
 
     // opens already on the playing line, so the list doesn't scroll past every earlier
     // line on its way in while it fades up
@@ -132,18 +152,42 @@ internal fun ImmersiveLyricsList(
             ) {
                 itemsIndexed(lines, key = { index, _ -> index }) { index, entry ->
                     val active = index == activeIndex
-                    Text(
-                        text = entry.text,
-                        fontSize = if (active) 22.sp else 18.sp,
-                        lineHeight = 27.sp,
-                        fontWeight = if (active) FontWeight.Bold else FontWeight.Medium,
-                        color = Color.White.copy(alpha = if (active) 0.95f else 0.45f),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 6.dp),
-                    )
+                    AnimatedVisibility(
+                        visible = index <= revealedUpTo,
+                        enter = revealEnterTransition(revealAnimation),
+                        exit = fadeOut(animationSpec = tween(durationMillis = 200, easing = RevealEasing)),
+                    ) {
+                        Text(
+                            text = entry.text,
+                            fontSize = if (active) 22.sp else 18.sp,
+                            lineHeight = 27.sp,
+                            fontWeight = if (active) FontWeight.Bold else FontWeight.Medium,
+                            color = Color.White.copy(alpha = if (active) 0.95f else 0.45f),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 6.dp),
+                        )
+                    }
                 }
             }
         }
+    }
+}
+
+// the same 420 ms ease the player uses when it hides its controls
+private val RevealEasing = CubicBezierEasing(0.4f, 0f, 0.2f, 1f)
+
+/** How a line comes in when its time is sung: a fade, a fade rising up, or a fade growing in. */
+private fun revealEnterTransition(animation: LyricsRevealAnimation): EnterTransition {
+    val fade = fadeIn(animationSpec = tween(durationMillis = 420, easing = RevealEasing))
+    return when (animation) {
+        LyricsRevealAnimation.FADE -> fade
+        LyricsRevealAnimation.SLIDE -> fade + slideInVertically(
+            animationSpec = tween(durationMillis = 420, easing = RevealEasing),
+        ) { it / 3 }
+        LyricsRevealAnimation.SCALE -> fade + scaleIn(
+            animationSpec = tween(durationMillis = 420, easing = RevealEasing),
+            initialScale = 0.96f,
+        )
     }
 }
