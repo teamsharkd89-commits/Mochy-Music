@@ -5,9 +5,6 @@ name: Dev Release
 # over the previous one). Run manually from the Actions tab.
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - .github/workflows/dev-release.yml
 
 jobs:
   dev_release:
