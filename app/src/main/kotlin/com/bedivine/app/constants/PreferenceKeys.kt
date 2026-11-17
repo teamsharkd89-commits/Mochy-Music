@@ -87,7 +87,6 @@ val AppleMusicDarkChromeKey = booleanPreferencesKey("appleMusicDarkChrome")
 val HidePlayerThumbnailKey = booleanPreferencesKey("hidePlayerThumbnail")
 val ThumbnailCornerRadiusKey = floatPreferencesKey("thumbnailCornerRadius")
 val CropAlbumArtKey = booleanPreferencesKey("cropAlbumArt")
-val ImmersiveLyricsKey = booleanPreferencesKey("immersiveLyrics")
 val SeekExtraSeconds = booleanPreferencesKey("seekExtraSeconds")
 val PauseOnMute = booleanPreferencesKey("pauseOnMute")
 // keep playing when another app makes sound, and don't pause that app either
@@ -979,17 +978,6 @@ enum class LyricsMotionStyle(
     val withoutShader: LyricsMotionStyle get() = if (risesWords) BORING else PLAIN
 }
 
-/** Line-by-line reveal of the immersive lyrics: lines stay hidden until they're sung. */
-val LyricsRevealKey = booleanPreferencesKey("lyricsReveal")
-val LyricsRevealAnimationKey = stringPreferencesKey("lyricsRevealAnimation")
-
-enum class LyricsRevealAnimation(
-    @StringRes val labelRes: Int,
-) {
-    FADE(R.string.lyrics_reveal_fade),
-    SLIDE(R.string.lyrics_reveal_slide),
-    SCALE(R.string.lyrics_reveal_scale),
-}
 
 val LyricsAnimationStyleKey = stringPreferencesKey("lyricsAnimationStyle")
 enum class LyricsAnimationStyle {

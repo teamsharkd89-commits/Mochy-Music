@@ -96,6 +96,7 @@ import com.bedivine.app.R
 import com.bedivine.app.LocalPlayerConnection
 import com.bedivine.app.constants.ThumbnailCornerRadius
 import com.bedivine.app.extensions.togglePlayPause
+import com.bedivine.app.playback.DownloadedArtwork
 import com.bedivine.app.ui.player.models.TrackInfo
 import com.bedivine.app.ui.utils.resize
 import androidx.compose.runtime.LaunchedEffect
@@ -1004,6 +1005,8 @@ fun MorphingCover(
                             BlurredCoverPicture(
                                 url = url,
                                 modifier = pictureModifier.graphicsLayer { if (pictureHidden(url)) alpha = 0f },
+                                mediaId = trackInfo.mediaId,
+                                trackThumbnailUrl = trackInfo.thumbnailUrl,
                             )
                         }
                     }
@@ -1055,6 +1058,8 @@ fun MorphingCover(
                         thumbnailUrl = url,
                         modifier = (if (squaredCards) pictureModifier.then(cardGreyFilter) else pictureModifier)
                             .graphicsLayer { if (pictureHidden(url)) alpha = 0f },
+                        mediaId = trackInfo.mediaId,
+                        trackThumbnailUrl = trackInfo.thumbnailUrl,
                     )
                 }
 
@@ -1396,11 +1401,21 @@ private fun MiniSongLines(title: String, artist: String, album: String, modifier
 }
 
 @Composable
-private fun CoverPicture(thumbnailUrl: String?, modifier: Modifier = Modifier) {
+private fun CoverPicture(
+    thumbnailUrl: String?,
+    modifier: Modifier = Modifier,
+    mediaId: String? = null,
+    trackThumbnailUrl: String? = null,
+) {
     val context = LocalContext.current
-    val imageRequest = remember(thumbnailUrl) {
+    val imageRequest = remember(thumbnailUrl, mediaId, trackThumbnailUrl) {
+        // a cover downloaded with the song wins over the remote URL, so it shows offline;
+        // the url only matches the track's own thumbnail on its own carousel page
+        val local = if (mediaId != null && thumbnailUrl != null && thumbnailUrl == trackThumbnailUrl) {
+            DownloadedArtwork.downloadedArtworkFile(context, mediaId)
+        } else null
         ImageRequest.Builder(context)
-            .data(thumbnailUrl?.resize(1200, 1200))
+            .data(local ?: thumbnailUrl?.resize(1200, 1200))
             .allowHardware(true)
             .size(CoilSize(1200, 1200))
             .precision(Precision.INEXACT)
@@ -2010,6 +2025,12 @@ private fun CoverCanvasLayer(
         val titleStr = trackInfo.title
         val artistStr = trackInfo.artist
         if (!canvasEnabled || mediaId.isBlank() || titleStr.isBlank() || artistStr.isBlank()) return@LaunchedEffect
+
+        // a canvas downloaded with the song plays offline, with no lookup at all
+        DownloadedArtwork.downloadedCanvasFile(context, mediaId)?.let { file ->
+            canvasArtwork = CanvasArtwork(animated = file.toURI().toString())
+            return@LaunchedEffect
+        }
 
         val connectivityManager = context.getSystemService<android.net.ConnectivityManager>()
         if (canvasWifiOnly && connectivityManager?.isActiveNetworkMetered == true) return@LaunchedEffect

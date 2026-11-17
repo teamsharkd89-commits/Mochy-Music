@@ -60,9 +60,6 @@ import com.bedivine.app.constants.EnableElementBlurAnimatorKey
 import com.bedivine.app.constants.EnableProgressiveBlurKey
 import com.bedivine.app.constants.LyricsMotionStyle
 import com.bedivine.app.constants.LyricsMotionStyleKey
-import com.bedivine.app.constants.LyricsRevealAnimation
-import com.bedivine.app.constants.LyricsRevealAnimationKey
-import com.bedivine.app.constants.LyricsRevealKey
 import com.bedivine.app.constants.PlayerNavBarDefault
 import com.bedivine.app.constants.PlayerNavBarKey
 import com.bedivine.app.constants.PlayerStatusBarDefault
@@ -248,83 +245,9 @@ internal fun LyricsStyleSection(modifier: Modifier = Modifier) {
             onSelect = onStyle,
             modifier = modifier,
         ) { LyricsStylePreview(it) }
-        Spacer(Modifier.height(11.dp))
-        LyricsRevealCard()
     }
 }
 
-// the immersive lyrics revealing line by line as they're sung, and how each line comes in
-@Composable
-private fun LyricsRevealCard() {
-    val (reveal, setReveal) = rememberPreference(LyricsRevealKey, defaultValue = true)
-    val (revealAnimation, setRevealAnimation) = rememberEnumPreference(LyricsRevealAnimationKey, defaultValue = LyricsRevealAnimation.SLIDE)
-    LabCard(padding = 20.dp) {
-        Text(
-            stringResource(R.string.lyrics_reveal_title),
-            fontFamily = InterFontFamily,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp,
-            letterSpacing = (-0.02).em,
-            color = LabColors.Primary,
-        )
-        Text(
-            stringResource(R.string.lyrics_reveal_desc),
-            fontFamily = InterFontFamily,
-            fontWeight = FontWeight.Medium,
-            fontSize = 13.sp,
-            color = LabColors.Secondary,
-            modifier = Modifier.padding(top = 2.dp),
-        )
-        Spacer(Modifier.height(14.dp))
-        LabToggleRow(
-            title = stringResource(R.string.lyrics_reveal_title),
-            subtitle = stringResource(R.string.lyrics_reveal_desc),
-            checked = reveal,
-            onCheckedChange = setReveal,
-        )
-        if (reveal) {
-            Spacer(Modifier.height(12.dp))
-            Text(
-                stringResource(R.string.lyrics_reveal_animation),
-                fontFamily = InterFontFamily,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 13.sp,
-                color = LabColors.Primary,
-            )
-            Spacer(Modifier.height(8.dp))
-            // the three ways a line comes in, same pills as the home glow modes
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                LyricsRevealAnimation.entries.forEach { option ->
-                    val selected = option == revealAnimation
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(40.dp)
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(if (selected) Color.White else LabColors.Row)
-                            .clickable { setRevealAnimation(option) }
-                            .padding(horizontal = 6.dp),
-                    ) {
-                        Text(
-                            text = stringResource(option.labelRes),
-                            fontFamily = InterFontFamily,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 12.sp,
-                            color = if (selected) Color.Black else Color.White,
-                            textAlign = TextAlign.Center,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
 
 // a lyric style's name in the app's language
 private fun lyricStyleNameRes(style: LyricsMotionStyle): Int = when (style) {

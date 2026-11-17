@@ -277,7 +277,6 @@ private fun PlayerSection() {
     Spacer(Modifier.height(16.dp))
     LandscapePlayerCard()
     Spacer(Modifier.height(16.dp))
-    ImmersiveLyricsCard()
     }
 }
 
@@ -312,37 +311,6 @@ private fun LandscapePlayerCard() {
     }
 }
 
-// Ajustes > Personalización > Reproductor: the immersive lyrics mode — after 5 s the
-// player hides everything and shows the lyrics; one tap brings it all back
-@Composable
-private fun ImmersiveLyricsCard() {
-    val (immersiveLyrics, setImmersiveLyrics) = rememberPreference(com.bedivine.app.constants.ImmersiveLyricsKey, defaultValue = true)
-    LabCard(padding = CardPadding) {
-        Text(
-            stringResource(R.string.immersive_lyrics_title),
-            fontFamily = InterFontFamily,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp,
-            letterSpacing = (-0.02).em,
-            color = LabColors.Primary,
-        )
-        Text(
-            stringResource(R.string.immersive_lyrics_desc),
-            fontFamily = InterFontFamily,
-            fontWeight = FontWeight.Medium,
-            fontSize = 13.sp,
-            color = LabColors.Secondary,
-            modifier = Modifier.padding(top = 2.dp),
-        )
-        Spacer(Modifier.height(14.dp))
-        LabToggleRow(
-            title = stringResource(R.string.immersive_lyrics_title),
-            subtitle = stringResource(R.string.immersive_lyrics_desc),
-            checked = immersiveLyrics,
-            onCheckedChange = setImmersiveLyrics,
-        )
-    }
-}
 
 @Composable
 private fun GestureSection() {

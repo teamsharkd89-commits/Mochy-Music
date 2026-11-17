@@ -16,6 +16,7 @@ import coil3.request.allowHardware
 import coil3.request.crossfade
 import coil3.request.transformations
 import coil3.size.Size as CoilSize
+import com.bedivine.app.playback.DownloadedArtwork
 import com.bedivine.app.ui.component.DownscaledBlur
 import com.bedivine.app.ui.component.GlassState
 import com.bedivine.app.ui.component.drawGlassNode
@@ -30,12 +31,21 @@ private val LiveBlur = 28.dp
 
 // the picture the sharp cover fades into: the same picture read small and blurred once, the very bitmap its mirror below uses, cropped like the cover
 @Composable
-fun BlurredCoverPicture(url: String?, modifier: Modifier = Modifier) {
+fun BlurredCoverPicture(
+    url: String?,
+    modifier: Modifier = Modifier,
+    mediaId: String? = null,
+    trackThumbnailUrl: String? = null,
+) {
     if (url == null) return
     val context = LocalContext.current
-    val request = remember(context, url) {
+    val request = remember(context, url, mediaId, trackThumbnailUrl) {
+        // a cover downloaded with the song wins over the remote URL, so it shows offline
+        val local = if (mediaId != null && url == trackThumbnailUrl) {
+            DownloadedArtwork.downloadedArtworkFile(context, mediaId)
+        } else null
         ImageRequest.Builder(context)
-            .data(url.resize(ReflectionPx, ReflectionPx))
+            .data(local ?: url.resize(ReflectionPx, ReflectionPx))
             .allowHardware(false)
             .transformations(BackdropBlurTransformation(radiusPx = ReflectionBlurPx))
             .crossfade(false)

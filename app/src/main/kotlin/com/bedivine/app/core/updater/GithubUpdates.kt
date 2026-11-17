@@ -171,7 +171,7 @@ private suspend fun fetchReleases(): Result<List<ParsedRelease>> = withContext(D
                 if (fullVer.copy(buildNumber = 0) < FirstReleaseWithThisId) continue
 
                 // the number in parentheses was confusing: show the build the same way
-                // everywhere else, "8.4.0 build#8", so the new version is readable at a glance
+                // everywhere else, "9.0.0 build#8", so the new version is readable at a glance
                 val displayVersion = if (fullVer.buildNumber > 0) "${fullVer.name} build#${fullVer.buildNumber}" else fullVer.name
 
                 val assets = release.optJSONArray("assets")

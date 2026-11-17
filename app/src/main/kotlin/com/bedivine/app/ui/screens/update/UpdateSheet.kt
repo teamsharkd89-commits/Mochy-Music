@@ -163,7 +163,7 @@ private val StableGreen = Color(0xFF9CF58A)
 private const val StableLabel = "STABLE"
 
 /** "8.1.0 build#1165" -> "8.1.0", "8.0.2 (1100)" -> "8.0.2" */
-// the version as shown in big type: "8.4.0 build#8", not just "8.4.0", so the installed
+// the version as shown in big type: "9.0.0 build#8", not just "9.0.0", so the installed
 // build and the new build never look identical
 internal fun shortVersion(version: String): String {
     val parsed = parseFullVersion(version)

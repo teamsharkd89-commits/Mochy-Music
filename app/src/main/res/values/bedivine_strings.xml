@@ -2774,12 +2774,4 @@
     <string name="devspace_donate">Donate</string>
     <string name="devspace_donate_me">Donate me!</string>
     <string name="devspace_attribution">BeDivine is inspired by Mochy-Music</string>
-    <string name="immersive_lyrics_title">Immersive lyrics</string>
-    <string name="immersive_lyrics_desc">After 5 seconds everything hides and the lyrics appear.</string>
-    <string name="lyrics_reveal_title">Line-by-line reveal</string>
-    <string name="lyrics_reveal_desc">Lines appear one by one as they are sung.</string>
-    <string name="lyrics_reveal_animation">Reveal animation</string>
-    <string name="lyrics_reveal_fade">Fade</string>
-    <string name="lyrics_reveal_slide">Slide</string>
-    <string name="lyrics_reveal_scale">Scale</string>
 </resources>

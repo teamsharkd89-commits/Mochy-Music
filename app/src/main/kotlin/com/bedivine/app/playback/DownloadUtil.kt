@@ -273,6 +273,7 @@ constructor(
                                     failedProviders.remove(download.request.id)
                                     downloadItags.remove(download.request.id)
                                     saveLyrics(download.request.id)
+                                    DownloadedArtwork.saveForDownload(context, database, download.request.id)
                                 }
                                 Download.STATE_FAILED -> {
                                     database.updateDownloadedInfo(download.request.id, false, null)
@@ -280,9 +281,12 @@ constructor(
                                     // kept by R8 in release builds, unlike Timber: the reason is the only clue
                                     android.util.Log.w(LOG_TAG, "Download of ${download.request.id} failed", finalException)
                                 }
-                                Download.STATE_STOPPED,
+                                Download.STATE_STOPPED -> {
+                                    database.updateDownloadedInfo(download.request.id, false, null)
+                                }
                                 Download.STATE_REMOVING -> {
                                     database.updateDownloadedInfo(download.request.id, false, null)
+                                    DownloadedArtwork.deleteFor(context, download.request.id)
                                 }
                                 else -> {
                                 }
