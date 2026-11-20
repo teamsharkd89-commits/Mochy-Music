@@ -6,6 +6,12 @@ pantalla de actualización y el `changelog.json`. Las secciones viejas quedan
 abajo como historial. Escribe los cambios como los leería Daniel: qué mejora
 o qué se arregló, en su idioma, sin hablar de builds ni de APKs.
 
+## 9.0.0 build#25
+
+### Arreglos
+
+- La actualización ya no se queda pidiendo instalarse una y otra vez: cada versión descarga su propio archivo y no reutiliza el de la anterior
+
 ## 9.0.0 build#24
 
 ### Mejoras

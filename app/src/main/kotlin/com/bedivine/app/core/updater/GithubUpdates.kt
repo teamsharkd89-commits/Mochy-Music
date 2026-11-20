@@ -256,6 +256,16 @@ suspend fun downloadApk(
         val url = release.apkUrl ?: error("This release has no APK attached")
         val target = apkFileFor(context, release)
 
+        // drop other builds' cached APKs (including the old bare-name file), so a stale file
+        // can never be mistaken for this one again
+        context.cacheDir.listFiles()?.forEach { file ->
+            if (file != target && file.name.endsWith(".apk", ignoreCase = true) &&
+                (file.name.startsWith("bedivine-") || file.name.startsWith("BeDivine-"))
+            ) {
+                runCatching { file.delete() }
+            }
+        }
+
         if (isDownloaded(context, release)) {
             onProgress(1f)
             return@runCatching target
@@ -290,8 +300,16 @@ suspend fun downloadApk(
     }
 }
 
-fun apkFileFor(context: Context, release: GithubRelease): File =
-    File(context.cacheDir, release.apkName ?: "bedivine-update.apk")
+fun apkFileFor(context: Context, release: GithubRelease): File {
+    // the asset name is the same in every release, so a bare asset name let one build reuse
+    // another build's cached APK whenever the two happened to be the same size — exactly what
+    // happened with builds 23 and 24 (both 30522413 bytes): "install" re-installed 23, the
+    // phone stayed on 23, and the prompt for 24 never went away. the tag makes each build's
+    // file its own, so a cached file can only ever be this release's.
+    val name = release.apkName ?: "bedivine-update.apk"
+    val tagged = if (release.tag.isNotBlank()) "bedivine-${release.tag}-$name" else name
+    return File(context.cacheDir, tagged)
+}
 
 fun isDownloaded(context: Context, release: GithubRelease): Boolean {
     val f = apkFileFor(context, release)
