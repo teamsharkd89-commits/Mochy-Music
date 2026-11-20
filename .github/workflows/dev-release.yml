@@ -42,21 +42,40 @@ jobs:
           cp app/build/outputs/apk/universalFoss/release/app-universal-foss-release.apk release/BeDivine-universal-foss-release.apk
           cd release
           sha256sum *.apk > SHA256SUMS.txt
-          cat > changelog.json <<'EOF'
-          {
-            "description": "BeDivine: rápida, personalizable y con el nombre y el logo de BeDivine.",
-            "changelog": [
-              {
-                "title": "BeDivine",
-                "items": [
-                  "Rápida y muy personalizable",
-                  "Nombre e icono de BeDivine (rayo + D)",
-                  "Las actualizaciones llegan desde este mismo repo"
-                ]
-              }
-            ]
-          }
-          EOF
+          # the notes for this build come from release/CHANGELOG.md (first ## section):
+          # body.md is what the in-app update sheet shows, changelog.json what the
+          # full update screen shows. The section title is rewritten with the real
+          # build number, so the file in the repo never needs to guess it.
+          python3 - <<'PYEOF'
+          import json, re
+          run_number = "${{ github.run_number }}"
+          version = f"9.0.0 build#{run_number}"
+          text = open("CHANGELOG.md", encoding="utf-8").read()
+          lines = text.splitlines()
+          start = next(i for i, l in enumerate(lines) if l.startswith("## "))
+          end = next((i for i in range(start + 1, len(lines)) if lines[i].startswith("## ")), len(lines))
+          section = lines[start:end]
+          body_lines, sections, current = [], [], None
+          for line in section[1:]:
+              m = re.match(r"^###\s+(.*)$", line)
+              if m:
+                  current = {"title": m.group(1).strip(), "items": []}
+                  sections.append(current)
+                  body_lines.append(line)
+              elif line.strip().startswith("- "):
+                  item = line.strip()[2:].strip()
+                  if current is None:
+                      current = {"title": "Novedades", "items": []}
+                      sections.append(current)
+                  current["items"].append(item)
+                  body_lines.append(line)
+              elif line.strip():
+                  body_lines.append(line)
+          open("body.md", "w", encoding="utf-8").write("\n".join(body_lines).strip() + "\n")
+          data = {"description": f"BeDivine {version}", "changelog": sections}
+          open("changelog.json", "w", encoding="utf-8").write(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
+          print(f"release notes for {version}: {len(sections)} sections")
+          PYEOF
           ls -la
 
       - name: Publish release
@@ -64,9 +83,7 @@ jobs:
         with:
           tag_name: bedivine-9.0.0-${{ github.run_number }}
           name: BeDivine 9.0.0 build#${{ github.run_number }}
-          body: |
-            BeDivine 9.0.0 build#${{ github.run_number }}.
-            Instala el APK arm64 en el Redmi Note 10S (o el universal en cualquier otro Android).
+          body_path: release/body.md
           prerelease: false
           files: |
             release/BeDivine-arm64-foss-release.apk

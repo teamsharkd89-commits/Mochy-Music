@@ -2375,6 +2375,8 @@
     <string name="misc_update_allow_install">Permite «Instalar apps desconocidas» para BeDivine y luego toca Instalar aquí de nuevo.</string>
     <string name="misc_update_available">¡Actualización disponible!</string>
     <string name="misc_update_available_user">¡Actualización disponible, %1$s!</string>
+    <string name="misc_update_new_available">Hay una nueva actualización</string>
+    <string name="misc_update_whats_new">Qué hay de nuevo</string>
     <string name="misc_update_what_changed">Qué cambió en %1$s</string>
     <string name="misc_update_to_install">Para instalar -</string>
     <string name="misc_update_snooze">no gracias, recuérdame en 24 horas</string>

@@ -37,6 +37,21 @@ import java.io.File
 object DownloadedArtwork {
     private const val ARTWORK_DIR = "artwork"
     private const val CANVAS_DIR = "canvas"
+    /** Which provider a saved canvas came from, so Spotify's can replace a saved one. */
+    private const val CANVAS_SOURCE_DIR = "canvas-source"
+    private const val SOURCE_SPOTIFY = "spotify"
+    private const val SOURCE_OTHER = "other"
+
+    /** Which provider the saved canvas came from, if recorded. */
+    private fun canvasSource(context: Context, mediaId: String): String? =
+        runCatching { File(File(context.filesDir, CANVAS_SOURCE_DIR), mediaId).readText().trim() }.getOrNull()
+
+    private fun writeCanvasSource(context: Context, mediaId: String, source: String) {
+        runCatching {
+            val dir = File(context.filesDir, CANVAS_SOURCE_DIR).apply { mkdirs() }
+            File(dir, mediaId).writeText(source)
+        }
+    }
 
     fun artworkFile(context: Context, mediaId: String): File =
         File(File(context.filesDir, ARTWORK_DIR), "$mediaId.jpg")
@@ -74,6 +89,7 @@ object DownloadedArtwork {
     fun deleteFor(context: Context, mediaId: String) {
         runCatching { artworkFile(context, mediaId).delete() }
         runCatching { downloadedCanvasFile(context, mediaId)?.delete() }
+        runCatching { File(File(context.filesDir, CANVAS_SOURCE_DIR), mediaId).delete() }
     }
 
     private val httpClient by lazy {
@@ -149,21 +165,33 @@ object DownloadedArtwork {
         val durationSec = song.song.duration.takeIf { it > 0 }
 
         // the same lookup the player does, Spotify first when its session is set, then Monochrome, then Apple Music
-        val artwork = withContext(Dispatchers.IO) {
+        val spotifyArtwork = withContext(Dispatchers.IO) {
             SpotifyCanvas.search(title, artist, null)
                 ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
-            ?: MonochromeApiCanvas.getBySongArtist(title, artist, null, durationSec)
-                ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
-                ?: AppleMusicCanvasProvider.getBySongArtist(title, artist, null, "us", durationSec)
+        }
+        val artwork = spotifyArtwork
+            ?: withContext(Dispatchers.IO) {
+                MonochromeApiCanvas.getBySongArtist(title, artist, null, durationSec)
                     ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
-        } ?: return
+                    ?: AppleMusicCanvasProvider.getBySongArtist(title, artist, null, "us", durationSec)
+                        ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
+            } ?: return
         val url = artwork.preferredAnimationUrl ?: return
         val extension = url.substringAfterLast('.', "")
             .substringBefore('?')
             .lowercase()
             .takeIf { it in setOf("mp4", "mov", "webm", "mkv", "m4v") } ?: "mp4"
         val target = File(File(context.filesDir, CANVAS_DIR), "$mediaId.$extension")
-        if (target.exists() && target.length() > 0) return
-        downloadToFile(url, target)
+        // a canvas is already saved: keep it, unless Spotify just found one and the saved
+        // one isn't Spotify's — then Spotify's replaces it, so Spotify always wins once
+        // it's connected (the backfill upgrades old downloads this way)
+        val existing = downloadedCanvasFile(context, mediaId)
+        if (existing != null && existing.length() > 0) {
+            if (spotifyArtwork == null || canvasSource(context, mediaId) == SOURCE_SPOTIFY) return
+        }
+        if (downloadToFile(url, target)) {
+            if (existing != null && existing != target) existing.delete()
+            writeCanvasSource(context, mediaId, if (spotifyArtwork != null) SOURCE_SPOTIFY else SOURCE_OTHER)
+        }
     }
 }

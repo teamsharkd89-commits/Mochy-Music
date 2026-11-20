@@ -2377,6 +2377,8 @@
     <string name="misc_update_allow_install">Allow “Install unknown apps” for BeDivine, then tap Install here again.</string>
     <string name="misc_update_available">Update available!</string>
     <string name="misc_update_available_user">Update available, %1$s!</string>
+    <string name="misc_update_new_available">There\'s a new update</string>
+    <string name="misc_update_whats_new">What\'s new</string>
     <string name="misc_update_what_changed">What changed on %1$s</string>
     <string name="misc_update_to_install">To Be Installed -</string>
     <string name="misc_update_snooze">no thanks remind me in 24 hour</string>

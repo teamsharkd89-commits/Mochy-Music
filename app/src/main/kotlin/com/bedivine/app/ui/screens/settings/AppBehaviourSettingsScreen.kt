@@ -63,6 +63,7 @@ import com.bedivine.app.constants.ProxyUrlKey
 import com.bedivine.app.constants.PlayVideoBackgroundKey
 import com.bedivine.app.constants.SYSTEM_DEFAULT
 import com.bedivine.app.canvas.SpotifyToken
+import com.bedivine.app.ui.player.CanvasArtworkPlaybackCache
 import com.bedivine.app.constants.ResumeOnBluetoothConnectKey
 import com.bedivine.app.constants.ShowFormatBadgeKey
 import com.bedivine.app.constants.SpotifySpdcTokenKey
@@ -596,6 +597,9 @@ private fun spotifyCanvasItem(): SettingsItem {
                 TextButton(onClick = {
                     onCookieChange("")
                     SpotifyToken.invalidate()
+                    // the player cached the old lookup results; the next play looks
+                    // Spotify up first instead of replaying a Mochy canvas
+                    CanvasArtworkPlaybackCache.clear()
                     showDialog = false
                 }) {
                     Text(stringResource(R.string.delete))
@@ -606,6 +610,9 @@ private fun spotifyCanvasItem(): SettingsItem {
                 TextButton(onClick = {
                     onCookieChange(draft.trim())
                     SpotifyToken.invalidate()
+                    // the player cached the old lookup results; the next play looks
+                    // Spotify up first instead of replaying a Mochy canvas
+                    CanvasArtworkPlaybackCache.clear()
                     showDialog = false
                 }) {
                     Text(stringResource(R.string.save))

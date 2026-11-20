@@ -123,11 +123,20 @@ fun UpdatePromptSheet(
             Spacer(modifier = Modifier.height(18.dp))
 
             Text(
-                text = if (userName.isBlank()) stringResource(R.string.misc_update_available) else stringResource(R.string.misc_update_available_user, userName),
+                text = stringResource(R.string.misc_update_new_available),
                 color = Color.White,
-                fontSize = 17.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "BeDivine ${release.version}",
+                color = Color(0xFF9A9A9A),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
 
@@ -141,7 +150,7 @@ fun UpdatePromptSheet(
                     .padding(16.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.misc_update_what_changed, release.version),
+                    text = stringResource(R.string.misc_update_whats_new),
                     color = Color.White,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
