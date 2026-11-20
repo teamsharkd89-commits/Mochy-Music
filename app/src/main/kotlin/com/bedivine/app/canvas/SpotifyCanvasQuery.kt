@@ -118,7 +118,7 @@ object SpotifyCanvasQuery {
      */
     class QueryHashes(
         private val fetch: (String) -> String?,
-        private val now: () -> Long = System.currentTimeMillis,
+        private val now: () -> Long = System::currentTimeMillis,
         private val maxScripts: Int = 8,
     ) {
         @Volatile private var hash: String? = null
