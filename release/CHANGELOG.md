@@ -6,6 +6,12 @@ pantalla de actualización y el `changelog.json`. Las secciones viejas quedan
 abajo como historial. Escribe los cambios como los leería Daniel: qué mejora
 o qué se arregló, en su idioma, sin hablar de builds ni de APKs.
 
+## 9.0.0 build#26
+
+### Mejoras
+
+- El reproductor ahora se pone en pantalla completa solo: a los pocos segundos de estar sonando una canción sin tocar nada, el título, la barra y los botones se desvanecen y queda solo la canvas (o la portada) ocupando toda la pantalla; un toque trae los controles de vuelta
+
 ## 9.0.0 build#25
 
 ### Arreglos

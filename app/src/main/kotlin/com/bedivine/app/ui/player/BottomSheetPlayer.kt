@@ -186,6 +186,13 @@ private val PlayerCloseStrip = 64.dp
 // the sheet's content is fully faded out up to here, see BottomSheet
 private const val StyleHiddenBelow = 0.25f
 
+/**
+ * How long the cover page waits, playing and untouched, before it goes fullscreen: the title,
+ * seek bar and buttons fade out and the canvas (or the cover) is left alone on screen, like
+ * the lyrics page's own immersive wait. Any touch brings the controls back and restarts it.
+ */
+private const val CoverImmersiveDelayMs = 4_000L
+
 /** The old gap from the seek bar down to the buttons (24dp plus the bar's lift). */
 internal val TransportGapAboveRow = 24.dp + SeekBarLift
 
@@ -584,9 +591,24 @@ private fun PlayerSheet(
     // The queue hides the controls the same way when scrolled, each page with its own flag so one
     // page's state never hides the controls on the other.
     var queueImmersive by remember { mutableStateOf(false) }
+    // The cover page goes fullscreen the same way: a few seconds of playback with no touch and
+    // the controls fade out, leaving the canvas (or the cover) alone on screen. Any touch brings
+    // them back and restarts the wait. The timer is keyed on the song, the playing state, the
+    // page and the last touch, so all of those reset it.
+    var coverImmersive by remember { mutableStateOf(false) }
+    var coverLastTouchAt by remember { androidx.compose.runtime.mutableLongStateOf(0L) }
+
+    LaunchedEffect(trackInfo.mediaId, transportState.isPlaying, transition.page, coverLastTouchAt, state.isExpanded) {
+        coverImmersive = false
+        if (!transportState.isPlaying || transition.page != PlayerPage.NONE || !state.isExpanded) return@LaunchedEffect
+        kotlinx.coroutines.delay(CoverImmersiveDelayMs)
+        coverImmersive = true
+    }
+
     val controlsHidden by animateFloatAsState(
         targetValue = if (
-            (lyricsImmersive && showLyrics) || (queueImmersive && showQueue)
+            (lyricsImmersive && showLyrics) || (queueImmersive && showQueue) ||
+            (coverImmersive && transition.page == PlayerPage.NONE)
         ) 1f else 0f,
         animationSpec = tween(durationMillis = 420, easing = CubicBezierEasing(0.4f, 0f, 0.2f, 1f)),
         label = "lyricsControlsHide",
@@ -922,7 +944,15 @@ private fun PlayerSheet(
             collapsedSwipe = miniSwipe,
             // the full video mode closes, opens its pane and scrolls by itself; the sheet read its swipes upright and fought its lists for them
             dragsWhenOpen = { currentPlayerStyle != PlayerStyle.VIDEO },
-            onTouchActivity = handleState::onTouchActivity,
+            onTouchActivity = { touching ->
+                handleState.onTouchActivity(touching)
+                if (touching) {
+                    // any touch on the open player restarts the cover's fullscreen wait, and
+                    // brings the controls straight back if they were already hidden
+                    coverLastTouchAt = System.currentTimeMillis()
+                    coverImmersive = false
+                }
+            },
             pureBlack = pureBlack,
             background = {},
             sharedContent = {
