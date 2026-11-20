@@ -118,6 +118,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import com.bedivine.app.canvas.CanvasArtwork
 import com.bedivine.app.canvas.MonochromeApiCanvas
+import com.bedivine.app.canvas.SpotifyCanvas
 import com.bedivine.app.applecanvas.AppleMusicCanvasProvider
 import com.bedivine.app.LocalGlassState
 import com.bedivine.app.constants.CanvasThumbnailAnimationKey
@@ -2051,7 +2052,9 @@ private fun CoverCanvasLayer(
             ?.takeIf { it.id == mediaId }?.duration?.takeIf { it > 0 }
 
         val res = withContext(Dispatchers.IO) {
-            MonochromeApiCanvas.getBySongArtist(normTitle, normArtist, null, durationSec)
+            SpotifyCanvas.search(normTitle, normArtist, null)
+                ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
+            ?: MonochromeApiCanvas.getBySongArtist(normTitle, normArtist, null, durationSec)
                 ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
             ?: AppleMusicCanvasProvider.getBySongArtist(normTitle, normArtist, null, "us", durationSec)
                 ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }

@@ -1004,6 +1004,8 @@ val SwipeThumbnailKey = booleanPreferencesKey("swipeThumbnail")
 val RotatingThumbnailKey = booleanPreferencesKey("rotatingThumbnail")
 val CanvasThumbnailAnimationKey = booleanPreferencesKey("canvasThumbnailAnimation")
 val CanvasWifiOnlyKey = booleanPreferencesKey("canvasWifiOnly")
+/** The listener's Spotify `sp_dc` session cookie, sealed in the vault; the Spotify canvas source is a no-op without it. */
+val SpotifySpdcTokenKey = stringPreferencesKey("spotifySpdcToken")
 /** The player's format badge beside the title (OPUS, AAC, FLAC...) */
 val ShowFormatBadgeKey = booleanPreferencesKey("showFormatBadge")
 /** The badge also says the stream's sample rate */

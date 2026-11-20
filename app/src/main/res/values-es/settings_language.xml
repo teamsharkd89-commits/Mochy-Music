@@ -27,6 +27,12 @@
     <string name="appearance_canvas_desc">Visuales en bucle para las pistas compatibles</string>
     <string name="appearance_canvas_wifi">Lienzo solo con Wi-Fi</string>
     <string name="appearance_canvas_wifi_desc">No usar datos móviles</string>
+    <string name="appearance_spotify_canvas">Canvas de Spotify</string>
+    <string name="appearance_spotify_canvas_desc">Los canvas propios de Spotify, primeros en la búsqueda</string>
+    <string name="appearance_spotify_canvas_connected">Conectado</string>
+    <string name="appearance_spotify_canvas_not_connected">Sin conectar</string>
+    <string name="appearance_spotify_canvas_dialog">Pega la cookie sp_dc de open.spotify.com (las cookies de tu navegador) para activar los canvas de Spotify. Queda en este teléfono, sellada.</string>
+    <string name="appearance_spotify_canvas_hint">Cookie sp_dc</string>
     <string name="appearance_global">Apariencia global</string>
     <string name="appearance_blur">Desenfoque</string>
     <string name="appearance_blur_desc">Desenfoque de cristal en el reproductor y la navegación</string>

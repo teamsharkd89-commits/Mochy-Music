@@ -23,6 +23,7 @@ import com.music.innertube.YouTube
 import com.music.innertube.models.IpVersion
 import com.music.innertube.models.YouTubeLocale
 import com.music.kugou.KuGou
+import com.bedivine.app.canvas.SpotifyToken
 import com.bedivine.app.constants.*
 import com.bedivine.app.di.ApplicationScope
 import com.bedivine.app.i18n.AppLanguage
@@ -75,6 +76,7 @@ class App : Application(), SingletonImageLoader.Factory {
         CrashHandler.install(this)
 
         CipherDeobfuscator.initialize(this)
+        SpotifyToken.init(this)
 
         if (BuildConfig.DEBUG || BuildConfig.BUILD_TYPE == "fast") {
             Timber.plant(Timber.DebugTree())

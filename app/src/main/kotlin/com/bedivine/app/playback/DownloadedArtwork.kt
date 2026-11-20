@@ -7,6 +7,7 @@ import android.net.ConnectivityManager
 import androidx.core.content.getSystemService
 import com.bedivine.app.applecanvas.AppleMusicCanvasProvider
 import com.bedivine.app.canvas.MonochromeApiCanvas
+import com.bedivine.app.canvas.SpotifyCanvas
 import com.bedivine.app.constants.CanvasThumbnailAnimationKey
 import com.bedivine.app.constants.CanvasWifiOnlyKey
 import com.bedivine.app.db.MusicDatabase
@@ -147,9 +148,11 @@ object DownloadedArtwork {
         if (title.length < 2 || artist.length < 2) return
         val durationSec = song.song.duration.takeIf { it > 0 }
 
-        // the same lookup the player does, Monochrome first, then Apple Music
+        // the same lookup the player does, Spotify first when its session is set, then Monochrome, then Apple Music
         val artwork = withContext(Dispatchers.IO) {
-            MonochromeApiCanvas.getBySongArtist(title, artist, null, durationSec)
+            SpotifyCanvas.search(title, artist, null)
+                ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
+            ?: MonochromeApiCanvas.getBySongArtist(title, artist, null, durationSec)
                 ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
                 ?: AppleMusicCanvasProvider.getBySongArtist(title, artist, null, "us", durationSec)
                     ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }

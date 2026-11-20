@@ -15,6 +15,7 @@ import androidx.compose.material.icons.rounded.GraphicEq
 import androidx.compose.material.icons.rounded.HighQuality
 import androidx.compose.material.icons.rounded.SignalCellularAlt
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -61,8 +62,10 @@ import com.bedivine.app.constants.ProxyEnabledKey
 import com.bedivine.app.constants.ProxyUrlKey
 import com.bedivine.app.constants.PlayVideoBackgroundKey
 import com.bedivine.app.constants.SYSTEM_DEFAULT
+import com.bedivine.app.canvas.SpotifyToken
 import com.bedivine.app.constants.ResumeOnBluetoothConnectKey
 import com.bedivine.app.constants.ShowFormatBadgeKey
+import com.bedivine.app.constants.SpotifySpdcTokenKey
 import com.bedivine.app.constants.ShowFormatSampleRateKey
 import com.bedivine.app.constants.SkipSilenceKey
 import com.bedivine.app.constants.StopPlaybackOnTaskRemovedKey
@@ -563,6 +566,7 @@ private fun playerLookItems(): List<SettingsItem> {
             onCheckedChange = onCanvasWifiOnlyChange,
             subOptionOf = canvasEnabled,
         ),
+        spotifyCanvasItem(),
         // only the shaded lyric styles have a bloom to make softer
         switchItem(
             key = "High quality bloom",
@@ -573,6 +577,70 @@ private fun playerLookItems(): List<SettingsItem> {
             onCheckedChange = onHighBloomChange,
             visible = lyricsStyle.shaded,
         ),
+    )
+}
+
+// Spotify's own canvas needs the listener's sp_dc session cookie once; without it the
+// source is a no-op and the Monochrome/Apple lookups keep working as before
+@Composable
+private fun spotifyCanvasItem(): SettingsItem {
+    val (cookie, onCookieChange) = rememberPreference(SpotifySpdcTokenKey, defaultValue = "")
+    var showDialog by remember { mutableStateOf(false) }
+    var draft by remember { mutableStateOf("") }
+    val title = stringResource(R.string.appearance_spotify_canvas)
+    if (showDialog) {
+        DefaultDialog(
+            onDismiss = { showDialog = false },
+            title = { Text(title) },
+            buttons = {
+                TextButton(onClick = {
+                    onCookieChange("")
+                    SpotifyToken.invalidate()
+                    showDialog = false
+                }) {
+                    Text(stringResource(R.string.delete))
+                }
+                TextButton(onClick = { showDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+                TextButton(onClick = {
+                    onCookieChange(draft.trim())
+                    SpotifyToken.invalidate()
+                    showDialog = false
+                }) {
+                    Text(stringResource(R.string.save))
+                }
+            },
+        ) {
+            Text(stringResource(R.string.appearance_spotify_canvas_dialog))
+            Spacer(Modifier.height(12.dp))
+            OutlinedTextField(
+                value = draft,
+                onValueChange = { draft = it },
+                label = { Text(stringResource(R.string.appearance_spotify_canvas_hint)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+            )
+        }
+    }
+    return SettingsItem(
+        title = { Text(title) },
+        highlightKey = "Spotify canvas",
+        descriptionText = stringResource(R.string.appearance_spotify_canvas_desc),
+        detail = stringResource(R.string.appearance_spotify_canvas_dialog),
+        searchText = title,
+        icon = painterResource(R.drawable.sparks),
+        iconShape = CircleShape,
+        onClick = {
+            draft = cookie
+            showDialog = true
+        },
+        trailingContent = {
+            Text(
+                if (cookie.isNotBlank()) stringResource(R.string.appearance_spotify_canvas_connected)
+                else stringResource(R.string.appearance_spotify_canvas_not_connected)
+            )
+        },
     )
 }
 

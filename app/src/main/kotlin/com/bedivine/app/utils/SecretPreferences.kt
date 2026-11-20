@@ -14,6 +14,7 @@ import com.bedivine.app.constants.LibreFmSessionKey
 import com.bedivine.app.constants.MonochromePlaybackApiTokenKey
 import com.bedivine.app.constants.OpenRouterApiKey
 import com.bedivine.app.constants.ProxyPasswordKey
+import com.bedivine.app.constants.SpotifySpdcTokenKey
 import com.bedivine.app.constants.TurnstileBypassTokenKey
 import com.bedivine.app.constants.VisitorDataKey
 import kotlinx.coroutines.flow.Flow
@@ -51,6 +52,7 @@ class SecretPreferences(private val raw: DataStore<Preferences>) : DataStore<Pre
             MonochromePlaybackApiTokenKey,
             TurnstileBypassTokenKey,
             ProxyPasswordKey,
+            SpotifySpdcTokenKey,
         )
 
         // the stored preferences with every secret opened; one sealed by a key this phone doesn't have is dropped, so the user signs in again

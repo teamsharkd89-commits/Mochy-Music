@@ -27,6 +27,12 @@
     <string name="appearance_canvas_desc">Looping visuals for supported tracks</string>
     <string name="appearance_canvas_wifi">Canvas on Wi-Fi only</string>
     <string name="appearance_canvas_wifi_desc">Skip mobile data</string>
+    <string name="appearance_spotify_canvas">Spotify canvas</string>
+    <string name="appearance_spotify_canvas_desc">Spotify\'s own looping visuals, first in the lookup</string>
+    <string name="appearance_spotify_canvas_connected">Connected</string>
+    <string name="appearance_spotify_canvas_not_connected">Not connected</string>
+    <string name="appearance_spotify_canvas_dialog">Paste the sp_dc cookie from open.spotify.com (your browser\'s cookies) to enable Spotify\'s own canvases. It stays on this phone, sealed.</string>
+    <string name="appearance_spotify_canvas_hint">sp_dc cookie</string>
     <string name="appearance_global">Global Appearance</string>
     <string name="appearance_blur">Blur</string>
     <string name="appearance_blur_desc">Glass blur across player and navigation</string>
