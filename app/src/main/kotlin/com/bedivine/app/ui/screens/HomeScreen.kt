@@ -923,6 +923,7 @@ fun HomeScreen(
             },
             // a library playlist's own thumbnailUrl is always null; its covers live in thumbnails
             thumbnailUrl = playlist?.thumbnails?.firstOrNull() ?: localItem.thumbnailUrl,
+            mediaId = (localItem as? Song)?.id,
             circular = localItem is Artist,
             isActive = when (localItem) {
                 is Song -> localItem.id == mediaMetadataState.value?.id
@@ -1293,6 +1294,7 @@ fun HomeScreen(
                         is Artist -> null
                     },
                     thumbnailUrl = playlist?.thumbnails?.firstOrNull() ?: localItem.thumbnailUrl,
+                    mediaId = (localItem as? Song)?.id,
                     isActive = when (localItem) {
                         is Song -> localItem.id == mediaMetadataState.value?.id
                         is Album -> localItem.id == mediaMetadataState.value?.album?.id

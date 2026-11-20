@@ -308,6 +308,13 @@ constructor(
         scope.launch { followBatches() }
         scope.launch { followAutoDownloads(context) }
 
+        // Las descargas viejas (de antes de que cada descarga guardara su portada, su canvas
+        // y su letra) se completan solas al arrancar, con calma para no pelear con el inicio.
+        scope.launch {
+            delay(20_000)
+            backfillDownloads()
+        }
+
         // Offline mode holds downloads where they are rather than failing them: they carry on
         // when it's turned off. Only then - resuming whenever offline mode reads off, at every
         // start included, would undo downloads paused for any other reason.
@@ -322,6 +329,7 @@ constructor(
                             downloadManager.pauseDownloads()
                         } else if (wasOffline) {
                             downloadManager.resumeDownloads()
+                            scope.launch { backfillDownloads() }
                         }
                     }
                     wasOffline = offline
@@ -401,6 +409,23 @@ constructor(
             val found = runCatching { lyricsHelper.getLyrics(song.toMediaMetadata()) }.getOrNull() ?: return
             if (found.provider == LyricsHelper.NoConnectionProvider) return
             database.query { upsert(LyricsEntity(id = songId, lyrics = found.lyrics, provider = found.provider)) }
+        }
+    }
+
+    /**
+     * Completa lo que les falte a las descargas hechas antes de que cada descarga guardara
+     * su portada HD, su canvas y su letra (en Prism lo llaman backfill): al arrancar y al
+     * volver el internet, cada descarga completada sin su archivo lo descarga. Lo que ya
+     * está completo se salta solo — saveLyrics y saveForDownload no repiten nada — así que
+     * esto no cuesta nada en una biblioteca ya completa.
+     */
+    private suspend fun backfillDownloads() {
+        if (OfflineMode.isOn) return
+        val songs = runCatching { database.downloadedSongsByCreateDateAsc().first() }.getOrNull() ?: return
+        for (song in songs) {
+            val id = song.song.id
+            runCatching { saveLyrics(id) }
+            runCatching { DownloadedArtwork.saveForDownload(context, database, id) }
         }
     }
 

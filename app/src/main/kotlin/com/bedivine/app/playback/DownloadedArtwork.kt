@@ -44,6 +44,24 @@ object DownloadedArtwork {
     fun downloadedArtworkFile(context: Context, mediaId: String): File? =
         artworkFile(context, mediaId).takeIf { it.exists() && it.length() > 0 }
 
+    /** The saved HD cover file when it's there, else the remote URL — so a downloaded song's cover never needs the network. */
+    fun artworkModel(context: Context, mediaId: String?, url: String?): Any? =
+        mediaId?.let { downloadedArtworkFile(context, it) } ?: url
+
+    /**
+     * The song id hiding in a YouTube thumbnail URL (i.ytimg.com/vi/<id>/...): a song's
+     * id is its video id, so a playlist collage tile can find the song's saved cover
+     * file from the URL alone. Null for any other host.
+     */
+    fun songIdFromThumbnail(url: String?): String? {
+        if (url == null) return null
+        val marker = "i.ytimg.com/vi/"
+        val start = url.indexOf(marker)
+        if (start < 0) return null
+        val id = url.substring(start + marker.length).substringBefore('/').substringBefore('?')
+        return id.takeIf { it.isNotBlank() }
+    }
+
     /** The downloaded animated cover when it's there, else null (any extension). */
     fun downloadedCanvasFile(context: Context, mediaId: String): File? {
         val dir = File(context.filesDir, CANVAS_DIR)

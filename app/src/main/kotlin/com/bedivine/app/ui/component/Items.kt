@@ -100,6 +100,7 @@ import com.bedivine.app.db.entities.Playlist
 import com.bedivine.app.db.entities.Song
 import com.bedivine.app.extensions.toMediaItem
 import com.bedivine.app.models.MediaMetadata
+import com.bedivine.app.playback.DownloadedArtwork
 import com.bedivine.app.ui.utils.resize
 import com.bedivine.app.utils.joinByBullet
 import com.bedivine.app.utils.makeTimeString
@@ -107,6 +108,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlin.math.roundToInt
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 
 const val ActiveBoxAlpha = 0.6f
@@ -421,7 +423,8 @@ fun SongListItem(
                     isActive = isActive,
                     isPlaying = isPlaying,
                     shape = RoundedCornerShape(ThumbnailCornerRadius),
-                    modifier = Modifier.size(ListThumbnailSize)
+                    modifier = Modifier.size(ListThumbnailSize),
+                    mediaId = song.id
                 )
             },
             trailingContent = trailingContent,
@@ -1134,8 +1137,9 @@ fun ItemThumbnail(
     modifier: Modifier = Modifier,
     albumIndex: Int? = null,
     isSelected: Boolean = false,
-    thumbnailRatio: Float = 1f
-) = ItemThumbnail(thumbnailUrl, isActive, { isPlaying }, shape, modifier, albumIndex, isSelected, thumbnailRatio)
+    thumbnailRatio: Float = 1f,
+    mediaId: String? = null
+) = ItemThumbnail(thumbnailUrl, isActive, { isPlaying }, shape, modifier, albumIndex, isSelected, thumbnailRatio, mediaId)
 
 // isPlaying is read only inside the indicator, so a play or pause leaves the cover image alone
 @Composable
@@ -1147,9 +1151,11 @@ fun ItemThumbnail(
     modifier: Modifier = Modifier,
     albumIndex: Int? = null,
     isSelected: Boolean = false,
-    thumbnailRatio: Float = 1f
+    thumbnailRatio: Float = 1f,
+    mediaId: String? = null
 ) {
     val cropAlbumArt = LocalCropAlbumArt.current
+    val context = LocalContext.current
 
     Box(
         contentAlignment = Alignment.Center,
@@ -1161,7 +1167,7 @@ fun ItemThumbnail(
         if (albumIndex == null) {
             // the box above already clips to the shape, a second clip here was just one more layer per cover
             AsyncImage(
-                model = thumbnailUrl?.resize(544, 544),
+                model = DownloadedArtwork.artworkModel(context, mediaId, thumbnailUrl?.resize(544, 544)),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
@@ -1325,6 +1331,7 @@ fun PlaylistThumbnail(
     modifier: Modifier = Modifier,
 ) {
     val cropAlbumArt = LocalCropAlbumArt.current
+    val context = LocalContext.current
 
     when (thumbnails.size) {
         0 -> Box(
@@ -1337,7 +1344,7 @@ fun PlaylistThumbnail(
             placeHolder()
         }
         1 -> AsyncImage(
-            model = thumbnails[0].resize(544, 544),
+            model = DownloadedArtwork.artworkModel(context, DownloadedArtwork.songIdFromThumbnail(thumbnails[0]), thumbnails[0].resize(544, 544)),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             placeholder = painterResource(R.drawable.queue_music),
@@ -1357,8 +1364,9 @@ fun PlaylistThumbnail(
                 Alignment.BottomStart,
                 Alignment.BottomEnd
             ).fastForEachIndexed { index, alignment ->
+                val tileUrl = thumbnails.getOrNull(index)
                 AsyncImage(
-                    model = thumbnails.getOrNull(index)?.resize(544, 544),
+                    model = DownloadedArtwork.artworkModel(context, DownloadedArtwork.songIdFromThumbnail(tileUrl), tileUrl?.resize(544, 544)),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     placeholder = painterResource(R.drawable.queue_music),
