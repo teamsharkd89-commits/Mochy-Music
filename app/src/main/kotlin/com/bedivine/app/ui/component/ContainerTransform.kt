@@ -43,9 +43,11 @@ import androidx.navigation.NavBackStackEntry
 /** every Home cover card is drawn with this radius, so the open transition starts from it */
 var HomeCardCornerRadius by mutableStateOf(25.dp)
 
-/** the soft spring a screen grows out of its card on (~0.6s), interruptible like iOS opening an app */
+/** the soft spring a screen grows out of its card on (~0.35s), interruptible like iOS opening an app.
+ * it used to sit at 150 stiffness (~0.6s): on a mid-range phone that long window of two full
+ * screens plus the live glass blur kept dropping frames, so the morph felt stuck halfway. */
 const val ContainerOpenDamping = 0.88f
-const val ContainerOpenStiffness = 150f
+const val ContainerOpenStiffness = 300f
 
 /**
  * the way back is a fixed-length ease instead of a spring. going back has to compose Home from
@@ -53,8 +55,10 @@ const val ContainerOpenStiffness = 150f
  * that part got skipped and the shrink visibly jumped. this curve starts gently (~12% at 100ms),
  * so a slow first frame costs nothing you can see, and a back swipe (which scrubs the transition
  * by time) tracks the finger instead of racing ahead of it. Home comes forward on the same clock.
+ * 440ms: long enough to keep that slow start, short enough that the two-screen window doesn't
+ * drag on a mid-range phone.
  */
-const val ContainerCloseMillis = 560
+const val ContainerCloseMillis = 440
 val ContainerCloseEasing = CubicBezierEasing(0.4f, 0f, 0.1f, 1f)
 
 // both sides of a match animate their own bounds, so they must pick the same spec: shrinking

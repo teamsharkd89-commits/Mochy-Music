@@ -85,7 +85,10 @@ import kotlin.math.pow
 
 private val PlayerSheetAnimationSpec = spring<Dp>(
     dampingRatio = 0.96f,
-    stiffness = 80f
+    // was 80: the open spring's tail ran on for a second after the sheet looked up, and on a
+    // mid-range phone that whole second of full-screen player + live glass blur kept dropping
+    // frames, so expanding the player felt stuck. 200 settles in ~0.3s with the same soft feel.
+    stiffness = 200f
 )
 
 /**
@@ -119,7 +122,8 @@ private val MiniPlayerDismissCommit = 48.dp
 
 private val PlayerSheetHorizontalAnimationSpec = spring<Float>(
     dampingRatio = 0.92f,
-    stiffness = 90f
+    // was 90, same long tail as the vertical spring above
+    stiffness = 200f
 )
 
 /** How far the mini player tilts and shrinks under a press. */

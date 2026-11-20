@@ -6,6 +6,13 @@ pantalla de actualización y el `changelog.json`. Las secciones viejas quedan
 abajo como historial. Escribe los cambios como los leería Daniel: qué mejora
 o qué se arregló, en su idioma, sin hablar de builds ni de APKs.
 
+## 9.0.0 build#24
+
+### Mejoras
+
+- Las animaciones entre pantallas ahora van fluidas: al abrir un álbum, una playlist o un artista, y al volver, la transición termina antes y sin tirones
+- El reproductor se abre y se cierra más rápido al tocar el mini reproductor, sin perder su animación
+
 ## 9.0.0 build#22
 
 ### Mejoras
