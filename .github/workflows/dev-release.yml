@@ -38,8 +38,8 @@ jobs:
       - name: Prepare release files
         run: |
           mkdir -p release
-          cp app/build/outputs/apk/arm64Foss/release/app-arm64-foss-release.apk release/BeDivine-arm64-foss-release.apk
-          cp app/build/outputs/apk/universalFoss/release/app-universal-foss-release.apk release/BeDivine-universal-foss-release.apk
+          cp app/build/outputs/apk/arm64Foss/release/app-arm64-foss-release.apk release/BeDivine-9.0.0-${{ github.run_number }}-arm64-foss-release.apk
+          cp app/build/outputs/apk/universalFoss/release/app-universal-foss-release.apk release/BeDivine-9.0.0-${{ github.run_number }}-universal-foss-release.apk
           cd release
           sha256sum *.apk > SHA256SUMS.txt
           # the notes for this build come from release/CHANGELOG.md (first ## section):
@@ -86,7 +86,7 @@ jobs:
           body_path: release/body.md
           prerelease: false
           files: |
-            release/BeDivine-arm64-foss-release.apk
-            release/BeDivine-universal-foss-release.apk
+            release/BeDivine-9.0.0-${{ github.run_number }}-arm64-foss-release.apk
+            release/BeDivine-9.0.0-${{ github.run_number }}-universal-foss-release.apk
             release/SHA256SUMS.txt
             release/changelog.json

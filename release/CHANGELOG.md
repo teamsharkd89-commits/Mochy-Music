@@ -6,6 +6,16 @@ pantalla de actualización y el `changelog.json`. Las secciones viejas quedan
 abajo como historial. Escribe los cambios como los leería Daniel: qué mejora
 o qué se arregló, en su idioma, sin hablar de builds ni de APKs.
 
+## 9.0.0 build#27
+
+### Mejoras
+
+- La portada ahora crece cuando el reproductor se pone en pantalla completa: a los pocos segundos de estar sonando una canción sin tocar nada, la canvas se hace más grande y solo quedan el título, el artista, el botón de me gusta y los botones de reproducir; un toque trae todo lo demás de vuelta
+
+### Arreglos
+
+- La actualización desde la app ya descarga la versión nueva de verdad: cada versión tiene su propio nombre de archivo, así ya no reutiliza la descarga vieja y ya no hay que ir a GitHub
+
 ## 9.0.0 build#26
 
 ### Mejoras

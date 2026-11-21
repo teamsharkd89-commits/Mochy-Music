@@ -52,6 +52,7 @@ import com.bedivine.app.ui.player.studio.playHoldRamp
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.zIndex
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.graphicsLayer
@@ -592,9 +593,10 @@ private fun PlayerSheet(
     // page's state never hides the controls on the other.
     var queueImmersive by remember { mutableStateOf(false) }
     // The cover page goes fullscreen the same way: a few seconds of playback with no touch and
-    // the controls fade out, leaving the canvas (or the cover) alone on screen. Any touch brings
-    // them back and restarts the wait. The timer is keyed on the song, the playing state, the
-    // page and the last touch, so all of those reset it.
+    // the canvas grows over the controls that fade out, leaving only the song row and the
+    // transport buttons on screen. Any touch brings the rest back and restarts the wait. The
+    // timer is keyed on the song, the playing state, the page and the last touch, so all of
+    // those reset it.
     var coverImmersive by remember { mutableStateOf(false) }
     var coverLastTouchAt by remember { androidx.compose.runtime.mutableLongStateOf(0L) }
 
@@ -604,6 +606,22 @@ private fun PlayerSheet(
         kotlinx.coroutines.delay(CoverImmersiveDelayMs)
         coverImmersive = true
     }
+
+    // how far the cover has grown into its fullscreen (0 = its usual region, 1 = grown): the
+    // canvas's own animation, on the same clock as the controls fading out
+    val coverFullscreen by animateFloatAsState(
+        targetValue = if (coverImmersive && transition.page == PlayerPage.NONE) 1f else 0f,
+        animationSpec = tween(durationMillis = 420, easing = CubicBezierEasing(0.4f, 0f, 0.2f, 1f)),
+        label = "coverFullscreen",
+    )
+
+    // the pages hide the whole transport column; the cover's fullscreen hides only its chrome
+    // (seek bar, card, volume bar), leaving the song row and the transport buttons on screen
+    val pageControlsHidden by animateFloatAsState(
+        targetValue = if ((lyricsImmersive && showLyrics) || (queueImmersive && showQueue)) 1f else 0f,
+        animationSpec = tween(durationMillis = 420, easing = CubicBezierEasing(0.4f, 0f, 0.2f, 1f)),
+        label = "pageControlsHide",
+    )
 
     val controlsHidden by animateFloatAsState(
         targetValue = if (
@@ -980,6 +998,7 @@ private fun PlayerSheet(
                     alternateStyle = !playerStyle.flagshipFamily || landscapeFlagship,
                     miniVideo = playerStyle == PlayerStyle.VIDEO,
                     coverOffsetProvider = layoutTweaks::controlsOffset,
+                    coverFullscreenProvider = { coverFullscreen },
                     onLongPressCover = holdToStudio,
                     studioArtModifier = if (playerStyle.flagshipFamily) {
                         Modifier
@@ -1381,6 +1400,23 @@ private fun PlayerSheet(
                     cardGrowable = showDeck && !isTurntable,
                 )
             }
+            // The fullscreen cover's shade: the grown canvas is bright behind the song row and
+            // the transport buttons, so the bottom darkens while they're the only controls left.
+            // A plain box takes no touches, so taps still reach the sheet and bring the rest back.
+            if (coverFullscreen > 0.001f) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                0.45f to Color.Transparent,
+                                1f to Color.Black.copy(alpha = 0.6f),
+                            )
+                        )
+                        .graphicsLayer { alpha = coverFullscreen },
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -1390,10 +1426,12 @@ private fun PlayerSheet(
                     .offset { androidx.compose.ui.unit.IntOffset(0, layoutTweaks.controlsOffset().roundToInt()) }
                     .graphicsLayer {
                         // the Turntable shows its own controls; these (with the seek bar) come up
-                        // only as the lyrics or the queue open, which run off the seek bar
-                        alpha = (1f - controlsHidden) * (if (isTurntable) turntablePageProgress else 1f)
+                        // only as the lyrics or the queue open, which run off the seek bar. The
+                        // cover's fullscreen leaves this column in place: only the seek bar inside
+                        // it fades, so the song row and the transport buttons stay on screen.
+                        alpha = (1f - pageControlsHidden) * (if (isTurntable) turntablePageProgress else 1f)
 
-                        translationY = controlsHidden * size.height * 0.55f
+                        translationY = pageControlsHidden * size.height * 0.55f
                         // Hidden over the lyrics, or behind the Turntable's own controls, they let
                         // touches through. A layer that ate every touch used to sit here, and it
                         // blocked the lyrics, the record and swipes along with the hidden buttons.
@@ -1631,6 +1669,13 @@ private fun PlayerSheet(
                     Column(
                         modifier = Modifier
                             .offset(y = -SeekBarLift)
+                            .graphicsLayer {
+                                // the cover's fullscreen fades the seek bar out with the rest of
+                                // the chrome, while the song row above it and the transport buttons
+                                // below it stay on screen
+                                alpha = 1f - coverFullscreen
+                                letTouchesThroughWhenHidden()
+                            }
                             .onGloballyPositioned { coords ->
                                 // Measured to the TOP of the seek bar: the lyrics list ends there and
                                 // its fade finishes above it. Measured to the bottom, lines kept

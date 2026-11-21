@@ -9,6 +9,9 @@ import com.bedivine.app.constants.PlayerCoverStyle
 
 const val CoverRegionFraction = 0.63f
 
+/** how tall the cover grows in its fullscreen, as a fraction of the sheet */
+const val CoverFullscreenFraction = 0.90f
+
 /**
  * How small and how big the cover's region can get when the controls under it are moved (held and
  * dragged in the player editor, or pushed up by a taller card).
