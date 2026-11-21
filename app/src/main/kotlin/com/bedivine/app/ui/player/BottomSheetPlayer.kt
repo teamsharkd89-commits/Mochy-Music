@@ -998,7 +998,7 @@ private fun PlayerSheet(
                     alternateStyle = !playerStyle.flagshipFamily || landscapeFlagship,
                     miniVideo = playerStyle == PlayerStyle.VIDEO,
                     coverOffsetProvider = layoutTweaks::controlsOffset,
-                    coverFullscreen = coverFullscreen,
+                    coverFullscreenProvider = { coverFullscreen },
                     onLongPressCover = holdToStudio,
                     studioArtModifier = if (playerStyle.flagshipFamily) {
                         Modifier

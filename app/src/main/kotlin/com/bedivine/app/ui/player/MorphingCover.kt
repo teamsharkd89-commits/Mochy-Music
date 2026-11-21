@@ -140,6 +140,7 @@ import com.bedivine.app.ui.player.flagship.FollowPicture
 import com.bedivine.app.ui.player.customize.coverArtBox
 import com.bedivine.app.ui.player.customize.coverArtBoxF
 import com.bedivine.app.ui.player.customize.CoverFullscreenFraction
+import com.bedivine.app.ui.player.customize.CoverRegionFraction
 import com.bedivine.app.ui.player.customize.usesBoxedStage
 import com.bedivine.app.ui.player.customize.isDisc
 import com.bedivine.app.ui.component.ChromeHighlightColor
@@ -228,29 +229,10 @@ private class MorphEndpointsPx(
     val dpPx: Float,
     /** how far the controls under the cover were moved, px down; read while laying out */
     val coverOffset: () -> Float,
-    /** how far into the cover's fullscreen, 0..1; a plain value, so the cover recomposes with it */
-    val coverFullscreen: Float,
 ) {
     /** the full-size cover's box (x, y, width, height), its region moved with the controls under it */
     fun fullArt(): FloatArray {
         val offset = coverOffset()
-        val fs = coverFullscreen
-        if (offset == 0f && fs <= 0f) return floatArrayOf(fullArtXPx, fullArtYPx, fullArtWidthPx, fullArtHeightPx)
-        // fullscreen grows the cover toward CoverFullscreenFraction of the sheet, edge-to-edge
-        // only: a boxed cover is a square stage and must keep its shape
-        if (!boxedStage && fs > 0f) {
-            val targetH = fullHeightPx * CoverFullscreenFraction
-            if (offset == 0f) {
-                return floatArrayOf(
-                    fullArtXPx,
-                    lerpF(fullArtYPx, 0f, fs),
-                    fullArtWidthPx,
-                    lerpF(fullArtHeightPx, targetH, fs),
-                )
-            }
-            val box = coverArtBoxF(boxedStage, fullWidthPx, fullHeightPx, statusTopPx, dpPx, offset)
-            return floatArrayOf(box.x, lerpF(box.y, 0f, fs), box.width, lerpF(box.height, targetH, fs))
-        }
         if (offset == 0f) return floatArrayOf(fullArtXPx, fullArtYPx, fullArtWidthPx, fullArtHeightPx)
         val box = coverArtBoxF(boxedStage, fullWidthPx, fullHeightPx, statusTopPx, dpPx, offset)
         return floatArrayOf(box.x, box.y, box.width, box.height)
@@ -461,11 +443,12 @@ fun MorphingCover(
     /**
      * How far into the cover's fullscreen (0 = its usual region, 1 = [CoverFullscreenFraction]
      * of the sheet): a few seconds of playback with no touch grow the canvas over the controls
-     * that faded out. A plain value, not a callback: a callback is only read while laying out,
-     * and the cover's layout never re-ran from it, so the cover stayed the same size while
-     * everything around it faded. A value recomposes the cover, so it grows.
+     * that faded out. A callback, read in the cover's draw layer: the shared content doesn't
+     * recompose during the animation, so a plain value (or growing the layout box) never
+     * reaches the cover — but a draw-layer read re-runs every frame, the same way the pause
+     * zoom and the seek bar's fade do.
      */
-    coverFullscreen: Float = 0f,
+    coverFullscreenProvider: () -> Float = { 0f },
     // told when a youtube video starts or stops showing on the cover, so the chevron can offer the full video mode
     onVideoShowingChange: (Boolean) -> Unit = {},
     // the new flagship's moving colours, fed from the picture, the video or the animated cover, and the backdrop when it's set to ambient
@@ -586,7 +569,7 @@ fun MorphingCover(
     }
 
     val currentCoverOffset by androidx.compose.runtime.rememberUpdatedState(coverOffsetProvider)
-    val endpointsPx = remember(endpoints, density, coverFullscreen) {
+    val endpointsPx = remember(endpoints, density) {
         with(density) {
             MorphEndpointsPx(
                 miniArtWidthPx = endpoints.miniArtWidth.toPx(),
@@ -620,7 +603,6 @@ fun MorphingCover(
                 statusTopPx = statusBarTop.toPx(),
                 dpPx = density.density,
                 coverOffset = { currentCoverOffset() },
-                coverFullscreen = coverFullscreen,
             )
         }
     }
@@ -864,6 +846,20 @@ fun MorphingCover(
                         element = MorphElement.ART,
                         lyricsProgressProvider = lyricsProgressProvider,
                     )
+                    .graphicsLayer {
+                        // the fullscreen zoom: the cover's layout never re-runs during the
+                        // animation (the shared content doesn't recompose), so the growth
+                        // happens here, in the draw layer, which re-reads the value every
+                        // frame — the same way the pause zoom and the seek bar's fade do.
+                        // From the top, so the cover grows downward to CoverFullscreenFraction
+                        // of the sheet; the canvas video inside (a TextureView) zooms with it.
+                        // Edge-to-edge only: a boxed cover is a square stage and must keep its shape.
+                        val fs = coverFullscreenProvider()
+                        val zoom = if (endpointsPx.boxedStage) 1f else 1f + (CoverFullscreenFraction / CoverRegionFraction - 1f) * fs
+                        scaleX = zoom
+                        scaleY = zoom
+                        transformOrigin = TransformOrigin(0.5f, 0f)
+                    }
                     .then(studioArtModifier)
                     .graphicsLayer {
                         val p = progressProvider()

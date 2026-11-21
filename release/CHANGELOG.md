@@ -6,6 +6,12 @@ pantalla de actualización y el `changelog.json`. Las secciones viejas quedan
 abajo como historial. Escribe los cambios como los leería Daniel: qué mejora
 o qué se arregló, en su idioma, sin hablar de builds ni de APKs.
 
+## 9.0.0 build#29
+
+### Arreglos
+
+- La portada a pantalla completa ahora sí crece: el crecimiento se hace en la misma capa que dibuja la portada (como el zoom al pausar y la barra que se desvanece, que sí funcionaban), así la canvas se hace más grande hasta casi toda la pantalla y solo quedan el título, el artista, el botón de me gusta y los botones de reproducir
+
 ## 9.0.0 build#28
 
 ### Arreglos
