@@ -998,7 +998,7 @@ private fun PlayerSheet(
                     alternateStyle = !playerStyle.flagshipFamily || landscapeFlagship,
                     miniVideo = playerStyle == PlayerStyle.VIDEO,
                     coverOffsetProvider = layoutTweaks::controlsOffset,
-                    coverFullscreenProvider = { coverFullscreen },
+                    coverFullscreen = coverFullscreen,
                     onLongPressCover = holdToStudio,
                     studioArtModifier = if (playerStyle.flagshipFamily) {
                         Modifier
@@ -1409,8 +1409,8 @@ private fun PlayerSheet(
                         .fillMaxSize()
                         .background(
                             Brush.verticalGradient(
-                                0.45f to Color.Transparent,
-                                1f to Color.Black.copy(alpha = 0.6f),
+                                0.35f to Color.Transparent,
+                                1f to Color.Black.copy(alpha = 0.75f),
                             )
                         )
                         .graphicsLayer { alpha = coverFullscreen },

@@ -228,13 +228,13 @@ private class MorphEndpointsPx(
     val dpPx: Float,
     /** how far the controls under the cover were moved, px down; read while laying out */
     val coverOffset: () -> Float,
-    /** how far into the cover's fullscreen, 0..1; read while laying out */
-    val coverFullscreen: () -> Float,
+    /** how far into the cover's fullscreen, 0..1; a plain value, so the cover recomposes with it */
+    val coverFullscreen: Float,
 ) {
     /** the full-size cover's box (x, y, width, height), its region moved with the controls under it */
     fun fullArt(): FloatArray {
         val offset = coverOffset()
-        val fs = coverFullscreen()
+        val fs = coverFullscreen
         if (offset == 0f && fs <= 0f) return floatArrayOf(fullArtXPx, fullArtYPx, fullArtWidthPx, fullArtHeightPx)
         // fullscreen grows the cover toward CoverFullscreenFraction of the sheet, edge-to-edge
         // only: a boxed cover is a square stage and must keep its shape
@@ -461,9 +461,11 @@ fun MorphingCover(
     /**
      * How far into the cover's fullscreen (0 = its usual region, 1 = [CoverFullscreenFraction]
      * of the sheet): a few seconds of playback with no touch grow the canvas over the controls
-     * that faded out. Read while laying out only, like the offset above.
+     * that faded out. A plain value, not a callback: a callback is only read while laying out,
+     * and the cover's layout never re-ran from it, so the cover stayed the same size while
+     * everything around it faded. A value recomposes the cover, so it grows.
      */
-    coverFullscreenProvider: () -> Float = { 0f },
+    coverFullscreen: Float = 0f,
     // told when a youtube video starts or stops showing on the cover, so the chevron can offer the full video mode
     onVideoShowingChange: (Boolean) -> Unit = {},
     // the new flagship's moving colours, fed from the picture, the video or the animated cover, and the backdrop when it's set to ambient
@@ -584,8 +586,7 @@ fun MorphingCover(
     }
 
     val currentCoverOffset by androidx.compose.runtime.rememberUpdatedState(coverOffsetProvider)
-    val currentCoverFullscreen by androidx.compose.runtime.rememberUpdatedState(coverFullscreenProvider)
-    val endpointsPx = remember(endpoints, density) {
+    val endpointsPx = remember(endpoints, density, coverFullscreen) {
         with(density) {
             MorphEndpointsPx(
                 miniArtWidthPx = endpoints.miniArtWidth.toPx(),
@@ -619,7 +620,7 @@ fun MorphingCover(
                 statusTopPx = statusBarTop.toPx(),
                 dpPx = density.density,
                 coverOffset = { currentCoverOffset() },
-                coverFullscreen = { currentCoverFullscreen() },
+                coverFullscreen = coverFullscreen,
             )
         }
     }
