@@ -6,6 +6,12 @@ pantalla de actualización y el `changelog.json`. Las secciones viejas quedan
 abajo como historial. Escribe los cambios como los leería Daniel: qué mejora
 o qué se arregló, en su idioma, sin hablar de builds ni de APKs.
 
+## 9.0.0 build#30
+
+### Mejoras
+
+- En la pantalla completa de la portada ahora solo queda la canción abajo: a los pocos segundos sin tocar nada, los botones de anterior/reproducir/siguiente y la barra de progreso desaparecen, y el título, el artista, el botón de me gusta y la flecha bajan hasta abajo de la pantalla sobre la canvas
+
 ## 9.0.0 build#29
 
 ### Arreglos

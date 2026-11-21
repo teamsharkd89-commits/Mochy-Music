@@ -1427,11 +1427,20 @@ private fun PlayerSheet(
                     .graphicsLayer {
                         // the Turntable shows its own controls; these (with the seek bar) come up
                         // only as the lyrics or the queue open, which run off the seek bar. The
-                        // cover's fullscreen leaves this column in place: only the seek bar inside
-                        // it fades, so the song row and the transport buttons stay on screen.
+                        // cover's fullscreen slides this column down so the song row lands at the
+                        // bottom, with the like and the chevron, while the seek bar and the
+                        // transport buttons fade out and slide off the bottom with it.
                         alpha = (1f - pageControlsHidden) * (if (isTurntable) turntablePageProgress else 1f)
 
-                        translationY = pageControlsHidden * size.height * 0.55f
+                        // how far the song row has to travel to the bottom: the column's height
+                        // minus the row and the spacer above it, plus the space the column sits
+                        // above the bottom bar — all layout sizes, so the slide never feeds back
+                        // on itself as the row moves
+                        val drop = size.height - (songInfoSourceRect?.height ?: 0f) +
+                            with(density) {
+                                (belowControls + transportGap.coerceAtLeast(0.dp) + controlsDrawShift - 20.dp - 16.dp).toPx()
+                            }
+                        translationY = pageControlsHidden * size.height * 0.55f + coverFullscreen * drop
                         // Hidden over the lyrics, or behind the Turntable's own controls, they let
                         // touches through. A layer that ate every touch used to sit here, and it
                         // blocked the lyrics, the record and swipes along with the hidden buttons.
@@ -1719,6 +1728,12 @@ private fun PlayerSheet(
                     .studioAnchor(studioAnchors) { it.transport }
                     .studioTransportLayer(studioParts)
                     .studioPiece(studioPieces, StudioPieces.TRANSPORT)
+                    .graphicsLayer {
+                        // in the cover's fullscreen the transport buttons go away with the seek
+                        // bar, leaving only the song row at the bottom
+                        alpha = 1f - coverFullscreen
+                        letTouchesThroughWhenHidden()
+                    }
                 if (isFlagship) {
                     FlagshipTransportRow(layout = transportLayout, modifier = transportModifier)
                 } else {
